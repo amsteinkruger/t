@@ -1,0 +1,152 @@
+---
+title: "Hog"
+output: html_document
+---
+
+####0. Libraries
+
+```{r}
+
+library(knitr)
+library(tidyverse)
+
+```
+
+####1. Aquaculture
+
+Inputs
+
+```{r aquaculture_in_read}
+
+```
+
+```{r aquaculture_in}
+
+```
+
+Functions
+
+```{r aquaculture_fun_read}
+
+```
+
+```{r aquaculture_fun}
+
+```
+
+Outputs
+
+```{r aquaculture_out_read}
+
+```
+
+```{r aquaculture_out}
+
+```
+
+####2. Fishery
+
+Inputs
+
+a. Get inputs from sources. Store in .csv and in the environment.
+
+```{r fishery_in_read, cache = FALSE}
+
+knitr::read_chunk('fi_in.R')
+
+```
+
+```{r fi_in}
+```
+
+Functions
+
+b. Build functions and get parameters from math and inputs. 
+
+```{r fishery_fun_read}
+
+print(fi_in)
+
+```
+
+```{r fishery_fun}
+
+```
+
+Outputs
+
+c. Gather up parameters from functions and store.
+
+```{r fishery_out_read}
+
+```
+
+```{r fishery_out}
+
+```
+
+####3. Market
+
+Inputs
+
+```{r market_in_read}
+
+```
+
+```{r market_in}
+
+```
+
+Functions
+
+```{r market_fun_read}
+
+```
+
+```{r market_fun}
+
+```
+
+Outputs
+
+```{r market_out_read}
+
+```
+
+```{r market_out}
+
+```
+
+####4. Hog Parameters
+
+Name 'em, join 'em, make 'em available.
+
+```{r par}
+
+```
+
+####5. Hog Function
+
+```{r fun}
+
+```
+
+####6. Hog Runs
+
+```{r run}
+
+```
+
+####7. Hog Outputs
+
+Tables and visualization.
+
+```{r vis}
+
+```
+
+```{r tab}
+
+```
+
+
