@@ -5,147 +5,143 @@ output: html_document
 
 ####0. Libraries
 
-```{r}
+```{r libraries, warning = FALSE, error = FALSE, message = FALSE}
 
 library(knitr)
 library(tidyverse)
+library(janitor)
+library(broom)
+library(reshape2)
 
 ```
 
-####1. Aquaculture
+####1 Data
 
-Inputs
+```{r data_read, cache = FALSE}
+knitr::read_chunk('data.R')
+```
 
-```{r aquaculture_in_read}
+```{r data}
+```
+
+####2 Functions
+
+```{r functions_read}
+
+knitr::read_chunk('functions.R')
 
 ```
 
-```{r aquaculture_in}
+```{r functions}
+```
+
+####3 Set-Up
+
+```{r set_read}
+
+knitr::read_chunk('set.R')
 
 ```
 
-Functions
-
-```{r aquaculture_fun_read}
-
+```{r set}
 ```
 
-```{r aquaculture_fun}
+####4. Hog Function
+
+```{r fun_read}
+
+knitr::read_chunk('fun.R')
 
 ```
-
-Outputs
-
-```{r aquaculture_out_read}
-
-```
-
-```{r aquaculture_out}
-
-```
-
-####2. Fishery
-
-Inputs
-
-a. Get inputs from sources. Store in .csv and in the environment.
-
-```{r fishery_in_read, cache = FALSE}
-
-knitr::read_chunk('fi_in.R')
-
-```
-
-```{r fi_in}
-```
-
-Functions
-
-b. Build functions and get parameters from math and inputs. 
-
-```{r fishery_fun_read}
-
-print(fi_in)
-
-```
-
-```{r fishery_fun}
-
-```
-
-Outputs
-
-c. Gather up parameters from functions and store.
-
-```{r fishery_out_read}
-
-```
-
-```{r fishery_out}
-
-```
-
-####3. Market
-
-Inputs
-
-```{r market_in_read}
-
-```
-
-```{r market_in}
-
-```
-
-Functions
-
-```{r market_fun_read}
-
-```
-
-```{r market_fun}
-
-```
-
-Outputs
-
-```{r market_out_read}
-
-```
-
-```{r market_out}
-
-```
-
-####4. Hog Parameters
-
-Name 'em, join 'em, make 'em available.
-
-```{r par}
-
-```
-
-####5. Hog Function
 
 ```{r fun}
+```
+
+####5. Hog Runs
+
+```{r runs}
+
+# Build a home for results of runs.
+results = list()
+
+# Loop through parameter sets.
+for(i in 1:1){par = select(pars, i)
+              output = fun(par)
+              output$Run = i
+              results[[i]] = output}
+
+# Go from list to dataframe for easier processing.
+results = bind_rows(results)
+print(results)
 
 ```
 
-####6. Hog Runs
+####6. Hog Outputs
 
-```{r run}
-
-```
-
-####7. Hog Outputs
-
-Tables and visualization.
+Visualization and tables.
 
 ```{r vis}
+
+# Wrangle a summary of numbers and catches by group and run for each year.
+results_sum = results %>%
+  group_by(Year, Variable, Group, Run) %>% 
+  summarize(Sum = sum(Result)) %>% 
+  mutate(Log = log(Sum)) %>% 
+  ungroup()
+
+# Plot the summary numbers.
+plot_fig = 
+  ggplot(results_sum) +
+  geom_line(aes(x = Year, y = Sum, group = Run, color = Run)) +
+  facet_grid(vars(Variable), vars(Group))
+
+#ggsave("plot_fig.png", plot_fig, dpi = 300, width = 6.5, height = 6.5)
+
+# Catch Mock-Up
+results_catch = results %>%
+  filter(Variable == "Catches") %>% 
+  group_by(Year) %>% 
+  summarize(Sum = sum(Result)) %>% 
+  mutate(Log = log(Sum)) %>% 
+  ungroup()
+
+plot_catch = 
+  ggplot(results_catch) +
+  geom_line(aes(x = Year, y = Sum)) +
+  ylim(0, NA) +
+  labs(x = "Year, 2017 - 2026", y = "Catches (Individuals Caught, All Cohorts)", title = "Catch Forecast") +
+  theme_classic()
+
+write.csv(results_catch, "catches.csv")
+
+# Numbers Mock-Up
+results_n = results %>%
+  filter(Variable == "Numbers") %>% 
+  group_by(Year) %>% 
+  summarize(Sum = sum(Result)) %>% 
+  mutate(Log = log(Sum)) %>% 
+  ungroup()
+
+plot_n = 
+  ggplot(results_n) +
+  geom_line(aes(x = Year, y = Sum)) +
+  ylim(0, NA) +
+  labs(x = "Year, 2017 - 2026", y = "Stock (Individuals, All Cohorts)", title = "Stock Forecast") +
+  theme_classic()
+
+write.csv(results_n, "numbers.csv")
+
+ggsave("plot_catch.png", plot_catch, dpi = 300, width = 6.5, height = 6.5)
+ggsave("plot_n.png", plot_n, dpi = 300, width = 6.5, height = 6.5)
+
+print(plot_catch)
+print(plot_n)
 
 ```
 
 ```{r tab}
+
+
 
 ```
 
