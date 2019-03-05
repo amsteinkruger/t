@@ -19,7 +19,8 @@ fun_a_bmort = function(a, b_b, a_mat, n0){b = ifelse(a < a_mat, 0.20, 0)}#(b_b /
 fun_rec = function(n, a_rec, b_rec, d_rec){n0 = (a_rec * n) / ((1 + n / b_rec) ^ d_rec)}
 
 # Production and grams to price in multivariate inverse demand specification.
-fun_p = function(q, g, a_ma, b_ma, c_ma){p = q * a_ma + g ^ b_ma + c_ma}
+fun_p = function(q, g, a_ma, b_ma, c_ma){p = q * a_ma + g ^ b_ma + c_ma
+                                         return(ifelse(p > 0, p, 0))}
 
 # Ages to natural mortalities in aquaculture.
 fun_a_aqmort = function(a, b1, b2){m = b1 * exp(b2 * a * 12) + 1} # Turn that 1 into a parameter for the minimum mortality.
