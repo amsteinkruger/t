@@ -33,6 +33,7 @@
       m = matrix(nrow = t_i - t_0 + 1, ncol = a_i - a_0 + 1) # Build a matrix of natural mortalities at age.
       b = matrix(nrow = t_i - t_0 + 1, ncol = a_i - a_0 + 1) # Build a matrix of bycatch at age.
       y = matrix(nrow = t_i - t_0 + 1, ncol = a_i - a_0 + 1) # Build a matrix of catch at age.
+      p_mat = matrix(nrow = t_i - t_0 + 1, ncol = a_i - a_0 + 1) # Build a matrix of prices at age.
       a_matrix = matrix(nrow = a_i - a_0 + 1, ncol = t_i - t_0 + 1) # Build a matrix of ages for reference in functions. Transposed.
       rec = as.numeric(vector(length = a_i - a_0 + 1))  # Build a vector of recruitment at age.
       e = as.numeric(vector(length = t_i - t_0 + 1))  # Build a vector of effort. This is the variable for optimization in the economic component.
@@ -82,8 +83,11 @@
       b[1,] = (n[1,] - m[1,]) * fun_a_bmort(a_matrix[1,], b_b, a_mat_am, n0) # Bycatch mortalities by cohort for first year.
       e[1] = e_2017 # Effort in boats/season for 2017.     
       y[1,] = (n[1,] - m[1,] - b[1,]) * q * e[1] * fun_l_s(fun_a_l(a_matrix[1,], linf_al, k_al, t0_al), a_ls, b_ls, m_ls) # Catch for first year by cohort.
-      p[1] = fun_p(sum(y[1,]), 500, a_ma, b_ma, c_ma) # First price w/o matrix thing.
-      r_fi[1] = p[1] * sum(y[1,]) # Revenues for first year. Fix the matrix thing. ^^^
+      p[1] = 100#fun_p(sum(y[1,]), 500, a_ma, b_ma, c_ma) # First price w/o matrix thing.
+      p_mat[1,] = fun_p(sum(fun_l_w(a_lw, fun_a_l(a_matrix[1, ], linf_al, k_al, t0_al), b_lw) * y[1, ] * d_z * e_z) / 1000, # Prices from tonnes of production and grams of maw at age. Placeholder names.
+                        fun_l_w(a_lw, fun_a_l(a_matrix[1, ], linf_al, k_al, t0_al), b_lw) * d_z * e_z * 1000, 
+                        a_ma, b_ma, c_ma)
+      r_fi[1] = sum(p_mat[1,] * fun_l_w(a_lw, fun_a_l(a_matrix[1, ], linf_al, k_al, t0_al), b_lw) * y[1, ] * d_z * e_z * 1000) # Constant for conversion to grams of buche.
       c_fi[1] = e[1] * c_2017 # Costs for first year.
       rec[1] = fun_rec(sum(n[1, 2:(t_i - t_0 + 1)]), a_r, b_r, d_r) # Recruitment for first year.
       eta = (e[1] * 0.10) / (r_fi[1] - c_fi[1]) # Parameter to restrict changes in effort.
@@ -137,39 +141,39 @@
       for(i in 2:(t_i - t_0 + 1)){
         for(j in 2:(a_i - a_0 + 1)){
           # Fishery.
-          # Numbers for time i and cohort j are numbers of the previous time and cohort less mortalities of the previous time and cohort.   
+          #  Numbers for time i and cohort j are numbers of the previous time and cohort less mortalities of the previous time and cohort.   
           n[i, j] = n[i - 1, j - 1] - m[i - 1, j - 1] - b[i - 1, j - 1] - y[i - 1, j - 1]
           
-          # Natural mortalities for time i and cohort j are numbers for the same multipled by a constant factor for marginal mortality.
+          #  Natural mortalities for time i and cohort j are numbers for the same multipled by a constant factor for marginal mortality.
           m[i, j] = n[i, j] * fun_a_nmort(a_matrix[i, j], a_mat_am, a_old_am, m_juv_am, m_mat_am, m_old_am)
           
-          # Bycatch for time i and cohort j are numbers for the same after natural mortality multipled by constant bycatch mortality..
+          #  Bycatch for time i and cohort j are numbers for the same after natural mortality multipled by constant bycatch mortality..
           b[i, j] = (n[i, j] - m[i, j]) * fun_a_bmort(a_matrix[i, j], b_b, a_mat_am, n0)
           
         }
         
-        # Numbers for time i and first cohort.
+        #  Numbers for time i and first cohort.
         n[i, 1] = rec[i - 1]
         
-        # Natural mortalities for time i and first cohort.
+        #  Natural mortalities for time i and first cohort.
         m[i, 1] = n[i, 1] * fun_a_nmort(a_matrix[i, 1], a_mat_am, a_old_am, m_juv_am, m_mat_am, m_old_am)
         
-        # Bycatch mortality for time i and first cohort.
+        #  Bycatch mortality for time i and first cohort.
         b[i, 1] = (n[i, 1] - m[i, 1]) * fun_a_bmort(a_matrix[i, 1], b_b, a_mat_am, n0)
         
         # Effort for time i and all cohorts from past effort, revenues, costs, and a stiffness parameter.
         e[i] = e[i - 1] + eta * (r_fi[i - 1] - c_fi[i - 1])
         
-        # Catches from effort and the rest.
+        #  Catches from effort and the rest.
         for(j in 2:(a_i - a_0 + 1)){
           y[i, j] = (n[i, j] - m[i, j] - b[i, j]) * q * e[i] * fun_l_s(fun_a_l(a_matrix[i, j], linf_al, k_al, t0_al), a_ls, b_ls, m_ls)
           y[i, 1] = (n[i, 1] - m[i, 1] - b[i, 1]) * q * e[i] * fun_l_s(fun_a_l(a_matrix[i, 1], linf_al, k_al, t0_al), a_ls, b_ls, m_ls)
         }
         
-        # Recruitment for time i.
+        #  Recruitment for time i.
         rec[i] = fun_rec(sum(n[i, 2:(a_i - a_0 + 1)]), a_r, b_r, d_r)
         
-        # JESUS TAKE THE WHEEL IT'S AQUACULTURE TIME
+        # Aquaculture.
         a0_aq[i] = a0_aq[i - 1] * hinv_aq[i - 1] + 1
         a1_aq[i] = a0_aq[i] + 1
         
@@ -181,7 +185,7 @@
         n0_aq[i] = (nstart * h_aq[i - 1] + n0_aq[i - 1] * hinv_aq[i - 1]) - nm0_aq[i] - nt0_aq[i]
         rt0_aq[i] = nt0_aq[i] * w0_aq[i] * f_z * g_z # Fix placeholder variable names.
         y0_aq[i] = w0_aq[i] * n0_aq[i] * d_z * e_z # Fix placeholder variable names.
-        p0_aq[i] = p[i - 1] # Placeholder.
+        p0_aq[i] = p_mat[i - 1, a0_aq[i]]
         rmaw0_aq[i] = y0_aq[i] * p0_aq[i]
         rround0_aq[i] = w0_aq[i] * f_z * g_z # Fix placeholder variable names.
         r0_aq[i] = (rmaw0_aq[i] + rround0_aq[i])
@@ -195,7 +199,7 @@
         n1_aq[i] = (nstart * h_aq[i - 1] + n1_aq[i - 1] * hinv_aq[i - 1]) - nm1_aq[i] - nt1_aq[i]
         rt1_aq[i] = nt1_aq[i] * w1_aq[i] * f_z * g_z # Fix placeholder variable names.
         y1_aq[i] = w1_aq[i] * n1_aq[i] * d_z * e_z # Fix placeholder variable names.
-        p1_aq[i] = p[i - 1] # Placeholder.
+        p1_aq[i] = p_mat[i - 1, a1_aq[i]]
         rmaw1_aq[i] = y1_aq[i] * p1_aq[i]
         rround1_aq[i] = w1_aq[i] * f_z * g_z # Fix placeholder variable names.
         r1_aq[i] = (rmaw1_aq[i] + rround1_aq[i])
@@ -208,17 +212,21 @@
         r_aq[i] = (r0_aq[i] + rt0_aq[i] * hinv_aq[i])
         c_aq[i] = c0_aq[i] * hinv_aq[i] + l_z * nstart * h_aq[i]
         
-        # Prices - looking for a conversion.
-        p[i] = fun_p(sum(y[i,]) + y0_aq[i] * h_aq[i], 500, a_ma, b_ma, c_ma)
+        # Prices in matrix. Use this one. Think harder about the lag problem.
+        for(j in 1:(a_i - a_0 + 1)){
+          p_mat[i, j] = fun_p(sum(fun_l_w(a_lw, fun_a_l(a_matrix[i, ], linf_al, k_al, t0_al), b_lw) * y[i, ] * d_z * e_z) / 1000, # Prices from tonnes of production and grams of maw at age. Placeholder names.
+                              fun_l_w(a_lw, fun_a_l(a_matrix[i, j], linf_al, k_al, t0_al), b_lw) * d_z * e_z * 1000, 
+                              a_ma, b_ma, c_ma)
+        }
         
         # Revenues.
-        r_fi[i] = p[i] * sum(y[i,]) # Placeholder! Do the matrix thing.
+        r_fi[i] = sum(p_mat[i,] * fun_l_w(a_lw, fun_a_l(a_matrix[i, ], linf_al, k_al, t0_al), b_lw) * y[i, ] * d_z * e_z * 1000) # Constant for conversion to grams of buche.
         
         # Costs.
         c_fi[i] = e[i] * c_2017
       }
       
-      # Tidy results: years, ages, and values into a dataframe. Add efforts, revenues, and costs sometime.
+      # Tidy results: years, ages, and values into a dataframe. Work in efforts, revenues, costs, profits, and biomass sometime.
       # HEY PIPE THIS %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% 
       #  Numbers.
       tidyn = melt(n)
@@ -246,7 +254,7 @@
       tidyc$value = c_fi
       tidyc$var = "Cost"
       #  Everything!
-      tidy = bind_rows(tidyn, tidyy, tidye)
+      tidy = bind_rows(tidyn, tidyy, tidye, tidyr, tidyc)
       tidy$group = ifelse(tidy$Var2 < a_mat_am, "Machorro", ifelse(tidy$Var2 < a_old_am, "Pre-Adulto", "Adulto"))
       tidy = rename(tidy, Year = Var1, Age = Var2, Result = value, Variable = var, Group = group)
       
