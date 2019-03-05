@@ -166,15 +166,6 @@
           y[i, 1] = (n[i, 1] - m[i, 1] - b[i, 1]) * q * e[i] * fun_l_s(fun_a_l(a_matrix[i, 1], linf_al, k_al, t0_al), a_ls, b_ls, m_ls)
         }
         
-        # Prices - looking for a conversion.
-        p[i] = fun_p(sum(y[i,]), 500, a_ma, b_ma, c_ma)
-        
-        # Revenues.
-        r_fi[i] = p[i] * sum(y[i,]) # Placeholder! Do the matrix thing.
-        
-        # Costs.
-        c_fi[i] = e[i] * c_2017
-        
         # Recruitment for time i.
         rec[i] = fun_rec(sum(n[i, 2:(a_i - a_0 + 1)]), a_r, b_r, d_r)
         
@@ -190,7 +181,7 @@
         n0_aq[i] = (nstart * h_aq[i - 1] + n0_aq[i - 1] * hinv_aq[i - 1]) - nm0_aq[i] - nt0_aq[i]
         rt0_aq[i] = nt0_aq[i] * w0_aq[i] * f_z * g_z # Fix placeholder variable names.
         y0_aq[i] = w0_aq[i] * n0_aq[i] * d_z * e_z # Fix placeholder variable names.
-        p0_aq[i] = p[i] # Placeholder.
+        p0_aq[i] = p[i - 1] # Placeholder.
         rmaw0_aq[i] = y0_aq[i] * p0_aq[i]
         rround0_aq[i] = w0_aq[i] * f_z * g_z # Fix placeholder variable names.
         r0_aq[i] = (rmaw0_aq[i] + rround0_aq[i])
@@ -204,19 +195,27 @@
         n1_aq[i] = (nstart * h_aq[i - 1] + n1_aq[i - 1] * hinv_aq[i - 1]) - nm1_aq[i] - nt1_aq[i]
         rt1_aq[i] = nt1_aq[i] * w1_aq[i] * f_z * g_z # Fix placeholder variable names.
         y1_aq[i] = w1_aq[i] * n1_aq[i] * d_z * e_z # Fix placeholder variable names.
-        p1_aq[i] = p[i] # Placeholder.
+        p1_aq[i] = p[i - 1] # Placeholder.
         rmaw1_aq[i] = y1_aq[i] * p1_aq[i]
         rround1_aq[i] = w1_aq[i] * f_z * g_z # Fix placeholder variable names.
         r1_aq[i] = (rmaw1_aq[i] + rround1_aq[i])
         c1_aq[i] = n1_aq[1] * w1_aq[1] * h_z * j_z * 365 + k_z # Fix placeholder variable names.
         
-        # Mind wrapper for hard-coding lower bound age at harvest.
-        #h_aq[i] = ifelse(a0_aq[i] > 0, ifelse((r0_aq[i] - par[20]) > (par[21] * (r1[i] - c0[i] + rt0[i])), 1, 0), 0) # Think hard about lags here.
-        #hinv_aq[i] = (h[i] - 1) ^ 2
+        # Mind wrapper for hard-coding lower bound age at harvest. Discount rate! Discount rate! Discount rate!
+        h_aq[i] = ifelse(a0_aq[i] > 0, ifelse((r0_aq[i] - l_z * nstart) > (0.90 * (r1_aq[i] - c0_aq[i] + rt0_aq[i])), 1, 0), 0) # Think hard about lags here.
+        hinv_aq[i] = (h_aq[i] - 1) ^ 2
         
-        #r_aq[i] = (r0_aq[i] + rt0_aq[i] * hinv_aq[i])
-        #c_aq[i] = c0_aq[i] * hinv_aq[i] + par[20] * h[i]
+        r_aq[i] = (r0_aq[i] + rt0_aq[i] * hinv_aq[i])
+        c_aq[i] = c0_aq[i] * hinv_aq[i] + l_z * nstart * h_aq[i]
         
+        # Prices - looking for a conversion.
+        p[i] = fun_p(sum(y[i,]) + y0_aq[i] * h_aq[i], 500, a_ma, b_ma, c_ma)
+        
+        # Revenues.
+        r_fi[i] = p[i] * sum(y[i,]) # Placeholder! Do the matrix thing.
+        
+        # Costs.
+        c_fi[i] = e[i] * c_2017
       }
       
       # Tidy results: years, ages, and values into a dataframe. Add efforts, revenues, and costs sometime.
