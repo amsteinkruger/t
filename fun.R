@@ -259,6 +259,6 @@
       tidy = rename(tidy, Year = Var1, Age = Var2, Result = value, Variable = var, Group = group)
       
       # Get results.
-      return(tidy)
+      return(h_aq)
       
     }
