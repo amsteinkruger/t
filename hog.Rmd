@@ -15,7 +15,7 @@ library(reshape2)
 
 ```
 
-####1 Data
+####1. Data
 
 ```{r data_read, cache = FALSE}
 knitr::read_chunk('data.R')
@@ -24,7 +24,7 @@ knitr::read_chunk('data.R')
 ```{r data}
 ```
 
-####2 Functions
+####2. Functions
 
 ```{r functions_read}
 
@@ -35,7 +35,7 @@ knitr::read_chunk('functions.R')
 ```{r functions}
 ```
 
-####3 Set-Up
+####3. Set-Up
 
 ```{r set_read}
 
@@ -92,7 +92,7 @@ results_sum = results %>%
 # Plot the summary numbers.
 plot_fig = 
   ggplot(results_sum) +
-  geom_line(aes(x = Year, y = Sum, group = Run, color = Run)) +
+  geom_line(aes(x = Year, y = Log, group = Run, color = Run)) +
   facet_grid(vars(Variable), vars(Group))
 
 #ggsave("plot_fig.png", plot_fig, dpi = 300, width = 6.5, height = 6.5)
@@ -112,7 +112,7 @@ plot_catch =
   labs(x = "Year, 2017 - 2026", y = "Catches (Individuals Caught, All Cohorts)", title = "Catch Forecast") +
   theme_classic()
 
-write.csv(results_catch, "catches.csv")
+#write.csv(results_catch, "catches.csv")
 
 # Numbers Mock-Up
 results_n = results %>%
@@ -129,10 +129,10 @@ plot_n =
   labs(x = "Year, 2017 - 2026", y = "Stock (Individuals, All Cohorts)", title = "Stock Forecast") +
   theme_classic()
 
-write.csv(results_n, "numbers.csv")
+#write.csv(results_n, "numbers.csv")
 
-ggsave("plot_catch.png", plot_catch, dpi = 300, width = 6.5, height = 6.5)
-ggsave("plot_n.png", plot_n, dpi = 300, width = 6.5, height = 6.5)
+#ggsave("plot_catch.png", plot_catch, dpi = 300, width = 6.5, height = 6.5)
+#ggsave("plot_n.png", plot_n, dpi = 300, width = 6.5, height = 6.5)
 
 print(plot_catch)
 print(plot_n)
