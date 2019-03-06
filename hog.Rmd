@@ -65,9 +65,11 @@ knitr::read_chunk('fun.R')
 results = list()
 
 # Loop through parameter sets.
-for(i in 1:1){par = select(pars, i)
+for(i in 1:6){par = select(pars, i)
               output = fun(par)
               output$Run = i
+              output$Scenario = ifelse(output$Run < 4, "w/ Aquaculture", "w/o Aquaculture")
+              output$Estimate = ifelse(output$Run == 1 | output$Run == 4, "Central", "Outer")
               results[[i]] = output}
 
 # Go from list to dataframe for easier processing.
@@ -83,59 +85,28 @@ Visualization and tables.
 ```{r vis}
 
 # Wrangle a summary of numbers and catches by group and run for each year.
-results_sum = results %>%
-  group_by(Year, Variable, Group, Run) %>% 
-  summarize(Sum = sum(Result)) %>% 
-  mutate(Log = log(Sum)) %>% 
-  ungroup()
+results_sum = filter(results, Age > 3) %>%
+  mutate(Biomass = fun_l_w(pars$default[4], fun_a_l(Age - 0.5, pars$default[1], pars$default[2], pars$default[3]),  pars$default[5]) / 1000 * Result) %>% 
+  group_by(Year, Variable, Run, Scenario, Estimate) %>% # Run, 
+  summarize(SumNum = sum(Result), SumBio = sum(Biomass)) %>% 
+  mutate(LogNum = log(SumNum + 1), LogBio = log(SumBio + 1)) %>% 
+  ungroup() %>% 
+  mutate(Run = as.factor(Run)) %>% 
+  unite("Estimate | Scenario", Estimate, Scenario, sep= " | ", remove = FALSE)
 
 # Plot the summary numbers.
 plot_fig = 
-  ggplot(results_sum) +
-  geom_line(aes(x = Year, y = Log, group = Run, color = Run)) +
-  facet_grid(vars(Variable), vars(Group))
+  ggplot(filter(results_sum, Variable == "Numbers")) +
+  geom_line(aes(x = Year, y = SumBio, group = Run, color = Scenario, linetype = Estimate), size = 1.25) + #group = Run,
+  scale_color_brewer(palette = "Set1", direction = -1) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, NA), labels = scales::comma) +
+  scale_x_continuous(expand = c(0, 0), labels = scales::comma) +  
+  labs(x = "Year", y = "Tonnes of Reproductive Biomass") +
+  theme_classic()
 
 #ggsave("plot_fig.png", plot_fig, dpi = 300, width = 6.5, height = 6.5)
 
-# Catch Mock-Up
-results_catch = results %>%
-  filter(Variable == "Catches") %>% 
-  group_by(Year) %>% 
-  summarize(Sum = sum(Result)) %>% 
-  mutate(Log = log(Sum)) %>% 
-  ungroup()
-
-plot_catch = 
-  ggplot(results_catch) +
-  geom_line(aes(x = Year, y = Sum)) +
-  ylim(0, NA) +
-  labs(x = "Year, 2017 - 2026", y = "Catches (Individuals Caught, All Cohorts)", title = "Catch Forecast") +
-  theme_classic()
-
-#write.csv(results_catch, "catches.csv")
-
-# Numbers Mock-Up
-results_n = results %>%
-  filter(Variable == "Numbers") %>% 
-  group_by(Year) %>% 
-  summarize(Sum = sum(Result)) %>% 
-  mutate(Log = log(Sum)) %>% 
-  ungroup()
-
-plot_n = 
-  ggplot(results_n) +
-  geom_line(aes(x = Year, y = Sum)) +
-  ylim(0, NA) +
-  labs(x = "Year, 2017 - 2026", y = "Stock (Individuals, All Cohorts)", title = "Stock Forecast") +
-  theme_classic()
-
-#write.csv(results_n, "numbers.csv")
-
-#ggsave("plot_catch.png", plot_catch, dpi = 300, width = 6.5, height = 6.5)
-#ggsave("plot_n.png", plot_n, dpi = 300, width = 6.5, height = 6.5)
-
-print(plot_catch)
-print(plot_n)
+print(plot_fig)
 
 ```
 
