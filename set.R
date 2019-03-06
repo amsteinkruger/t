@@ -17,12 +17,12 @@ am_reg_tidy = tidy(am_reg)
 # Pull initial and intermediate parameters together.
 pars_full = pars %>%
   # Add market outputs to parameter table.
-  add_row(name_long = "Quantity Elasticity", name_short = "a_ma", "function" = "Demand", default = nlm_tidy$estimate[1], pessimistic = nlm_tidy$estimate[1] - nlm_tidy$std.error[1], optimistic = nlm_tidy$estimate[1] + nlm_tidy$std.error[1], units = "-", module = "Fishery", source_default = "Intermediate", source_pess = NA, sources_opt = NA) %>% 
-  add_row(name_long = "Size Premium", name_short = "b_ma", "function" = "Demand", default = nlm_tidy$estimate[2], pessimistic = nlm_tidy$estimate[2] - nlm_tidy$std.error[2], optimistic = nlm_tidy$estimate[2] + nlm_tidy$std.error[2], units = "-", module = "Fishery", source_default = "Intermediate", source_pess = NA, sources_opt = NA) %>%
-  add_row(name_long = "Choke Price", name_short = "c_ma", "function" = "Demand", default = nlm_tidy$estimate[3], pessimistic = nlm_tidy$estimate[3] - nlm_tidy$std.error[3], optimistic = nlm_tidy$estimate[3] + nlm_tidy$std.error[3], units = "-", module = "Fishery", source_default = "Intermediate", source_pess = NA, sources_opt = NA) %>%
+  add_row(name_long = "Quantity Elasticity", name_short = "a_ma", "function" = "Demand", default = nlm_tidy$estimate[1], pessimistic = nlm_tidy$estimate[1] - nlm_tidy$std.error[1], optimistic = nlm_tidy$estimate[1] + nlm_tidy$std.error[1], units = "-", module = "Fishery", source_def = "Intermediate", source_pess = NA, source_opt = NA, same_pess = NA, same_opt = NA) %>% 
+  add_row(name_long = "Size Premium", name_short = "b_ma", "function" = "Demand", default = nlm_tidy$estimate[2], pessimistic = nlm_tidy$estimate[2] - nlm_tidy$std.error[2], optimistic = nlm_tidy$estimate[2] + nlm_tidy$std.error[2], units = "-", module = "Fishery", source_def = "Intermediate", source_pess = NA, source_opt = NA, same_pess = NA, same_opt = NA) %>%
+  add_row(name_long = "Choke Price", name_short = "c_ma", "function" = "Demand", default = nlm_tidy$estimate[3], pessimistic = nlm_tidy$estimate[3] - nlm_tidy$std.error[3], optimistic = nlm_tidy$estimate[3] + nlm_tidy$std.error[3], units = "-", module = "Fishery", source_def = "Intermediate", source_pess = NA, source_opt = NA, same_pess = NA, same_opt = NA) %>%
   # Add aquaculture outputs to parameter table.
-  add_row(name_long = "Aq. Mortality Coefficient", name_short = "b1_mort_aq", "function" = "Aquaculture Mortality", default = am_reg_tidy$estimate[1], pessimistic = am_reg_tidy$estimate[1] + am_reg_tidy$std.error[1], optimistic = am_reg_tidy$estimate[1] - am_reg_tidy$std.error[1], units = "-", module = "Aquaculture", source_default = "Intermediate", source_pess = NA, sources_opt = NA) %>%
-  add_row(name_long = "Aq. Mortality Coefficient", name_short = "b2_mort_aq", "function" = "Aquaculture Mortality", default = am_reg_tidy$estimate[2], pessimistic = am_reg_tidy$estimate[2] + am_reg_tidy$std.error[2], optimistic = am_reg_tidy$estimate[2] - am_reg_tidy$std.error[2], units = "-", module = "Aquaculture", source_default = "Intermediate", source_pess = NA, sources_opt = NA)
+  add_row(name_long = "Aq. Mortality Coefficient", name_short = "b1_mort_aq", "function" = "Aquaculture Mortality", default = am_reg_tidy$estimate[1], pessimistic = am_reg_tidy$estimate[1] + am_reg_tidy$std.error[1], optimistic = am_reg_tidy$estimate[1] - am_reg_tidy$std.error[1], units = "-", module = "Aquaculture", source_def = "Intermediate", source_pess = NA, source_opt = NA, same_pess = NA, same_opt = NA) %>%
+  add_row(name_long = "Aq. Mortality Coefficient", name_short = "b2_mort_aq", "function" = "Aquaculture Mortality", default = am_reg_tidy$estimate[2], pessimistic = am_reg_tidy$estimate[2] + am_reg_tidy$std.error[2], optimistic = am_reg_tidy$estimate[2] - am_reg_tidy$std.error[2], units = "-", module = "Aquaculture", source_def = "Intermediate", source_pess = NA, source_opt = NA, same_pess = NA, same_opt = NA)
 
     
 # Turn parameters into a matrix for multiple model runs.
@@ -31,3 +31,10 @@ pars = pars_full %>%
   column_to_rownames(var = "name_short")
 
 # Build out a matrix of parameters for sensitivity analysis.
+pars[4:6] = pars[1:3]
+
+# Change parameters in new columns for sensitivity analysis.
+pars["switch_aq",1:3] = 1
+pars["switch_aq",4:6] = 0
+
+  

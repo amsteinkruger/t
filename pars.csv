@@ -1,40 +1,46 @@
-Name (Long),Name (Short),Function,Default,Pessimistic,Optimistic,Units,Module,Source (default),Source (pess),Sources (Opt),
-Length (Infinity),linf_al_aq,VBGF,200,,,Centimeters,Aquaculture,INAPESCA (2018),,,
-Catabolic Constant (k),k_al_aq,VBGF,0.155,0.155,0.3162,Years (Inverse),Aquaculture,INAPESCA (2018),,Roman-Rodriguez and Hammann (1997),
-Length (time 0),t0_al_aq,VBGF,-0.65,,,Years,Aquaculture,INAPESCA (2018),,,
-a ,a_lw,Length-Weight,0.000004128,,,-,Aquaculture and Fishery,,,,
-b,b_lw,Length-Weight,3.24674,,,-,Aquaculture and Fishery,,,,
-Stocking Denisty,dens_aq,Numbers at Age,20,10,30,(kg/cub.m.),Aquaculture,,,,
-Cage Size ,cage_size_aq,Numbers at Age,8000,,11000,(cubic meters),Aquaculture,InnovaSea AquaPod,,InnovaSea Evolution,
-First Saleable Size ,sale_size_aq,Numbers at Age,2,,,(kg),Aquaculture,,,,
-Buche yield ,d_z,Buche Weights,0.0161,0.0137,,Proportion,Aquaculture,UABC & PhD (INAPESCA wild),"Goto et al, 2019",,
-Buche Dry weight yield,e_z,Buche Weights,0.31,,0.37,Proportion,Aquaculture,UABC & PhD (INAPESCA wild),,"Goto et al, 2019",
-Fish Round Yield,f_z,Wet Weight Revenues,0.7,,,Proportion,Aquaculture,,,,No! Thanks for plugging this in - I'll add it. AS2
-Fish Round Price,g_z,Wet Weight Revenues,6.5,,,USD,Aquaculture,Sistema Nacional de Informacion e Integracion de Mercados (2019),,,
-Feed Requirements,h_z,Feed at Weight,0.04,0.08,0.01,Proportion,Aquaculture,CREMES recommendation,Tuna Ranching Book,Lit Review Comp,
-Feed Cost,j_z,No Harvest Cost,2,,1.545,USD/kg,Aquaculture,"pers. comm. GMG, Eartch Ocean Farms (2019)",,Intrafish (2019),
-Overhead,k_z,No Harvest Cost,170000,,,USD/cage,Aquaculture,"pers. comm. Felipe Ramirez (10/16/2018), InnovaSea (11/5/2018); pers. comm. Tyler Korte (11/5/2018), Blue Ocean Mariculture; pers. comm. Earth Ocean Farms S.A. de C.V. (2018); Salary tabulator (2017 SHCP); Cygnus MIA (2017)",,,
-Cost per fry,l_z,Harvest Cost,2,,,,Aquaculture,CREMES (2018),,,
-Biomass (2017),b_2017,Stock,36429,25709,47149,Metric Tonnes,Fishery,INAPESCA (2018),INAPESCA (2018),INAPESCA (2018),
-Catch (2017),f_2017,Catch,1400,,,Metric Tonnes,Fishery,INAPESCA (2018),,,
-Effort (2017),e_2017,Catch,120,,,Boat-Years,Fishery,INAPESCA (2018),,,
-Bycatch (2017),b_b,Age-Bycatch Mortality,80000,,,Individuals,Fishery,INAPESCA (2018),,,
-Effort Cost,c_2017,Catch,98654.21,19007.46,178300.96,USD/Boat-Year,Fishery,"Fishers interviews; (Green Crime in Mexico, Martinez 2018-Ch.12); INAPESCA (2018) ",,,
-Length (Infinity),linf_al,VBGF,180.52,,,Centimeters,Fishery,INAPESCA (2018),,,
-Catabolic Constant (k),k_al,VBGF,0.17906,,,Years (Inverse),Fishery,INAPESCA (2018),,,
-Length (time 0),t0_al,VBGF,-0.6516,,,Years,Fishery,INAPESCA (2018),,,
-Age Lower Limit - Mature,a_mat_am,Age-Natural Mortality,3.5,,,Years,Fishery,INAPESCA (2018),,,
-Age Lower Limit - Old,a_old_am,Age-Natural Mortality,20.5,,,Years,Fishery,INAPESCA (2018),,,
-Juvenile Natural Mortality,m_juv_am,Age-Natural Mortality,0.549,,,Proportion,Fishery,INAPESCA (2018),,,
-Mature Natural Mortality,m_mat_am,Age-Natural Mortality,0.069,,,Proportion,Fishery,INAPESCA (2018),,,
-Old Natural Mortality,m_old_am,Age-Natural Mortality,0.411,,,Proportion,Fishery,INAPESCA (2018),,,
-a,a_ls,Length-Selectivity,0.95,,,-,Fishery,INAPESCA (2018),,,
-b,b_ls,Length-Selectivity,19.88,,,-,Fishery,INAPESCA (2018),,,
-m,m_ls,Length-Selectivity,0.13,,,-,Fishery,INAPESCA (2018),,,
-Alpha,a_r,Recruitment,131.35,,,-,Fishery,INAPESCA (2018),,,
-Beta,b_r,Recruitment,30700,,,-,Fishery,INAPESCA (2018),,,
-Delta,d_r,Recruitment,1.639951478,,,-,Fishery,INAPESCA (2018),,,
-Start Year,t_0,-,0,,,,All,INAPESCA (2018),,,
-End Year,t_i,-,9,,,,All,INAPESCA (2018),,,
-Start Age,a_0,-,0.5,,,,All,INAPESCA (2018),,,
-End Age,a_i,-,26.5,,,,All,INAPESCA (2018),,,
+Name (Long),Name (Short),Function,Default,Pessimistic,Optimistic,Units,Module,SourceDef,SourcePess,SourceOpt,SamePess,SameOpt
+Length (Infinity),linf_al_aq,VBGF,200,200,200,Centimeters,Aquaculture,INAPESCA (2018),,,1,1
+Catabolic Constant (k),k_al_aq,VBGF,0.155,0.155,0.3162,Years (Inverse),Aquaculture,INAPESCA (2018),,Roman-Rodriguez and Hammann (1997),1,0
+Length (time 0),t0_al_aq,VBGF,-0.65,-0.65,-0.65,Years,Aquaculture,INAPESCA (2018),,,1,1
+a ,a_lw,Length-Weight,0.000004128,0.000004128,0.000004128,-,Aquaculture and Fishery,INAPESCA (2018),,,1,1
+b,b_lw,Length-Weight,3.24674,3.24674,3.24674,-,Aquaculture and Fishery,INAPESCA (2018),,,1,1
+Stocking Denisty,dens_aq,Numbers at Age,20,10,30,(kg/cub.m.),Aquaculture,"innovasea, other aquaculture folks?, HSWRI pers. comm.",,,0,0
+Cage Size ,cage_size_aq,Numbers at Age,8000,8000,11000,(cubic meters),Aquaculture,InnovaSea AquaPod,,InnovaSea Evolution,1,0
+First Saleable Size ,sale_size_aq,Numbers at Age,2,2,2,(kg),Aquaculture,,,,1,1
+Buche yield ,by1,Buche Weights,0.0161,0.0137,0.0161,Proportion,Aquaculture and Fishery,UABC & PhD (INAPESCA wild),"Goto et al, 2019",,0,1
+Buche Dry weight yield,by2,Buche Weights,0.31,0.31,0.37,Proportion,Aquaculture and Fishery,UABC & PhD (INAPESCA wild),,"Goto et al, 2019",1,0
+Fish Round Yield,f_z,Wet Weight Revenues,0.7,0.7,0.7,Proportion,Aquaculture,,,,1,1
+Fish Round Price,g_z,Wet Weight Revenues,6.5,6.5,6.5,USD,Aquaculture,Sistema Nacional de Informacion e Integracion de Mercados (2019),,,1,1
+Feed Requirements,h_z,Feed at Weight,0.04,0.08,0.01,Proportion,Aquaculture,CREMES recommendation,Tuna Ranching Book,Lit Review Comp,0,0
+Feed Cost,j_z,No Harvest Cost,2,2,1.545,USD/kg,Aquaculture,"pers. comm. GMG, Eartch Ocean Farms (2019)",,Intrafish (2019),1,0
+Overhead,k_z,No Harvest Cost,170000,170000,170000,USD/cage,Aquaculture,"pers. comm. Felipe Ramirez (10/16/2018), InnovaSea (11/5/2018); pers. comm. Tyler Korte (11/5/2018), Blue Ocean Mariculture; pers. comm. Earth Ocean Farms S.A. de C.V. (2018); Salary tabulator (2017 SHCP); Cygnus MIA (2017)",,,1,1
+Cost per fry,l_z,Harvest Cost,2,2,2,,Aquaculture,CREMES (2018),,,1,1
+Minimum Mortality,mmin_aq,Aquaculture Mortality,1,10,0,Proportion (%),Aquaculture,?!,,,0,0
+Discount Factor,disc_aq,Harvest Decision,0.9,1,0.75,Proportion (%),Aquaculture,Midriff source?,,,0,0
+Value Lost,loss,Price Matrix,0.1,0.05,0.15,Proportion,Aquaculture and Fishery,ex-vesse price data source?,,,0,0
+Aquaculture Switch,switch_aq,Price Matrix,1,0,1,-,Aquaculture,-,,,0,1
+Biomass (2017),b_2017,Stock,36429,25709,47149,Metric Tonnes,Fishery,INAPESCA (2018),INAPESCA (2018),INAPESCA (2018),0,0
+Proportional Difference from Central Estimate for Biomass (2017),bprop_2017,Stock,0.925945729,0.653466709,1.198424749,Proportion,Fishery,INAPESCA (2018),,,0,0
+Catch (2017),f_2017,Catch,1400,1400,1400,Metric Tonnes,Fishery,INAPESCA (2018),,,1,1
+Effort (2017),e_2017,Catch,120,120,120,Boat-Years,Fishery,INAPESCA (2018),,,1,1
+Bycatch (2017),b_b,Age-Bycatch Mortality,80000,80000,80000,Individuals,Fishery,INAPESCA (2018),,,1,1
+Effort Cost,c_2017,Catch,98654.21,19007.46,178300.96,USD/Boat-Year,Fishery,"Fishers interviews; (Green Crime in Mexico, Martinez 2018-Ch.12); INAPESCA (2018) ",,,0,0
+Effort Entry Limit,eta_limit,Catch,0.1,1,0.05,Proportion,Fishery,INAPESCA (2018),,,0,0
+Length (Infinity),linf_al,VBGF,180.52,180.52,180.52,Centimeters,Fishery,INAPESCA (2018),,,1,1
+Catabolic Constant (k),k_al,VBGF,0.17906,0.17906,0.17906,Years (Inverse),Fishery,INAPESCA (2018),,,1,1
+Length (time 0),t0_al,VBGF,-0.6516,-0.6516,-0.6516,Years,Fishery,INAPESCA (2018),,,1,1
+Age Lower Limit - Mature,a_mat_am,Age-Natural Mortality,3.5,3.5,3.5,Years,Fishery,INAPESCA (2018),,,1,1
+Age Lower Limit - Old,a_old_am,Age-Natural Mortality,20.5,20.5,20.5,Years,Fishery,INAPESCA (2018),,,1,1
+Juvenile Natural Mortality,m_juv_am,Age-Natural Mortality,0.549,0.549,0.549,Proportion,Fishery,INAPESCA (2018),,,1,1
+Mature Natural Mortality,m_mat_am,Age-Natural Mortality,0.069,0.069,0.069,Proportion,Fishery,INAPESCA (2018),,,1,1
+Old Natural Mortality,m_old_am,Age-Natural Mortality,0.411,0.411,0.411,Proportion,Fishery,INAPESCA (2018),,,1,1
+a,a_ls,Length-Selectivity,0.95,0.95,0.95,-,Fishery,INAPESCA (2018),,,1,1
+b,b_ls,Length-Selectivity,19.88,19.88,19.88,-,Fishery,INAPESCA (2018),,,1,1
+m,m_ls,Length-Selectivity,0.13,0.13,0.13,-,Fishery,INAPESCA (2018),,,1,1
+Alpha,a_r,Recruitment,131.35,131.35,131.35,-,Fishery,INAPESCA (2018),,,1,1
+Beta,b_r,Recruitment,30700,30700,30700,-,Fishery,INAPESCA (2018),,,1,1
+Delta,d_r,Recruitment,1.639951478,1.639951478,1.639951478,-,Fishery,INAPESCA (2018),,,1,1
+Start Year,t_0,-,0,0,0,,All,INAPESCA (2018),,,1,1
+End Year,t_i,-,9,9,9,,All,INAPESCA (2018),,,1,1
+Start Age,a_0,-,0.5,0.5,0.5,,All,INAPESCA (2018),,,1,1
+End Age,a_i,-,26.5,26.5,26.5,,All,INAPESCA (2018),,,1,1

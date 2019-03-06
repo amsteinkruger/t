@@ -23,7 +23,7 @@ fun_p = function(q, g, a_ma, b_ma, c_ma){p = q * a_ma + g ^ b_ma + c_ma
                                          return(ifelse(p > 0, p, 0))}
 
 # Ages to natural mortalities in aquaculture.
-fun_a_aqmort = function(a, b1, b2){m = b1 * exp(b2 * a * 12) + 1} # Turn that 1 into a parameter for the minimum mortality.
+fun_a_aqmort = function(a, b1, b2, mmin){m = b1 * exp(b2 * a * 12) + mmin} # Turn that 1 into a parameter for the minimum mortality.
 
 # Weights to optimal stocking densities in numbers.
 fun_ns = function(cage_size_aq, dens_aq, w){ns = (cage_size_aq * dens_aq) / w}
