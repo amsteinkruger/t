@@ -209,7 +209,7 @@
         c1_aq[i] = n1_aq[1] * w1_aq[1] * h_z * j_z * 365 + k_z # Fix placeholder variable names.
         
         # Mind wrapper for hard-coding lower bound age at harvest.
-        h_aq[i] = ifelse(a0_aq[i] > 0, ifelse((r0_aq[i] - l_z * nstart) > (disc_aq * (r1_aq[i] - c0_aq[i] + rt0_aq[i])), 1, 0), 0) # Think hard about lags here.
+        h_aq[i] = ifelse(a0_aq[i] > 3, ifelse((r0_aq[i] - l_z * nstart) > (disc_aq * (r1_aq[i] - c0_aq[i] + rt0_aq[i])), 1, 0), 0) # Think hard about lags here.
         hinv_aq[i] = (h_aq[i] - 1) ^ 2
         
         r_aq[i] = (r0_aq[i] + rt0_aq[i] * hinv_aq[i])
@@ -219,7 +219,7 @@
         for(j in 1:(a_i - a_0 + 1)){
           p_mat[i, j] = fun_p(sum(
                                   fun_l_w(a_lw, fun_a_l(a_matrix[i, ], linf_al, k_al, t0_al), b_lw) * y[i, ] * by1 * by2 + # Fishery production.
-                                  switch_aq * 50 * (y0_aq[i] * by1 * by2 * h_aq[i] + nt0_aq[i] * w0_aq[i] * by1 * by2 * hinv_aq[i]) # Aquaculture production.
+                                  switch_aq * (y0_aq[i] * by1 * by2 * h_aq[i] + nt0_aq[i] * w0_aq[i] * by1 * by2 * hinv_aq[i]) # Aquaculture production.
                                   ) 
                                   / 1000,
                               fun_l_w(a_lw, fun_a_l(a_matrix[i, j], linf_al, k_al, t0_al), b_lw) * by1 * by2 * 1000, 
@@ -249,19 +249,43 @@
       tidye$var = "Effort"
       #tidye = select(tidye, tidye$Var1, tidye$Var2, var)
       #  Poaching Revenue.
-      tidyr = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
-      tidyr$Var1 = seq(1, t_i - t_0 + 1)
-      tidyr$Var2 = NA
-      tidyr$value = r_fi
-      tidyr$var = "Revenue"
+      tidyr_fi = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
+      tidyr_fi$Var1 = seq(1, t_i - t_0 + 1)
+      tidyr_fi$Var2 = NA
+      tidyr_fi$value = r_fi
+      tidyr_fi$var = "Poaching Revenue"
       #  Poaching Cost.
-      tidyc = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
-      tidyc$Var1 = seq(1, t_i - t_0 + 1)
-      tidyc$Var2 = NA
-      tidyc$value = c_fi
-      tidyc$var = "Cost"
+      tidyc_fi = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
+      tidyc_fi$Var1 = seq(1, t_i - t_0 + 1)
+      tidyc_fi$Var2 = NA
+      tidyc_fi$value = c_fi
+      tidyc_fi$var = "Poaching Cost"
+      #  Poaching Profit.
+      tidypi_fi = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
+      tidypi_fi$Var1 = seq(1, t_i - t_0 + 1)
+      tidypi_fi$Var2 = NA
+      tidypi_fi$value = r_fi - c_fi
+      tidypi_fi$var = "Poaching Profit"
+      #  Aquaculture Revenue.
+      tidyr_aq = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
+      tidyr_aq$Var1 = seq(1, t_i - t_0 + 1)
+      tidyr_aq$Var2 = NA
+      tidyr_aq$value = r_aq
+      tidyr_aq$var = "Aquaculture Revenue"
+      #  Aquaculture Cost.
+      tidyc_aq = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
+      tidyc_aq$Var1 = seq(1, t_i - t_0 + 1)
+      tidyc_aq$Var2 = NA
+      tidyc_aq$value = c_fi
+      tidyc_aq$var = "Aquaculture Cost"
+      # Aquaculture Profit.
+      tidypi_aq = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
+      tidypi_aq$Var1 = seq(1, t_i - t_0 + 1)
+      tidypi_aq$Var2 = NA
+      tidypi_aq$value = r_aq - c_aq
+      tidypi_aq$var = "Aquaculture Profit"
       #  Everything!
-      tidy = bind_rows(tidyn, tidyy, tidye, tidyr, tidyc)
+      tidy = bind_rows(tidyn, tidyy, tidye, tidyr_fi, tidyc_fi, tidypi_fi, tidyr_aq, tidyc_aq, tidypi_aq)
       tidy$group = ifelse(tidy$Var2 < a_mat_am, "Machorro", ifelse(tidy$Var2 < a_old_am, "Pre-Adulto", "Adulto"))
       tidy = rename(tidy, Year = Var1, Age = Var2, Result = value, Variable = var, Group = group)
       
