@@ -1,6 +1,6 @@
 ---
 title: "Hog"
-output: html_document
+output: pdf_document
 ---
 
 ####0. Libraries

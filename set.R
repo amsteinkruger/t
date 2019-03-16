@@ -43,6 +43,7 @@ pars_arb = pars_full %>%
   select(2, 4) %>% 
   column_to_rownames(var = "name_short")
 
-pars_arb["switch_aq", 1] = 0 
+pars_arb["switch_aq", 1] = 0
+pars_arb["eta_limit", 1] = 1
 pars_arb[2:21] = pars_arb[1]
 pars_arb["y_arb", 2:21] = seq(1, 20)
