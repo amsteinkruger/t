@@ -98,28 +98,42 @@ print(plot_rc)
 #ggsave("plot_rc.png", plot_rc, dpi = 300, width = 6.5, height = 6.5)
 
 # Wrangle effort.
-results_e_sum = filter(results_e, Variable == "Effort") %>% 
+
+results_e_0.1 = filter(results_e, Variable == "Effort") %>% 
   group_by(Run) %>% 
   summarize(mean = mean(Result)) %>% 
   ungroup() %>% 
   mutate("Annual Tonnes" = Run - 1) %>% 
-  rename("Mean Effort" = mean)
+  rename("Mean Effort" = mean) %>% 
+  mutate("25% Reduction" = (`Mean Effort`[1] * 0.75)) %>% 
+  mutate("50% Reduction" = (`Mean Effort`[1] * 0.50)) %>% 
+  mutate("90% Reduction" = (`Mean Effort`[1] * 0.10))
+
+
+#write.csv(results_e_sum)
+
 
 # Plot efforts.
-plot_earb = 
-ggplot(results_e_sum, aes(`Annual Tonnes`, `Mean Effort`)) +
-  geom_line(color = "black", size = 2) +
-  geom_segment(aes( x = 0, xend= Inf, y = 60, yend = 60), linetype = "dashed", color = "red")+
-  geom_segment(aes( x = 0, xend= Inf, y = 12, yend = 12), linetype = "dashed", color = "red")+
-  geom_segment(aes( x = 0, xend= Inf, y = 90, yend = 90), linetype = "dashed", color = "red")+
-  annotate("text", x = 6, y = 95, label = "25% Reduction in Effort", size = 3) + #, family = "Century Gothic"
-  annotate("text", x = 4, y = 55, label = "50% Reduction in Effort", size = 3) + #, family = "Century Gothic"
-  annotate("text", x = 6.5, y = 15, label = "90% Reduction in Effort", size = 3) + #, family = "Century Gothic"
-  scale_x_discrete(expand = c(0,0), limits = c(0, 20)) + 
-  scale_y_discrete(expand = c(0,0), limits = c(0, 200)) + 
-  labs( x = "Tonnes of Aquaculture", y = "Effort (Boat Years)")+
-  ggtitle("Fish Money")+
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+plot_earb_0.1 = 
+  ggplot(results_e_0.1, aes(`Annual Tonnes`, `Mean Effort`)) +
+    geom_line(color = "black", size = 2) +
+    geom_line(aes(`Annual Tonnes`, `25% Reduction`), linetype = "dashed", color = "red")+
+    geom_line(aes( `Annual Tonnes`, `50% Reduction`), linetype = "dashed", color = "red")+
+    geom_line(aes( `Annual Tonnes`, `90% Reduction`), linetype = "dashed", color = "red")+
+    annotate("text", x = 13, y = 140, label = "25% Reduction in Effort", size = 3) + #, family = "Century Gothic"
+    annotate("text", x = 10, y = 95, label = "50% Reduction in Effort", size = 3) + #, family = "Century Gothic"
+    annotate("text", x = 10, y = 25, label = "90% Reduction in Effort", size = 3) + #, family = "Century Gothic"
+    #scale_x_discrete(expand = c(0,0)) + #limits = c(0, 20)) + 
+    #scale_y_discrete(expand = c(0,0)) + #limits = c(0, 200)) + 
+    labs( x = "Tonnes of Aquaculture", y = "Effort (Boat Years)")+
+    ggtitle("Stiffness Parameter of 0.1")+
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
-plot_earb
+print(plot_earb_0.1)
+
+#ggsave("plot_earb_1.png", plot_earb_.1, dpi = 300, width = 6.5, height = 6.5)
+
+
+
+

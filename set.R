@@ -43,7 +43,7 @@ pars_arb = pars_full %>%
   select(2, 4) %>% 
   column_to_rownames(var = "name_short")
 
-pars_arb["switch_aq", 1] = 0
-pars_arb["eta_limit", 1] = 1
-pars_arb[2:21] = pars_arb[1]
-pars_arb["y_arb", 2:21] = seq(1, 20)
+pars_arb["switch_aq", 1] = 0 #turn aqua on/off
+pars_arb["eta_limit", 1] = 0.1 #stiffness parameter, 1= free entry/exit, 0= no entry/exit
+pars_arb[2:21] = pars_arb[1] #make 20 columns, 20 runs
+pars_arb["y_arb", 2:21] = seq(1, 20) #
