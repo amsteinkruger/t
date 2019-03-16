@@ -32,9 +32,17 @@ pars = pars_full %>%
 
 # Build out a matrix of parameters for sensitivity analysis.
 pars[4:6] = pars[1:3]
+pars[]
 
 # Change parameters in new columns for sensitivity analysis.
 pars["switch_aq",1:3] = 1
 pars["switch_aq",4:6] = 0
 
-  
+# Turn parameters into a different matrix for analysis of outcomes from different arbitrary annual aquaculture outputs.
+pars_arb = pars_full %>% 
+  select(2, 4) %>% 
+  column_to_rownames(var = "name_short")
+
+pars_arb["switch_aq", 1] = 0 
+pars_arb[2:21] = pars_arb[1]
+pars_arb["y_arb", 2:21] = seq(1, 20)

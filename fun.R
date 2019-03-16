@@ -79,7 +79,7 @@
       n[1,] = n0 # Age distribution for first year, e.g. 2017.
       m[1,] = n[1,] * fun_a_nmort(a_matrix[1,], a_mat_am, a_old_am, m_juv_am, m_mat_am, m_old_am) # Natural mortalities.
       b[1,] = (n[1,] - m[1,]) * fun_a_bmort(a_matrix[1,], b_b, a_mat_am, n0) # Bycatch mortalities by cohort for first year.
-      e[1] = e_2017 # Effort in boats/season for 2017.     
+      e[1] = e_2017 # Effort in boats/season for 2017.
       y[1,] = (n[1,] - m[1,] - b[1,]) * q * e[1] * fun_l_s(fun_a_l(a_matrix[1,], linf_al, k_al, t0_al), a_ls, b_ls, m_ls) # Catch for first year by cohort.
       p_mat[1,] = fun_p(sum(fun_l_w(a_lw, fun_a_l(a_matrix[1, ], linf_al, k_al, t0_al), b_lw) * y[1, ] * by1 * by2) / 1000, # Prices from tonnes of production and grams of maw at age. Placeholder names.
                         fun_l_w(a_lw, fun_a_l(a_matrix[1, ], linf_al, k_al, t0_al), b_lw) * by1 * by2 * 1000, 
@@ -221,7 +221,7 @@
                                   fun_l_w(a_lw, fun_a_l(a_matrix[i, ], linf_al, k_al, t0_al), b_lw) * y[i, ] * by1 * by2 + # Fishery production.
                                   switch_aq * (y0_aq[i] * by1 * by2 * h_aq[i] + nt0_aq[i] * w0_aq[i] * by1 * by2 * hinv_aq[i]) # Aquaculture production.
                                   ) 
-                                  / 1000,
+                                  / 1000 + y_arb, # Conversion to tonnes and addition of arbitrary production.
                               fun_l_w(a_lw, fun_a_l(a_matrix[i, j], linf_al, k_al, t0_al), b_lw) * by1 * by2 * 1000, 
                               a_ma, b_ma, c_ma) * loss
         }
@@ -233,8 +233,7 @@
         c_fi[i] = e[i] * c_2017
       }
       
-      # Tidy results: years, ages, and values into a dataframe. Work in efforts, revenues, costs, profits, and biomass sometime.
-      # HEY PIPE THIS %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% 
+      # Tidy results: numbers, recruitment, catches, effort, revenues, costs, profits.
       #  Numbers.
       tidyn = melt(n)
       tidyn$var = "Numbers"
@@ -247,7 +246,6 @@
       tidye$Var2 = NA
       tidye$value = e
       tidye$var = "Effort"
-      #tidye = select(tidye, tidye$Var1, tidye$Var2, var)
       #  Poaching Revenue.
       tidyr_fi = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
       tidyr_fi$Var1 = seq(1, t_i - t_0 + 1)
@@ -293,3 +291,4 @@
       return(tidy)
       
     }
+    
