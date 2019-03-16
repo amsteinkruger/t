@@ -21,8 +21,9 @@ Value Lost,loss,Price Matrix,0.1,0.05,0.15,Proportion,Aquaculture and Fishery,ex
 Aquaculture Switch,switch_aq,Price Matrix,1,0,1,-,Aquaculture,-,,,0,1
 Biomass (2017),b_2017,Stock,36429,25709,47149,Metric Tonnes,Fishery,INAPESCA (2018),INAPESCA (2018),INAPESCA (2018),0,0
 Proportional Difference from Central Estimate for Biomass (2017),bprop_2017,Stock,0.925945729,0.653466709,1.198424749,Proportion,Fishery,INAPESCA (2018),,,0,0
-Catch (2017),f_2017,Catch,1400,1400,1400,Metric Tonnes,Fishery,INAPESCA (2018),,,1,1
-Effort (2017),e_2017,Catch,120,120,120,Boat-Years,Fishery,INAPESCA (2018),,,1,1
+Catch (Mass) (2017),f_2017,Catch,1400,1400,1400,Metric Tonnes,Fishery,INAPESCA (2018),,,1,1
+Catch (Count) (2017),fn_2017,Catch,86400,864000,21000,,,,,,,
+Effort (2017),e_2017,Catch,120,100,200,Boat-Years,Fishery,"Fisher interviews (Castellanos 2018, INAPESCA 2018)",,,1,1
 Bycatch (2017),b_b,Age-Bycatch Mortality,80000,80000,80000,Individuals,Fishery,INAPESCA (2018),,,1,1
 Effort Cost,c_2017,Catch,98654.21,19007.46,178300.96,USD/Boat-Year,Fishery,"Fishers interviews; (Green Crime in Mexico, Martinez 2018-Ch.12); INAPESCA (2018) ",,,0,0
 Effort Entry Limit,eta_limit,Catch,0.1,1,0.05,Proportion,Fishery,INAPESCA (2018),,,0,0
@@ -44,3 +45,4 @@ Start Year,t_0,-,0,0,0,,All,INAPESCA (2018),,,1,1
 End Year,t_i,-,9,9,9,,All,INAPESCA (2018),,,1,1
 Start Age,a_0,-,0.5,0.5,0.5,,All,INAPESCA (2018),,,1,1
 End Age,a_i,-,26.5,26.5,26.5,,All,INAPESCA (2018),,,1,1
+Arbitrary Aquaculture Output,y_arb,Price Matrix,0,0,0,Metric Tonnes,All,-,,,,
