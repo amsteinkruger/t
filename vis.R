@@ -105,3 +105,21 @@ results_e_sum = filter(results_e, Variable == "Effort") %>%
   mutate("Annual Tonnes" = Run - 1) %>% 
   rename("Mean Effort" = mean)
 
+# Plot efforts.
+plot_earb = 
+ggplot(results_e_sum, aes(`Annual Tonnes`, `Mean Effort`)) +
+  geom_line(color = "black", size = 2) +
+  geom_segment(aes( x = 0, xend= Inf, y = 60, yend = 60), linetype = "dashed", color = "red")+
+  geom_segment(aes( x = 0, xend= Inf, y = 12, yend = 12), linetype = "dashed", color = "red")+
+  geom_segment(aes( x = 0, xend= Inf, y = 90, yend = 90), linetype = "dashed", color = "red")+
+  annotate("text", x = 6, y = 95, label = "25% Reduction in Effort", size = 3) + #, family = "Century Gothic"
+  annotate("text", x = 4, y = 55, label = "50% Reduction in Effort", size = 3) + #, family = "Century Gothic"
+  annotate("text", x = 6.5, y = 15, label = "90% Reduction in Effort", size = 3) + #, family = "Century Gothic"
+  scale_x_discrete(expand = c(0,0), limits = c(0, 20)) + 
+  scale_y_discrete(expand = c(0,0), limits = c(0, 200)) + 
+  labs( x = "Tonnes of Aquaculture", y = "Effort (Boat Years)")+
+  ggtitle("Fish Money")+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+plot_earb
