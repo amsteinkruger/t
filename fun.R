@@ -161,6 +161,7 @@
         b[i, 1] = (n[i, 1] - m[i, 1]) * fun_a_bmort(a_matrix[i, 1], b_b, a_mat_am, n0)
         
         # Effort for time i and all cohorts from past effort, revenues, costs, and a stiffness parameter.
+        #e[i] = ifelse(e[i - 1] + eta * (r_fi[i - 1] - c_fi[i - 1]) > 0, e[i - 1] + eta * (r_fi[i - 1] - c_fi[i - 1]) > 0, 0) # Bound positive.
         e[i] = e[i - 1] + eta * (r_fi[i - 1] - c_fi[i - 1])
         
         #  Catches from effort and the rest.
@@ -217,13 +218,12 @@
         
         # Prices in matrix. Use this one. Think harder about the lag problem.
         for(j in 1:(a_i - a_0 + 1)){
-          p_mat[i, j] = fun_p(sum(
-                                  fun_l_w(a_lw, fun_a_l(a_matrix[i, ], linf_al, k_al, t0_al), b_lw) * y[i, ] * by1 * by2 + # Fishery production.
-                                  switch_aq * (y0_aq[i] * by1 * by2 * h_aq[i] + nt0_aq[i] * w0_aq[i] * by1 * by2 * hinv_aq[i]) # Aquaculture production.
-                                  ) 
+          p_mat[i, j] = fun_p(sum(fun_l_w(a_lw, fun_a_l(a_matrix[i, ], linf_al, k_al, t0_al), b_lw) * y[i, ] * by1 * by2 + # Fishery production.
+                                  switch_aq * (y0_aq[i] * by1 * by2 * h_aq[i] + nt0_aq[i] * w0_aq[i] * by1 * by2 * hinv_aq[i])) # Aquaculture production.
                                   / 1000 + y_arb, # Conversion to tonnes and addition of arbitrary production.
                               fun_l_w(a_lw, fun_a_l(a_matrix[i, j], linf_al, k_al, t0_al), b_lw) * by1 * by2 * 1000, 
                               a_ma, b_ma, c_ma) * loss
+          p_mat[i, j] = ifelse(p_mat[i, j] > 0, p_mat[i, j], 0)
         }
         
         # Revenues.
@@ -240,6 +240,12 @@
       #  Catches.
       tidyy = melt(y)
       tidyy$var = "Catches"
+      #  Prices. Using prices for a 13y/o fish for easy reference. It's representativish.
+      tidyp = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
+      tidyp$Var1 = seq(1, t_i - t_0 + 1)
+      tidyp$Var2 = NA
+      tidyp$value = p_mat[, 13]
+      tidyp$var = "Price"
       #  Poaching Effort.
       tidye = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
       tidye$Var1 = seq(1, t_i - t_0 + 1)
@@ -283,7 +289,7 @@
       tidypi_aq$value = r_aq - c_aq
       tidypi_aq$var = "Aquaculture Profit"
       #  Everything!
-      tidy = bind_rows(tidyn, tidyy, tidye, tidyr_fi, tidyc_fi, tidypi_fi, tidyr_aq, tidyc_aq, tidypi_aq)
+      tidy = bind_rows(tidyn, tidyy, tidyp, tidye, tidyr_fi, tidyc_fi, tidypi_fi, tidyr_aq, tidyc_aq, tidypi_aq)
       tidy$group = ifelse(tidy$Var2 < a_mat_am, "Machorro", ifelse(tidy$Var2 < a_old_am, "Pre-Adulto", "Adulto"))
       tidy = rename(tidy, Year = Var1, Age = Var2, Result = value, Variable = var, Group = group)
       

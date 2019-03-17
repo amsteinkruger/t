@@ -2,7 +2,6 @@
 title: "Hog"
 output:
   html_document: default
-  pdf_document: default
 ---
 
 ####0. Libraries
