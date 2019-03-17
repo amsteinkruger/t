@@ -36,6 +36,7 @@ pars[]
 
 # Change parameters in new columns for sensitivity analysis.
 pars["switch_aq",1:3] = 1
+#pars["y_arb", 1:3] = 2.4
 pars["switch_aq",4:6] = 0
 
 # Turn parameters into a different matrix for analysis of outcomes from different arbitrary annual aquaculture outputs.

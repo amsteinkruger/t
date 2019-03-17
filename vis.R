@@ -22,7 +22,7 @@ plot_nfig =
 
 print(plot_nfig)
 
-#ggsave("plot_fig.png", plot_fig, dpi = 300, width = 6.5, height = 6.5)
+ggsave("plot_nfig.png", plot_nfig, dpi = 300, width = 6.5, height = 6.5)
 
 plot_cfig = 
   ggplot(filter(results_sum, Variable == "Catches")) +
@@ -55,7 +55,7 @@ plot_pfig =
   scale_color_brewer(palette = "Set1", direction = -1) +
   scale_y_continuous(expand = c(0, 0), limits = c(0, NA), labels = scales::comma) +
   scale_x_continuous(expand = c(0, 0), labels = scales::comma) +  
-  labs(x = "Year", y = "Catch (Tonnes)") +
+  labs(x = "Year", y = "Price (USD2018 Per Gram)") +
   theme_classic()
 
 print(plot_pfig)
@@ -128,15 +128,13 @@ results_e_sum = filter(results_e, Variable == "Effort") %>%
 # Plot efforts.
 plot_earb = 
   ggplot(results_e_sum, aes(`Annual Tonnes`, `Mean Effort`)) +
+    geom_line(aes(`Annual Tonnes`, `25% Reduction`), linetype = "dashed", color = "red") +
+    geom_line(aes( `Annual Tonnes`, `50% Reduction`), linetype = "dashed", color = "red") +
+    geom_line(aes( `Annual Tonnes`, `90% Reduction`), linetype = "dashed", color = "red") +
     geom_line(color = "black", size = 2) +
-    geom_line(aes(`Annual Tonnes`, `25% Reduction`), linetype = "dashed", color = "red")+
-    geom_line(aes( `Annual Tonnes`, `50% Reduction`), linetype = "dashed", color = "red")+
-    geom_line(aes( `Annual Tonnes`, `90% Reduction`), linetype = "dashed", color = "red")+
     annotate("text", x = 13, y = 140, label = "25% Reduction in Effort", size = 3) + #, family = "Century Gothic"
     annotate("text", x = 10, y = 95, label = "50% Reduction in Effort", size = 3) + #, family = "Century Gothic"
     annotate("text", x = 10, y = 25, label = "90% Reduction in Effort", size = 3) + #, family = "Century Gothic"
-    #scale_x_discrete(expand = c(0,0)) + #limits = c(0, 20)) + 
-    #scale_y_discrete(expand = c(0,0)) + #limits = c(0, 200)) + 
     labs( x = "Tonnes of Aquaculture", y = "Effort (Boat Years)")+
     ggtitle("Stiffness Parameter of 0.1")+
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -157,15 +155,15 @@ results_p_sum = filter(results_e, Variable == "Price") %>%
 
 plot_parb = 
   ggplot(results_p_sum, aes(`Annual Tonnes`, `Mean Price`)) +
+  geom_line(aes(`Annual Tonnes`, `25% Reduction`), linetype = "dashed", color = "red") +
+  geom_line(aes( `Annual Tonnes`, `50% Reduction`), linetype = "dashed", color = "red") +
+  geom_line(aes( `Annual Tonnes`, `90% Reduction`), linetype = "dashed", color = "red") +
   geom_line(color = "black", size = 2) +
-  geom_line(aes(`Annual Tonnes`, `25% Reduction`), linetype = "dashed", color = "red")+
-  geom_line(aes( `Annual Tonnes`, `50% Reduction`), linetype = "dashed", color = "red")+
-  geom_line(aes( `Annual Tonnes`, `90% Reduction`), linetype = "dashed", color = "red")+
   #annotate("text", x = 13, y = 140, label = "25% Reduction in Effort", size = 3) + #, family = "Century Gothic"
   #annotate("text", x = 10, y = 95, label = "50% Reduction in Effort", size = 3) + #, family = "Century Gothic"
   #annotate("text", x = 10, y = 25, label = "90% Reduction in Effort", size = 3) + #, family = "Century Gothic"
   #scale_x_discrete(expand = c(0,0)) + #limits = c(0, 20)) + 
-  scale_y_discrete(expand = c(0,0)) +
+  #scale_y_discrete(expand = c(0,0)) +
   labs( x = "Tonnes of Aquaculture", y = "Price (USD2018 Per Gram)")+
   ggtitle("")+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
