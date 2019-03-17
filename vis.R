@@ -121,9 +121,12 @@ results_e_sum = filter(results_e, Variable == "Effort") %>%
   rename("Mean Effort" = mean) %>% 
   mutate("25% Reduction" = (`Mean Effort`[1] * 0.75)) %>% 
   mutate("50% Reduction" = (`Mean Effort`[1] * 0.50)) %>% 
-  mutate("90% Reduction" = (`Mean Effort`[1] * 0.10))
+  mutate("90% Reduction" = (`Mean Effort`[1] * 0.10))  
+  
 
-#write.csv(results_e_sum)
+
+
+#write.csv(results_e_sum, file = "results_e_sum.csv")
 
 # Plot efforts.
 plot_earb = 
@@ -131,16 +134,27 @@ plot_earb =
     geom_line(aes(`Annual Tonnes`, `25% Reduction`), linetype = "dashed", color = "red") +
     geom_line(aes( `Annual Tonnes`, `50% Reduction`), linetype = "dashed", color = "red") +
     geom_line(aes( `Annual Tonnes`, `90% Reduction`), linetype = "dashed", color = "red") +
+    geom_vline(xintercept = 2.4, linetype = "dashed", color = "blue")+
+    geom_hline(yintercept = 162.65, linetype = "dashed", color = "blue")+
     geom_line(color = "black", size = 2) +
     annotate("text", x = 13, y = 140, label = "25% Reduction in Effort", size = 3) + #, family = "Century Gothic"
     annotate("text", x = 10, y = 95, label = "50% Reduction in Effort", size = 3) + #, family = "Century Gothic"
     annotate("text", x = 10, y = 25, label = "90% Reduction in Effort", size = 3) + #, family = "Century Gothic"
+    annotate("text", x = 9, y = 168, label = "7% Reduction in Effort with Current EOF Production Capacity", size = 3) +
+    ylim(0,200)+
+    xlim(0,15)+
+    #scale_x_continuous(expand = c(0, 0)) + 
+    #scale_y_continuous(expand = c(0, 0))+
     labs( x = "Tonnes of Aquaculture", y = "Effort (Boat Years)")+
-    ggtitle("Stiffness Parameter of 0.1")+
+    ggtitle("Reduction in Poaching Effort per Increase in Aquaculture Output")+
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-          panel.background = element_blank(), axis.line = element_line(colour = "black"))
+          panel.background = element_blank(), axis.line = element_line(colour = "black"), plot.title = element_text(hjust=1, vjust=1, face = 'bold'))
+
+ggsave("plot_earb.png", plot_earb, dpi = 300, width = 6.5, height = 6.5)
 
 print(plot_earb)
+
+
 
 # Plot prices.
 results_p_sum = filter(results_e, Variable == "Price") %>% 
@@ -151,7 +165,14 @@ results_p_sum = filter(results_e, Variable == "Price") %>%
   rename("Mean Price" = mean) %>% 
   mutate("25% Reduction" = (`Mean Price`[1] * 0.75)) %>% 
   mutate("50% Reduction" = (`Mean Price`[1] * 0.50)) %>% 
-  mutate("90% Reduction" = (`Mean Price`[1] * 0.10))
+  mutate("90% Reduction" = (`Mean Price`[1] * 0.10)) 
+
+as.data.frame(results_p_sum)
+
+#View(results_p_sum)
+
+#write.csv(results_p_sum, file = "results_p_sum.csv")
+  
 
 plot_parb = 
   ggplot(results_p_sum, aes(`Annual Tonnes`, `Mean Price`)) +
@@ -159,16 +180,23 @@ plot_parb =
   geom_line(aes( `Annual Tonnes`, `50% Reduction`), linetype = "dashed", color = "red") +
   geom_line(aes( `Annual Tonnes`, `90% Reduction`), linetype = "dashed", color = "red") +
   geom_line(color = "black", size = 2) +
-  #annotate("text", x = 13, y = 140, label = "25% Reduction in Effort", size = 3) + #, family = "Century Gothic"
-  #annotate("text", x = 10, y = 95, label = "50% Reduction in Effort", size = 3) + #, family = "Century Gothic"
-  #annotate("text", x = 10, y = 25, label = "90% Reduction in Effort", size = 3) + #, family = "Century Gothic"
-  #scale_x_discrete(expand = c(0,0)) + #limits = c(0, 20)) + 
-  #scale_y_discrete(expand = c(0,0)) +
+  geom_vline(xintercept = 2.4, linetype = "dashed", color = "blue")+
+  geom_hline(yintercept = 5.242088692, linetype = "dashed", color = "blue")+
+  annotate("text", x = 9, y = 5.6, label = "14% Reduction in Price with Current EOF Production Capacity", size = 3)+
+  annotate("text", x = 7, y = 4.75, label = "25% Reduction in Price", size = 3) + #, family = "Century Gothic"
+  annotate("text", x = 12, y = 3.25, label = "50% Reduction in Price", size = 3) + #, family = "Century Gothic"
+  annotate("text", x = 9, y = 0.75, label = "90% Reduction in Price", size = 3) + #, family = "Century Gothic"
+  #scale_x_continuous(expand = c(0, 0)) + 
+  #scale_y_continuous(expand = c(0, 0))+
+  #scale_x_discrete(expand = c(0,0), limits = c(0,20)) + #limits = c(0, 20)) + 
+  #scale_y_discrete(expand = c(0,0), limits = c(0,10)) +
   labs( x = "Tonnes of Aquaculture", y = "Price (USD2018 Per Gram)")+
-  ggtitle("")+
+  ggtitle("Reduction in Market Price per Increase in Aquaculture Output")+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),plot.title = element_text(hjust=1, vjust=1, face = 'bold'))
 
 print(plot_parb)
+
+ggsave("plot_parb.png", plot_parb, dpi = 300, width = 6.5, height = 6.5)
 
 #ggsave("plot_earb_1.png", plot_earb_.1, dpi = 300, width = 6.5, height = 6.5)
