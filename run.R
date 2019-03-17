@@ -24,3 +24,4 @@ for(i in 1:length(pars_arb)){par = select(pars_arb, i)
 
 # Go from list to dataframe for easier processing.
 results_e = bind_rows(results_e)
+
