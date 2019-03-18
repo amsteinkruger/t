@@ -123,9 +123,6 @@ results_e_sum = filter(results_e, Variable == "Effort") %>%
   mutate("50% Reduction" = (`Mean Effort`[1] * 0.50)) %>% 
   mutate("90% Reduction" = (`Mean Effort`[1] * 0.10))  
   
-
-
-
 #write.csv(results_e_sum, file = "results_e_sum.csv")
 
 # Plot efforts.
@@ -142,8 +139,8 @@ plot_earb =
     annotate("text", x = 10, y = 25, label = "90% Reduction in Effort", size = 3) + #, family = "Century Gothic"
     annotate("text", x = 7, y = 173, label = "3% Reduction in Effort with Current Production Capacity", size = 3) +
     ylim(0,200)+
-    xlim(0,15)+
-    #scale_x_continuous(expand = c(0, 0)) + 
+    #xlim(0,15)+
+    scale_x_discrete(expand = c(0, 0), limits = c(0, 15)) + 
     #scale_y_continuous(expand = c(0, 0))+
     labs( x = "Tonnes of Aquaculture", y = "Effort (Boat Years)")+
     ggtitle("Reduction in Poaching Effort per Increase in Aquaculture Output")+
@@ -173,7 +170,6 @@ as.data.frame(results_p_sum)
 
 #write.csv(results_p_sum, file = "results_p_sum.csv")
   
-
 plot_parb = 
   ggplot(results_p_sum, aes(`Annual Tonnes`, `Mean Price`)) +
   geom_line(aes(`Annual Tonnes`, `25% Reduction`), linetype = "dashed", color = "red") +
@@ -187,7 +183,7 @@ plot_parb =
   annotate("text", x = 12, y = 3.25, label = "50% Reduction in Price", size = 3) + #, family = "Century Gothic"
   annotate("text", x = 9, y = 0.75, label = "90% Reduction in Price", size = 3) + #, family = "Century Gothic"
   #scale_x_continuous(expand = c(0, 0)) + 
-  #scale_y_continuous(expand = c(0, 0))+
+  scale_x_continuous(expand = c(0, 0), limits = c(0, 15))+
   #scale_x_discrete(expand = c(0,0), limits = c(0,20)) + #limits = c(0, 20)) + 
   #scale_y_discrete(expand = c(0,0), limits = c(0,10)) +
   labs( x = "Tonnes of Aquaculture", y = "Price (USD2018 Per Gram)")+
