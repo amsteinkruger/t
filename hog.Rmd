@@ -9,9 +9,9 @@ output:
 ```{r libraries, warning = FALSE, error = FALSE, message = FALSE}
 
 library(knitr)
-install.packages("tidyverse")
+#install.packages("tidyverse")
 #library("tidyverse", lib.loc="H:/R/R-3.5.3/library")
-#library(tidyverse)
+library(tidyverse)
 library(janitor)
 library(broom)
 library(reshape2)
