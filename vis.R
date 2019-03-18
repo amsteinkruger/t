@@ -140,7 +140,7 @@ plot_earb =
     annotate("text", x = 13, y = 140, label = "25% Reduction in Effort", size = 3) + #, family = "Century Gothic"
     annotate("text", x = 10, y = 95, label = "50% Reduction in Effort", size = 3) + #, family = "Century Gothic"
     annotate("text", x = 10, y = 25, label = "90% Reduction in Effort", size = 3) + #, family = "Century Gothic"
-    annotate("text", x = 7, y = 170, label = "3% Reduction in Effort with Current Production Capacity", size = 3) +
+    annotate("text", x = 7, y = 173, label = "3% Reduction in Effort with Current Production Capacity", size = 3) +
     ylim(0,200)+
     xlim(0,15)+
     #scale_x_continuous(expand = c(0, 0)) + 
@@ -182,7 +182,7 @@ plot_parb =
   geom_line(color = "black", size = 2) +
   geom_vline(xintercept = 1, linetype = "dashed", color = "blue")+
   geom_hline(yintercept = 5.776472, linetype = "dashed", color = "blue")+
-  annotate("text", x = 9, y = 5.9, label = "14% Reduction in Price with Current EOF Production Capacity", size = 3)+
+  annotate("text", x = 9, y = 5.9, label = "6% Reduction in Price with Current Production Capacity", size = 3)+
   annotate("text", x = 7, y = 4.75, label = "25% Reduction in Price", size = 3) + #, family = "Century Gothic"
   annotate("text", x = 12, y = 3.25, label = "50% Reduction in Price", size = 3) + #, family = "Century Gothic"
   annotate("text", x = 9, y = 0.75, label = "90% Reduction in Price", size = 3) + #, family = "Century Gothic"
