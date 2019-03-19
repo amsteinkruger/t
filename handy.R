@@ -6,7 +6,7 @@
 
 # without fixing prices + miscellaneous other tweaks:
 
-#library(pubr)
+library(pubr)
 library(gridExtra)
 
 results_output <- read_csv("results_output.csv")
