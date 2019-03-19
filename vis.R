@@ -181,7 +181,7 @@ plot_parb =
   scale_x_continuous(expand = c(0, 0), limits = c(0, 15))+
   #scale_x_discrete(expand = c(0,0), limits = c(0,20)) + #limits = c(0, 20)) + 
   #scale_y_discrete(expand = c(0,0), limits = c(0,10)) +
-  labs( x = "Tonnes of Dry Buhce", y = "Price per Gram (USD2018)")+
+  labs( x = "Tonnes of Dry Buche", y = "Price per Gram (USD2018)")+
   #ggtitle("Reduction in Market Price per Increase in Aquaculture Output")+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),plot.title = element_text(hjust=1, vjust=1, face = 'bold'),
