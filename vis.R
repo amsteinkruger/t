@@ -112,6 +112,11 @@ print(plot_rc)
 
 #ggsave("plot_rc.png", plot_rc, dpi = 300, width = 6.5, height = 6.5)
 
+
+
+
+################GOTO Edits##################
+
 # Wrangle effort.
 results_e_sum = filter(results_e, Variable == "Effort") %>% 
   group_by(Run) %>% 
@@ -122,35 +127,31 @@ results_e_sum = filter(results_e, Variable == "Effort") %>%
   mutate("25% Reduction" = (`Mean Effort`[1] * 0.75)) %>% 
   mutate("50% Reduction" = (`Mean Effort`[1] * 0.50)) %>% 
   mutate("90% Reduction" = (`Mean Effort`[1] * 0.10))  
-  
-#write.csv(results_e_sum, file = "results_e_sum.csv")
+
 
 # Plot efforts.
 plot_earb = 
   ggplot(results_e_sum, aes(`Annual Tonnes`, `Mean Effort`)) +
-    geom_line(aes(`Annual Tonnes`, `25% Reduction`), linetype = "dashed", color = "red") +
-    geom_line(aes( `Annual Tonnes`, `50% Reduction`), linetype = "dashed", color = "red") +
-    geom_line(aes( `Annual Tonnes`, `90% Reduction`), linetype = "dashed", color = "red") +
-    geom_vline(xintercept = 1, linetype = "dashed", color = "blue")+
-    geom_hline(yintercept = 169.3064, linetype = "dashed", color = "blue")+
-    geom_line(color = "black", size = 2) +
-    annotate("text", x = 13, y = 140, label = "25% Reduction in Effort", size = 3) + #, family = "Century Gothic"
-    annotate("text", x = 10, y = 95, label = "50% Reduction in Effort", size = 3) + #, family = "Century Gothic"
-    annotate("text", x = 10, y = 25, label = "90% Reduction in Effort", size = 3) + #, family = "Century Gothic"
-    annotate("text", x = 7, y = 173, label = "3% Reduction in Effort with Current Production Capacity", size = 3) +
-    ylim(0,200)+
-    #xlim(0,15)+
-    scale_x_discrete(expand = c(0, 0), limits = c(0, 15)) + 
-    #scale_y_continuous(expand = c(0, 0))+
-    labs( x = "Tonnes of Aquaculture", y = "Effort (Boat Years)")+
-    ggtitle("Reduction in Poaching Effort per Increase in Aquaculture Output")+
-    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-          panel.background = element_blank(), axis.line = element_line(colour = "black"), plot.title = element_text(hjust=1, vjust=1, face = 'bold'))
-
-ggsave("plot_earb.png", plot_earb, dpi = 300, width = 6.5, height = 6.5)
-
-print(plot_earb)
-
+  geom_line(aes(`Annual Tonnes`, `25% Reduction`), linetype = "dashed", color = "red") +
+  geom_line(aes( `Annual Tonnes`, `50% Reduction`), linetype = "dashed", color = "red") +
+  geom_line(aes( `Annual Tonnes`, `90% Reduction`), linetype = "dashed", color = "red") +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "blue")+
+  geom_hline(yintercept = 169.3064, linetype = "dashed", color = "blue")+
+  geom_line(color = "black", size = 1) +
+  annotate("text", x = 8, y = 123, label = "25%", size = 3) + #, family = "Century Gothic"
+  annotate("text", x = 8, y = 80, label = "50%", size = 3) + #, family = "Century Gothic"
+  annotate("text", x = 8, y = 10, label = "90%", size = 3) + #, family = "Century Gothic"
+  annotate("text", x = 8, y = 163, label = "3%", size = 3) +
+  ylim(0,200)+
+  xlim(0,15)+
+  #scale_x_discrete(expand = c(0, 0), limits = c(0, 15)) + 
+  #scale_y_continuous(expand = c(0, 0))+
+  labs( x = "Tonnes of Dry Buche", y = "Effort (Boat Years)")+
+  #ggtitle("Reduction in Poaching Effort per Increase in Aquaculture Output")+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"), plot.title = element_text(hjust=1, vjust=1, face = 'bold'),
+        axis.title = element_text(size = 10),
+        axis.text = element_text(size = 10))
 
 
 # Plot prices.
@@ -164,35 +165,38 @@ results_p_sum = filter(results_e, Variable == "Price") %>%
   mutate("50% Reduction" = (`Mean Price`[1] * 0.50)) %>% 
   mutate("90% Reduction" = (`Mean Price`[1] * 0.10)) 
 
-as.data.frame(results_p_sum)
-
-#View(results_p_sum)
-
-#write.csv(results_p_sum, file = "results_p_sum.csv")
-  
 plot_parb = 
   ggplot(results_p_sum, aes(`Annual Tonnes`, `Mean Price`)) +
   geom_line(aes(`Annual Tonnes`, `25% Reduction`), linetype = "dashed", color = "red") +
   geom_line(aes( `Annual Tonnes`, `50% Reduction`), linetype = "dashed", color = "red") +
   geom_line(aes( `Annual Tonnes`, `90% Reduction`), linetype = "dashed", color = "red") +
-  geom_line(color = "black", size = 2) +
+  geom_line(color = "black", size = 1) +
   geom_vline(xintercept = 1, linetype = "dashed", color = "blue")+
   geom_hline(yintercept = 5.776472, linetype = "dashed", color = "blue")+
-  annotate("text", x = 9, y = 5.9, label = "6% Reduction in Price with Current Production Capacity", size = 3)+
-  annotate("text", x = 7, y = 4.75, label = "25% Reduction in Price", size = 3) + #, family = "Century Gothic"
-  annotate("text", x = 12, y = 3.25, label = "50% Reduction in Price", size = 3) + #, family = "Century Gothic"
-  annotate("text", x = 9, y = 0.75, label = "90% Reduction in Price", size = 3) + #, family = "Century Gothic"
+  annotate("text", x = 8, y = 5.5, label = "6%", size = 3)+
+  annotate("text", x = 8, y = 4.3, label = "25%", size = 3) + #, family = "Century Gothic"
+  annotate("text", x = 8, y = 2.8, label = "50%", size = 3) + #, family = "Century Gothic"
+  annotate("text", x = 8, y = 0.4, label = "90%", size = 3) + #, family = "Century Gothic"
   #scale_x_continuous(expand = c(0, 0)) + 
   scale_x_continuous(expand = c(0, 0), limits = c(0, 15))+
   #scale_x_discrete(expand = c(0,0), limits = c(0,20)) + #limits = c(0, 20)) + 
   #scale_y_discrete(expand = c(0,0), limits = c(0,10)) +
-  labs( x = "Tonnes of Aquaculture", y = "Price (USD2018 Per Gram)")+
-  ggtitle("Reduction in Market Price per Increase in Aquaculture Output")+
+  labs( x = "Tonnes of Dry Buhce", y = "Price per Gram (USD2018)")+
+  #ggtitle("Reduction in Market Price per Increase in Aquaculture Output")+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black"),plot.title = element_text(hjust=1, vjust=1, face = 'bold'))
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),plot.title = element_text(hjust=1, vjust=1, face = 'bold'),
+        axis.title = element_text(size = 10),
+        axis.text = element_text(size = 10))
 
-print(plot_parb)
 
-ggsave("plot_parb.png", plot_parb, dpi = 300, width = 6.5, height = 6.5)
+#output figure
+ggarrange(plot_parb, plot_earb,
+          ncol = 2, nrow = 1)
 
-#ggsave("plot_earb_1.png", plot_earb_.1, dpi = 300, width = 6.5, height = 6.5)
+ggsave("effort_price.png",
+       width = 6.6,
+       height = 3,
+       units = c("in"),
+       dpi = 300,
+       limitsize = FALSE,
+       bg = "transparent")
