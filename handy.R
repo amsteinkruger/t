@@ -7,10 +7,10 @@
 # without fixing prices + miscellaneous other tweaks:
 
 #library(pubr)
-#library(gridExtra)
+library(gridExtra)
 
-results_output <- read_csv("~/GitHub/t/results_output.csv")
-results_profit <- read_csv("~/GitHub/t/results_profit.csv")
+results_output <- read_csv("results_output.csv")
+results_profit <- read_csv("results_profit.csv")
 
 
 plot_output = 
