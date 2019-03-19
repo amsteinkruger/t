@@ -38,3 +38,16 @@ plot_profit =
   theme_classic()
 
 plot_profit
+
+
+#output figure
+ggarrange(plot_outfit, plot_profit,
+          ncol = 2, nrow = 1)
+
+ggsave("output_profit.png",
+       width = 6.6,
+       height = 3,
+       units = c("in"),
+       dpi = 300,
+       limitsize = FALSE,
+       bg = "transparent")
