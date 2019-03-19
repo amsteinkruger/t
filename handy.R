@@ -1,10 +1,4 @@
 # Run out a one-off set of results for one cage with fixed prices, etc.
-#results_handy = filter(results, Variable == "Aquaculture Profit" | Variable == "taq" | Variable == "naq" | Variable == "waq")
-#results_handy = filter(results_handy, Estimate == "Central", Scenario == "w/o Aquaculture")
-#results_handy = select(results_handy, Year, Result, Variable)
-#write.csv(results_handy, "results_handy.csv")
-
-# without fixing prices + miscellaneous other tweaks:
 
 library(pubr)
 library(gridExtra)
@@ -45,6 +39,51 @@ ggarrange(plot_outfit, plot_profit,
           ncol = 2, nrow = 1)
 
 ggsave("output_profit.png",
+       width = 6.6,
+       height = 3,
+       units = c("in"),
+       dpi = 300,
+       limitsize = FALSE,
+       bg = "transparent")
+
+# Quick rerun.
+results_handy = read_csv("results_handy_but_really.csv")
+
+results_handy = results_handy %>% 
+  mutate(Profit = ifelse(Plot == "Profit" & Result > 0, 1, ifelse(Plot == "Profit", 0, NA))) %>% 
+  mutate(Result = ifelse(Plot == "Profit", Result * 0.000001, Result))
+
+plot_handy_prod = 
+  ggplot(filter(results_handy, Plot == "Yield" & Product == "Meat")) +
+  geom_col(aes(Year, Result), fill = "blue") +
+  scale_y_continuous(labels = scales::comma, expand = c(0, 0), limits = c(0, 250), breaks = c(0, 50, 100, 150, 200, 250)) +
+  scale_x_continuous(expand = c(0, 0)) +
+  labs(y = "Production (Tonnes)") +
+  theme_classic() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),plot.title = element_text(hjust=1, vjust=1, face = 'bold'),
+        axis.title = element_text(size = 10),
+        axis.text = element_text(size = 10))
+
+plot_handy_pi = 
+  ggplot(filter(results_handy, Plot == "Profit")) +
+  geom_col(aes(Year, Result, fill = as.factor(Profit))) + 
+  scale_fill_manual(values = c("red", "blue")) +
+  scale_y_continuous(labels = scales::comma, expand = c(0.1, 0.1), breaks = c(-2.5, 0, 2.5, 5, 7.5, 10)) +
+  scale_x_continuous(expand = c(0, 0)) +
+  labs(y = "Profit (Millions USD2018)") +
+  theme_classic() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),plot.title = element_text(hjust=1, vjust=1, face = 'bold'),
+        axis.title = element_text(size = 10),
+        axis.text = element_text(size = 10),
+        legend.position="none")
+
+#output figure
+ggarrange(plot_handy_prod, plot_handy_pi,
+          ncol = 2, nrow = 1)
+
+ggsave("handy.png",
        width = 6.6,
        height = 3,
        units = c("in"),
