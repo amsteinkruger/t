@@ -210,8 +210,7 @@
         c1_aq[i] = n1_aq[1] * w1_aq[1] * h_z * j_z * 365 + k_z # Fix placeholder variable names.
         
         # Mind wrapper for hard-coding lower bound age at harvest.
-        #h_aq[i] = ifelse(a0_aq[i] > ceiling(a_sale), ifelse((r0_aq[i] - l_z * nstart) > (disc_aq * (rt0_aq[i] + r1_aq[i] - c0_aq[i])), 1, 0), 0) # Think hard about lags here.
-        h_aq[i] = ifelse(i < 5, 0, 1) #Nonsense for quick figure generation.
+        h_aq[i] = ifelse(a0_aq[i] > ceiling(a_sale), ifelse((r0_aq[i] - l_z * nstart) > (disc_aq * (rt0_aq[i] + r1_aq[i] - c0_aq[i])), 1, 0), 0) # Think hard about lags here.
         hinv_aq[i] = (h_aq[i] - 1) ^ 2
         
         r_aq[i] = (r0_aq[i] * h_aq[i] + rt0_aq[i] * hinv_aq[i])
@@ -281,7 +280,7 @@
       tidyc_aq = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
       tidyc_aq$Var1 = seq(1, t_i - t_0 + 1)
       tidyc_aq$Var2 = NA
-      tidyc_aq$value = c_fi
+      tidyc_aq$value = c_aq
       tidyc_aq$var = "Aquaculture Cost"
       # Aquaculture Profit.
       tidypi_aq = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
@@ -289,26 +288,8 @@
       tidypi_aq$Var2 = NA
       tidypi_aq$value = r_aq - c_aq
       tidypi_aq$var = "Aquaculture Profit"
-      #taq
-      tidytaq = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
-      tidytaq$Var1 = seq(1, t_i - t_0 + 1)
-      tidytaq$Var2 = NA
-      tidytaq$value = nt0_aq
-      tidytaq$var = "taq"
-      #naq
-      tidynaq = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
-      tidynaq$Var1 = seq(1, t_i - t_0 + 1)
-      tidynaq$Var2 = NA
-      tidynaq$value = n0_aq
-      tidynaq$var = "naq"
-      #waq
-      tidywaq = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
-      tidywaq$Var1 = seq(1, t_i - t_0 + 1)
-      tidywaq$Var2 = NA
-      tidywaq$value = w0_aq
-      tidywaq$var = "waq"
       #  Everything!
-      tidy = bind_rows(tidyn, tidyy, tidyp, tidye, tidyr_fi, tidyc_fi, tidypi_fi, tidyr_aq, tidyc_aq, tidypi_aq, tidynaq, tidywaq, tidytaq)
+      tidy = bind_rows(tidyn, tidyy, tidyp, tidye, tidyr_fi, tidyc_fi, tidypi_fi, tidyr_aq, tidyc_aq, tidypi_aq)
       tidy$group = ifelse(tidy$Var2 < a_mat_am, "Machorro", ifelse(tidy$Var2 < a_old_am, "Pre-Adulto", "Adulto"))
       tidy = rename(tidy, Year = Var1, Age = Var2, Result = value, Variable = var, Group = group)
       
