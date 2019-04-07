@@ -13,6 +13,8 @@ results_sum = filter(results, Age > 3) %>%
 # Plot the summary numbers.
 plot_nfig = 
   ggplot(filter(results_sum, Variable == "Numbers")) +
+  geom_hline(yintercept = 25108, linetype = "dotted", size = 0.95) +
+  geom_hline(yintercept = 10044, linetype = "dotted", size = 0.95) +
   geom_line(aes(x = Year, y = SumBio, group = Run, color = Scenario, linetype = Estimate), size = 1.25) +
   scale_color_brewer(palette = "Set1", direction = -1) +
   scale_y_continuous(expand = c(0, 0), limits = c(0, NA), labels = scales::comma) +
@@ -22,7 +24,7 @@ plot_nfig =
 
 print(plot_nfig)
 
-ggsave("plot_nfig.png", plot_nfig, dpi = 300, width = 6.5, height = 6.5)
+ggsave("plot_nfig.png", plot_nfig, dpi = 300, width = 6.5, height = 3)
 
 plot_cfig = 
   ggplot(filter(results_sum, Variable == "Catches")) +
@@ -193,9 +195,17 @@ plot_parb =
 ggarrange(plot_parb, plot_earb,
           ncol = 2, nrow = 1)
 
-ggsave("effort_price.png",
-       width = 6.6,
-       height = 3,
+ggsave("effort_price_5x225.png",
+       width = 5,
+       height = 2.25,
+       units = c("in"),
+       dpi = 300,
+       limitsize = FALSE,
+       bg = "transparent")
+
+ggsave("effort_price_10x7.png",
+       width = 10,
+       height = 7,
        units = c("in"),
        dpi = 300,
        limitsize = FALSE,
