@@ -11,20 +11,23 @@ results_sum = filter(results, Age > 3) %>%
   unite("Estimate | Scenario", Estimate, Scenario, sep = " | ", remove = FALSE)
 
 # Plot the summary numbers.
+#  Check whether inputs are tonnes or numbers.
 plot_nfig = 
   ggplot(filter(results_sum, Variable == "Numbers")) +
   geom_hline(yintercept = 25108, linetype = "dotted", size = 0.95) +
   geom_hline(yintercept = 10044, linetype = "dotted", size = 0.95) +
-  geom_line(aes(x = Year, y = SumBio, group = Run, color = Scenario, linetype = Estimate), size = 1.25) +
-  scale_color_brewer(palette = "Set1", direction = -1) +
+  geom_line(aes(x = Year + 2016, y = SumBio, group = Run, color = Scenario, linetype = Estimate), size = 1.25) +
+  scale_color_manual(values = c("#04859B", "#003660")) +
   scale_y_continuous(expand = c(0, 0), limits = c(0, NA), labels = scales::comma) +
-  scale_x_continuous(expand = c(0, 0), labels = scales::comma) +  
-  labs(x = "Year", y = "Tonnes of Reproductive Biomass") +
-  theme_classic()
+  #scale_x_continuous(expand = c(0, 0), labels = scales::comma) +  
+  labs(x = "Year", y = "Reproductive Population", caption = "Numbers of individuals at or above mean age of maturation in six scenarios: lower, central, and upper \nestimates of model parameters, and with and without exports of aquaculture products.") +
+  theme_classic() +
+  theme(legend.position = "none")
 
 print(plot_nfig)
 
-ggsave("plot_nfig.png", plot_nfig, dpi = 300, width = 6.5, height = 3)
+ggsave("plot_nfig_5x225.png", plot_nfig, dpi = 300, width = 5, height = 2.25)
+ggsave("plot_nfig_10x7.png", plot_nfig, dpi = 300, width = 10, height = 7)
 
 plot_cfig = 
   ggplot(filter(results_sum, Variable == "Catches")) +
@@ -155,7 +158,6 @@ plot_earb =
         axis.title = element_text(size = 10),
         axis.text = element_text(size = 10))
 
-
 # Plot prices.
 results_p_sum = filter(results_e, Variable == "Price") %>% 
   group_by(Run) %>% 
@@ -189,7 +191,6 @@ plot_parb =
         panel.background = element_blank(), axis.line = element_line(colour = "black"),plot.title = element_text(hjust=1, vjust=1, face = 'bold'),
         axis.title = element_text(size = 10),
         axis.text = element_text(size = 10))
-
 
 #output figure
 ggarrange(plot_parb, plot_earb,
