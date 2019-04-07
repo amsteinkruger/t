@@ -210,7 +210,9 @@
         c1_aq[i] = n1_aq[1] * w1_aq[1] * h_z * j_z * 365 + k_z # Fix placeholder variable names.
         
         # Mind wrapper for hard-coding lower bound age at harvest.
-        h_aq[i] = ifelse(a0_aq[i] > ceiling(a_sale), ifelse((r0_aq[i] - l_z * nstart) > (disc_aq * (rt0_aq[i] + r1_aq[i] - c0_aq[i])), 1, 0), 0) # Think hard about lags here.
+        #h_aq[i] = ifelse(a0_aq[i] > ceiling(a_sale), ifelse((r0_aq[i] - l_z * nstart) > (disc_aq * (rt0_aq[i] + r1_aq[i] - c0_aq[i])), 1, 0), 0) # Think hard about lags here.
+        y0_aq[i] = 1000
+        h_aq[i] = 1
         hinv_aq[i] = (h_aq[i] - 1) ^ 2
         
         r_aq[i] = (r0_aq[i] * h_aq[i] + rt0_aq[i] * hinv_aq[i])
@@ -297,4 +299,3 @@
       return(tidy)
       
     }
-    
