@@ -191,6 +191,7 @@ plot_parb =
         axis.text = element_text(size = 10))
 
 
+
 #output figure
 ggarrange(plot_parb, plot_earb,
           ncol = 2, nrow = 1)
