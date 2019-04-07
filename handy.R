@@ -1,6 +1,6 @@
 # Run out a one-off set of results for one cage with fixed prices, etc.
 
-#library(pubr)
+library(pubr)
 library(gridExtra)
 
 results_output <- read_csv("results_output.csv")
