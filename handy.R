@@ -2,51 +2,14 @@
 
 library(pubr)
 library(gridExtra)
+library(showtext)
 
-results_output <- read_csv("results_output.csv")
-results_profit <- read_csv("results_profit.csv")
+# Load Avenir from an open text file in the working directory.
+#  real quick heads-up: package showtext works for certain graphic devices so that saved files display Avenir but previews in RStudio do not.
+#  This is fixable and I do not know how.
+font_paths(".")
+font_add("avenir", "avenir.otf")
 
-
-plot_output = 
-  ggplot(results_output) +
-  geom_col(aes(Year, Result), fill = "red") +  #fill = Variable
-  scale_fill_brewer(palette = "Set1") +
-  #facet_wrap(~Variable) +
-  scale_y_continuous(labels = scales::comma) +
-  scale_x_continuous(expand = c(0, 0)) +
-  labs(y = "Kilograms") +
-  theme_classic()
-
-#print(plot_handy)
-
-plot_output
-
-plot_profit = 
-  ggplot(results_profit) +
-  geom_col(aes(Year, Result), fill = "blue") + #fill = Variable
-  scale_fill_brewer(palette = "Set1") +
-  #facet_wrap(~Variable) +
-  scale_y_continuous(labels = scales::comma) +
-  scale_x_continuous(expand = c(0, 0)) +
-  labs(y = "USD 2018") +
-  theme_classic()
-
-plot_profit
-
-
-#output figure
-ggarrange(plot_outfit, plot_profit,
-          ncol = 2, nrow = 1)
-
-ggsave("output_profit.png",
-       width = 6.6,
-       height = 3,
-       units = c("in"),
-       dpi = 300,
-       limitsize = FALSE,
-       bg = "transparent")
-
-# Quick rerun.
 results_handy = read_csv("results_handy_but_really.csv")
 
 results_handy = results_handy %>% 
@@ -59,9 +22,11 @@ plot_handy_prod =
   scale_y_continuous(labels = scales::comma, expand = c(0, 0), limits = c(0, 250), breaks = c(0, 50, 100, 150, 200, 250)) +
   scale_x_continuous(expand = c(0, 0)) +
   labs(y = "Production (Tonnes)") +
-  theme_classic() +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black"),plot.title = element_text(hjust=1, vjust=1, face = 'bold'),
+  theme_classic(base_family = "avenir") +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "transparent", color = NA),
+        plot.background = element_rect(fill = "transparent", color = NA),
         axis.title = element_text(size = 10),
         axis.text = element_text(size = 10))
 
@@ -72,27 +37,58 @@ plot_handy_pi =
   scale_y_continuous(labels = scales::comma, expand = c(0.1, 0.1), breaks = c(-2.5, 0, 2.5, 5, 7.5, 10)) +
   scale_x_continuous(expand = c(0, 0)) +
   labs(y = "Profit (Millions USD2018)") +
-  theme_classic() +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black"),plot.title = element_text(hjust=1, vjust=1, face = 'bold'),
+  theme_classic(base_family = "avenir") +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "transparent", color = NA),
+        plot.background = element_rect(fill = "transparent", color = NA),
         axis.title = element_text(size = 10),
         axis.text = element_text(size = 10),
-        legend.position="none")
+        legend.position = "none")
+
+# Create a handy theming object for font sizes.
+bigfont = theme(axis.text = element_text(size = 16), axis.title = element_text(size = 20))
+lilfont = theme(axis.text = element_text(size = 8), axis.title = element_text(size = 10))
+
+plot_handy_prod_lil = plot_handy_prod + lilfont
+plot_handy_pi_lil = plot_handy_pi + lilfont
+plot_handy_prod_big = plot_handy_prod + bigfont
+plot_handy_pi_big = plot_handy_pi + bigfont
 
 #output figure
-ggarrange(plot_handy_prod, plot_handy_pi,
-          ncol = 2, nrow = 1)
+#ggarrange(plot_handy_prod, plot_handy_pi,
+#          ncol = 2, nrow = 1)
 
-ggsave("handy_5x225.png",
-       width = 5,
+ggsave("handyprod_25x225.png",
+       plot_handy_prod_lil,
+       width = 2.5,
        height = 2.25,
        units = c("in"),
        dpi = 300,
        limitsize = FALSE,
        bg = "transparent")
 
-ggsave("handy_10x7.png",
-       width = 10,
+ggsave("handypi_25x225.png",
+       plot_handy_pi_lil,
+       width = 2.5,
+       height = 2.25,
+       units = c("in"),
+       dpi = 300,
+       limitsize = FALSE,
+       bg = "transparent")
+
+ggsave("handyprod_5x7.png",
+       plot_handy_prod_big,
+       width = 5,
+       height = 7,
+       units = c("in"),
+       dpi = 300,
+       limitsize = FALSE,
+       bg = "transparent")
+
+ggsave("handypi_5x7.png",
+       plot_handy_pi_big,
+       width = 5,
        height = 7,
        units = c("in"),
        dpi = 300,
