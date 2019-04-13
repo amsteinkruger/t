@@ -47,8 +47,8 @@ plot_handy_pi =
         legend.position = "none")
 
 # Create a handy theming object for font sizes.
-bigfont = theme(axis.text = element_text(size = 16), axis.title = element_text(size = 20))
-lilfont = theme(axis.text = element_text(size = 8), axis.title = element_text(size = 10))
+bigfont = theme(axis.text = element_text(size = 36), axis.title = element_text(size = 54))
+lilfont = theme(axis.text = element_text(size = 18), axis.title = element_text(size = 27))
 
 plot_handy_prod_lil = plot_handy_prod + lilfont
 plot_handy_pi_lil = plot_handy_pi + lilfont
@@ -61,8 +61,8 @@ plot_handy_pi_big = plot_handy_pi + bigfont
 
 ggsave("handyprod_25x225.png",
        plot_handy_prod_lil,
-       width = 2.5,
-       height = 2.25,
+       width = 2.4,
+       height = 2.75,
        units = c("in"),
        dpi = 300,
        limitsize = FALSE,
@@ -70,8 +70,8 @@ ggsave("handyprod_25x225.png",
 
 ggsave("handypi_25x225.png",
        plot_handy_pi_lil,
-       width = 2.5,
-       height = 2.25,
+       width = 2.4,
+       height = 2.75,
        units = c("in"),
        dpi = 300,
        limitsize = FALSE,
@@ -80,7 +80,7 @@ ggsave("handypi_25x225.png",
 ggsave("handyprod_5x7.png",
        plot_handy_prod_big,
        width = 5,
-       height = 7,
+       height = 3.7125,
        units = c("in"),
        dpi = 300,
        limitsize = FALSE,
@@ -89,7 +89,7 @@ ggsave("handyprod_5x7.png",
 ggsave("handypi_5x7.png",
        plot_handy_pi_big,
        width = 5,
-       height = 7,
+       height = 3.7125,
        units = c("in"),
        dpi = 300,
        limitsize = FALSE,
