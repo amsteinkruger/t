@@ -350,9 +350,9 @@ mar_mut = mutate(ma_dat, hat = fun_p(q, g, nlm_tidy[[1, 2]], nlm_tidy[[2, 2]], n
 
 mar_g =
   ggplot(mar_mut) +
-  geom_point(aes(g, p), colour = "#04859B") +
-  geom_segment(aes(x = g, y = p, xend = g, yend = hat), colour = "#04859B") +
-  geom_point(aes(g, hat), colour = "#003660") +
+  geom_point(aes(g, p), colour = "#04859B", size = 2.5) +
+  geom_segment(aes(x = g, y = p, xend = g, yend = hat), colour = "#04859B", size = 1.25) +
+  geom_point(aes(g, hat), colour = "#003660", size = 2.5) +
   labs(x = "Grams of Dry Buche", y = "Gram Price") +
   scale_y_continuous(breaks = seq(0, 100, by = 50), limits = c(0, 100), expand = c(0, 0)) +
   theme_classic(base_family = "avenir") +
@@ -360,7 +360,8 @@ mar_g =
         panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "transparent", color = NA),
         plot.background = element_rect(fill = "transparent", color = NA),
-        legend.position = "none")
+        legend.position = "none") + 
+  bigfont
 
 mar_q_big = 
   ggplot(mar_mut) +
@@ -400,9 +401,9 @@ ggsave("mar_g_lil.png",
        bg = "transparent")
 
 ggsave("mar_g_big.png",
-       mar_g_big,
-       width = 4.575,
-       height = 8.35,
+       mar_g,
+       width = 8,
+       height = 8,
        units = c("in"),
        dpi = 300,
        limitsize = FALSE,
