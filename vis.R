@@ -29,10 +29,10 @@ results_sum = filter(results, Age > 3) %>%
 # Plot the summary numbers.
 #  Check whether inputs are tonnes or numbers.
 plot_nfig_big = 
-  ggplot(filter(results_sum, Variable == "Numbers")) +
+  ggplot(filter(results_sum, Variable == "Numbers" & Estimate == "Central")) +
   geom_hline(yintercept = 25108, size = 0.95, color = "#7A8D39") +
   geom_hline(yintercept = 10044, size = 0.95, color = "#EF5645") +
-  geom_line(aes(x = Year + 2016, y = SumBio, group = Run, color = Scenario, linetype = Estimate), size = 1.15) +
+  geom_line(aes(x = Year + 2016, y = SumBio, group = Run, color = Scenario), size = 1.15) + #, linetype = Estimate
   scale_color_manual(values = c("#04859B", "#003660")) +
   scale_y_continuous(expand = c(0, 0), limits = c(0, NA), labels = scales::comma) +
   scale_x_continuous(expand = c(0, 0.25)) +  
@@ -287,8 +287,8 @@ kobebig =
   scale_colour_gradient(low = "gray50", high = "gray0") +
   scale_x_continuous(limits = c(0, 2.05), expand = c(0, 0)) +
   scale_y_continuous(limits = c(0, 2.25), expand = c(0, 0)) +
-  xlab("Biomass Ratio") +
-  ylab("Fishing Mortality Ratio") +
+  xlab("Biomass Ratio (B / BMSY)") +
+  ylab("Fishing Mortality Ratio (F / FMSY)") +
   theme_classic(base_family = "avenir") +
   theme(panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
@@ -363,6 +363,21 @@ mar_g =
         legend.position = "none") + 
   bigfont
 
+mar_g_lil = 
+  ggplot(mar_mut) +
+  geom_point(aes(g, p), colour = "#04859B", size = 0.75) +
+  geom_segment(aes(x = g, y = p, xend = g, yend = hat), colour = "#04859B", size = 0.5) +
+  geom_point(aes(g, hat), colour = "#003660", size = 0.75) +
+  labs(x = "Grams of Dry Buche", y = "Gram Price") +
+  scale_y_continuous(breaks = seq(0, 100, by = 50), limits = c(0, 100), expand = c(0, 0)) +
+  theme_classic(base_family = "avenir") +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "transparent", color = NA),
+        plot.background = element_rect(fill = "transparent", color = NA),
+        legend.position = "none") + 
+  lilfont
+
 mar_q_big = 
   ggplot(mar_mut) +
   geom_boxplot(aes(as.factor(q), hat), colour = "#003660", fill = "transparent", size = 1.25) +
@@ -393,8 +408,8 @@ mar_q_lil =
 
 ggsave("mar_g_lil.png",
        mar_g_lil,
-       width = 2.5,
-       height = 2.25,
+       width = 2.55,
+       height = 2.55,
        units = c("in"),
        dpi = 300,
        limitsize = FALSE,
