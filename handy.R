@@ -36,7 +36,7 @@ plot_handy_pi =
   scale_fill_manual(values = c("#EF5645", "#0BA89A")) +
   scale_y_continuous(labels = scales::comma, expand = c(0.1, 0.1), breaks = c(-2.5, 0, 2.5, 5, 7.5, 10)) +
   scale_x_continuous(expand = c(0, 0)) +
-  labs(y = "Profit (Millions USD2018)") +
+  labs(y = "Millions US$") +
   theme_classic(base_family = "avenir") +
   theme(panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
