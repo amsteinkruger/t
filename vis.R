@@ -46,7 +46,7 @@ plot_nfig_big =
   bigfont
 
 plot_nfig_lil = 
-  ggplot(filter(results_sum, Variable == "Numbers")) +
+  ggplot(filter(results_sum, Variable == "Numbers" & Estimate == "Central")) +
   geom_hline(yintercept = 25108, size = 0.5, color = "#7A8D39") +
   geom_hline(yintercept = 10044, size = 0.5, color = "#EF5645") +
   geom_line(aes(x = Year + 2016, y = SumBio, group = Run, color = Scenario, linetype = Estimate), size = 0.55) +
@@ -64,8 +64,8 @@ plot_nfig_lil =
 
 ggsave("plot_nfig_5x225.png", 
        plot_nfig_lil, 
-       width = 2.45, 
-       height = 2,
+       width = 2.4, 
+       height = 2.75,
        units = c("in"),
        dpi = 300,
        limitsize = FALSE,
@@ -129,7 +129,6 @@ results_e_sum = filter(results_e, Variable == "Effort") %>%
   mutate("50% Reduction" = (`Mean Effort`[1] * 0.50)) %>% 
   mutate("90% Reduction" = (`Mean Effort`[1] * 0.10))  
 
-
 # Plot efforts.
 plot_earb_big = 
   ggplot(results_e_sum, aes(`Annual Tonnes`, `Mean Effort`)) +
@@ -142,7 +141,7 @@ plot_earb_big =
   annotate("text", x = 8, y = 123, label = "25%", size = 15, family = "avenir") +
   annotate("text", x = 8, y = 80, label = "50%", size = 15, family = "avenir") +
   annotate("text", x = 8, y = 10, label = "90%", size = 15, family = "avenir") +
-  annotate("text", x = 8, y = 163, label = "3%", size = 15, family = "avenir") +
+  annotate("text", x = 8, y = 163, label = "4%", size = 15, family = "avenir") +
   ylim(0, 200) +
   scale_x_discrete(expand = c(0, 0), limits = c(0, 15)) + 
   #scale_y_continuous(expand = c(0, 0))+
@@ -166,7 +165,7 @@ plot_earb_lil =
   annotate("text", x = 8, y = 123, label = "25%", size = 7, family = "avenir") +
   annotate("text", x = 8, y = 80, label = "50%", size = 7, family = "avenir") +
   annotate("text", x = 8, y = 10, label = "90%", size = 7, family = "avenir") +
-  annotate("text", x = 8, y = 163, label = "3%", size = 7, family = "avenir") +
+  annotate("text", x = 8, y = 163, label = "4%", size = 7, family = "avenir") +
   ylim(0, 200) +
   scale_x_discrete(expand = c(0, 0), limits = c(0, 15)) + 
   #scale_y_continuous(expand = c(0, 0))+
@@ -242,8 +241,8 @@ plot_parb_lil =
 
 ggsave("earb_25x225.png",
        plot_earb_lil,
-       width = 2.55,
-       height = 2.55,
+       width = 2.40,
+       height = 2.75,
        units = c("in"),
        dpi = 300,
        limitsize = FALSE,
@@ -353,7 +352,7 @@ mar_g =
   geom_point(aes(g, p), colour = "#04859B", size = 2.5) +
   geom_segment(aes(x = g, y = p, xend = g, yend = hat), colour = "#04859B", size = 1.25) +
   geom_point(aes(g, hat), colour = "#003660", size = 2.5) +
-  labs(x = "Grams of Dry Buche", y = "Gram Price") +
+  labs(x = "Grams of Buche", y = "Price per Gram") +
   scale_y_continuous(breaks = seq(0, 100, by = 50), limits = c(0, 100), expand = c(0, 0)) +
   theme_classic(base_family = "avenir") +
   theme(panel.grid.major = element_blank(), 
@@ -365,10 +364,10 @@ mar_g =
 
 mar_g_lil = 
   ggplot(mar_mut) +
-  geom_point(aes(g, p), colour = "#04859B", size = 0.75) +
-  geom_segment(aes(x = g, y = p, xend = g, yend = hat), colour = "#04859B", size = 0.5) +
+  geom_point(aes(g, p), colour = "#04859B", size = 0.75, fill = NA) +
+  geom_segment(aes(x = g, y = p, xend = g, yend = hat), colour = "#04859B", size = 0.50) +
   geom_point(aes(g, hat), colour = "#003660", size = 0.75) +
-  labs(x = "Grams of Dry Buche", y = "Gram Price") +
+  labs(x = "Grams of Buche", y = "Price per Gram") +
   scale_y_continuous(breaks = seq(0, 100, by = 50), limits = c(0, 100), expand = c(0, 0)) +
   theme_classic(base_family = "avenir") +
   theme(panel.grid.major = element_blank(), 
@@ -396,7 +395,7 @@ mar_q_lil =
   ggplot(mar_mut) +
   geom_boxplot(aes(as.factor(q), hat), colour = "#003660", fill = "transparent", size = 0.5) +
   geom_jitter(aes(as.factor(q), p), colour = "#04859B", size = 0.75) +
-  labs(x = "Tonnes of Dry Buche at Market", y = "Gram Price") +
+  labs(x = "Tonnes of Buche", y = "Gram Price") +
   scale_y_continuous(breaks = seq(0, 100, by = 50), limits = c(0, 100), expand = c(0, 0)) +
   theme_classic(base_family = "avenir") +
   theme(panel.grid.major = element_blank(), 
@@ -408,8 +407,8 @@ mar_q_lil =
 
 ggsave("mar_g_lil.png",
        mar_g_lil,
-       width = 2.55,
-       height = 2.55,
+       width = 2.40,
+       height = 2.75,
        units = c("in"),
        dpi = 300,
        limitsize = FALSE,
@@ -426,8 +425,8 @@ ggsave("mar_g_big.png",
 
 ggsave("mar_q_lil.png",
        mar_q_lil,
-       width = 2.55,
-       height = 2.55,
+       width = 2.40,
+       height = 2.75,
        units = c("in"),
        dpi = 300,
        limitsize = FALSE,
@@ -441,3 +440,54 @@ ggsave("mar_q_big.png",
        dpi = 300,
        limitsize = FALSE,
        bg = "transparent")
+
+# Why not make additional plots? That would be great. That would be fantastic. Let's do it.
+bc_dat = read_csv("bc_dat.csv")
+
+plot_yb = 
+  ggplot(bc_dat) +
+  geom_line(aes(y, b), color = "#003660") +
+  scale_y_continuous(labels = scales::comma, expand = c(0, 0), limits = c(0, NA)) +
+  scale_x_continuous(expand = c(0, 0), breaks = c(1925, 2017)) +
+  labs(y = "Stock (Tonnes)") +
+  theme_classic(base_family = "avenir") +
+  theme(axis.title.x=element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "transparent", color = NA),
+        plot.background = element_rect(fill = "transparent", color = NA))
+
+plot_yc = 
+  ggplot(bc_dat) +
+  geom_line(aes(y, c), color = "#04859B") +
+  scale_y_continuous(labels = scales::comma, expand = c(0, 0), limits = c(0, NA)) +
+  scale_x_continuous(expand = c(0, 0), breaks = c(1925, 2017)) +
+  labs(y = "Catch (Tonnes)") +
+  theme_classic(base_family = "avenir") +
+  theme(axis.title.x=element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "transparent", color = NA),
+        plot.background = element_rect(fill = "transparent", color = NA))
+
+plot_yb = plot_yb + lilfont
+plot_yc = plot_yc + lilfont
+
+ggsave("yb.png",
+       plot_yb,
+       width = 1.2,
+       height = 2.75,
+       units = c("in"),
+       dpi = 300,
+       limitsize = FALSE,
+       bg = "transparent")
+
+ggsave("yc.png",
+       plot_yc,
+       width = 1.2,
+       height = 2.75,
+       units = c("in"),
+       dpi = 300,
+       limitsize = FALSE,
+       bg = "transparent")
+
