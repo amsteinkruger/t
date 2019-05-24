@@ -17,11 +17,11 @@ bigfont = theme(axis.text = element_text(size = 36), axis.title = element_text(s
 lilfont = theme(axis.text = element_text(size = 18), axis.title = element_text(size = 27))
 
 # Stock and catch of reproductive biomass in numbers and mass.
-results_sum = filter(results, Age > 3) %>%
+results_sum =  results %>% #filter(results, Age > 3)
   mutate(Biomass = fun_l_w(pars$default[4], fun_a_l(Age - 0.5, pars$default[1], pars$default[2], pars$default[3]),  pars$default[5]) / 1000 * Result) %>% 
   group_by(Year, Variable, Run, Scenario, Estimate) %>% # Run, 
   summarize(SumNum = sum(Result), SumBio = sum(Biomass)) %>% 
-  mutate(LogNum = log(SumNum + 1), LogBio = log(SumBio + 1)) %>% 
+  #mutate(LogNum = log(SumNum + 1), LogBio = log(SumBio + 1)) %>% 
   ungroup() %>% 
   mutate(Run = as.factor(Run)) %>% 
   unite("Estimate | Scenario", Estimate, Scenario, sep = " | ", remove = FALSE)
@@ -381,7 +381,7 @@ mar_q_big =
   ggplot(mar_mut) +
   geom_boxplot(aes(as.factor(q), hat), colour = "#003660", fill = "transparent", size = 1.25) +
   geom_jitter(aes(as.factor(q), p), colour = "#04859B", size = 2.5) +
-  labs(x = "Tonnes of Dry Buche at Market", y = "Gram Price") +
+  labs(x = "Tonnes of Buche at Market", y = "Gram Price") +
   scale_y_continuous(breaks = seq(0, 100, by = 50), limits = c(0, 100), expand = c(0, 0)) +
   theme_classic(base_family = "avenir") +
   theme(panel.grid.major = element_blank(), 
@@ -395,7 +395,7 @@ mar_q_lil =
   ggplot(mar_mut) +
   geom_boxplot(aes(as.factor(q), hat), colour = "#003660", fill = "transparent", size = 0.5) +
   geom_jitter(aes(as.factor(q), p), colour = "#04859B", size = 0.75) +
-  labs(x = "Tonnes of Buche", y = "Gram Price") +
+  labs(x = "Tonnes of Buche", y = "Price per Gram") +
   scale_y_continuous(breaks = seq(0, 100, by = 50), limits = c(0, 100), expand = c(0, 0)) +
   theme_classic(base_family = "avenir") +
   theme(panel.grid.major = element_blank(), 

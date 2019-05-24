@@ -39,7 +39,8 @@ pars["switch_aq", 4:6] = 0
 pars["switch_aq", 7:9] = 1
 pars["switch_aq", 10:12] = 0
 pars["eta_limit", 7:12] = 0.5
-pars["y_arb", 7:9] = 1000
+pars["y_arb", 1:6] = 1000
+pars["c_ma", 1:6] = pars["c_ma", 1] * 10
 
 # Turn parameters into a different matrix for analysis of outcomes from different arbitrary annual aquaculture outputs.
 pars_arb = pars_full %>% 
