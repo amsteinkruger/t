@@ -19,22 +19,23 @@ lilfont = theme(axis.text = element_text(size = 18), axis.title = element_text(s
 # Stock and catch of reproductive biomass in numbers and mass.
 results_sum =  results %>% #filter(results, Age > 3)
   mutate(Biomass = fun_l_w(pars$default[4], fun_a_l(Age - 0.5, pars$default[1], pars$default[2], pars$default[3]),  pars$default[5]) / 1000 * Result) %>% 
-  group_by(Year, Variable, Run, Scenario, Estimate) %>% # Run, 
+  group_by(Year, Variable, Run, Scenario) %>% # Run, #, Estimate
   summarize(SumNum = sum(Result), SumBio = sum(Biomass)) %>% 
   #mutate(LogNum = log(SumNum + 1), LogBio = log(SumBio + 1)) %>% 
   ungroup() %>% 
-  mutate(Run = as.factor(Run)) %>% 
-  unite("Estimate | Scenario", Estimate, Scenario, sep = " | ", remove = FALSE)
+  mutate(Run = as.factor(Run)) #%>% 
+ # unite("Estimate | Scenario", Estimate, Scenario, sep = " | ", remove = FALSE)
+
+View(filter(results_sum, Year == "10", Run == 1 | Run == 4, Variable == "Catches" | Variable == "Numbers" | Variable == "Effort"))
 
 # Plot the summary numbers.
 #  Check whether inputs are tonnes or numbers.
 plot_nfig_big = 
-  ggplot(filter(results_sum, Variable == "Numbers" & Estimate == "Central")) +
-  geom_hline(yintercept = 25108, size = 0.95, color = "#7A8D39") +
-  geom_hline(yintercept = 10044, size = 0.95, color = "#EF5645") +
-  geom_line(aes(x = Year + 2016, y = SumBio, group = Run, color = Scenario), size = 1.15) + #, linetype = Estimate
+  ggplot(filter(results_sum, Variable == "Numbers")) + # & Estimate == "Central"
+  geom_hline(yintercept = 12136, size = 0.95, color = "#EF5645") +
+  geom_line(aes(x = Year + 2016, y = SumBio * 0.33, group = Run), size = 1.15, alpha = 0.0025) + #, linetype = Estimate #, color = Scenario
   scale_color_manual(values = c("#04859B", "#003660")) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, NA), labels = scales::comma) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 20000), labels = scales::comma) +
   scale_x_continuous(expand = c(0, 0.25)) +  
   labs(x = "Year", y = "Tonnes of Biomass") +
   theme_classic(base_family = "avenir") +

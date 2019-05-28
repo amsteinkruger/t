@@ -220,11 +220,13 @@
         
         # Prices in matrix. Use this one. Think harder about the lag problem.
         for(j in 1:(a_i - a_0 + 1)){
-          p_mat[i, j] = fun_p(sum(fun_l_w(a_lw, fun_a_l(a_matrix[i, ], linf_al, k_al, t0_al), b_lw) * y[i, ] * by1 * by2 + # Fishery production.
+          p_mat[i, j] = fun_p(sum(fun_l_w(a_lw, fun_a_l(a_matrix[i, ], linf_al, k_al, t0_al), b_lw) * y[i, ] * by1 * by2, # Fishery production.
                                   switch_aq * (y0_aq[i] * h_aq[i] + nt0_aq[i] * w0_aq[i] * by1 * by2 * hinv_aq[i])) # Aquaculture production.
-                                  / 1000, # Conversion to tonnes and addition of arbitrary production.
+                                  / 1000, # Conversion to tonnes.
                               fun_l_w(a_lw, fun_a_l(a_matrix[i, j], linf_al, k_al, t0_al), b_lw) * by1 * by2 * 1000, 
-                              a_ma, b_ma, c_ma) * loss
+                              a_ma, 
+                              b_ma, 
+                              c_ma) * loss
           p_mat[i, j] = ifelse(p_mat[i, j] > 0, p_mat[i, j], 0)
         }
         
