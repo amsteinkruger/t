@@ -19,7 +19,7 @@ lilfont = theme(axis.text = element_text(size = 18), axis.title = element_text(s
 # Stock and catch of reproductive biomass in numbers and mass.
 results_sum =  results %>% #filter(results, Age > 3)
   mutate(Biomass = fun_l_w(pars$default[4], fun_a_l(Age - 0.5, pars$default[1], pars$default[2], pars$default[3]),  pars$default[5]) / 1000 * Result) %>% 
-  group_by(Year, Variable, Run, Scenario) %>% # Run, #, Estimate
+  group_by(Year, Variable, Run) %>% # Run, #, Estimate, Scenario
   summarize(SumNum = sum(Result), SumBio = sum(Biomass)) %>% 
   #mutate(LogNum = log(SumNum + 1), LogBio = log(SumBio + 1)) %>% 
   ungroup() %>% 
