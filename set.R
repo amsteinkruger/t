@@ -92,8 +92,8 @@ pars[4:6] = pars[1:3]
 # Define the aquaculture switch for two scenarios.
 pars["switch_aq", 1:3] = 0
 pars["switch_aq", 4:6] = 1
-pars["y_arb", 1:6] = 15000
-pars["eta_limit", 1:6] = 1
+pars["y_arb", 1:6] = 1500
+pars["eta_limit", 1:6] = 0.1
 
 # Extend the dataframe for n runs.
 #  Define your n real quick. Put this into par.csv and be better about data management.
