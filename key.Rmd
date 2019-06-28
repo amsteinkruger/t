@@ -1,7 +1,7 @@
 ---
-title: "Hog"
+title: "Simulating Economic and Ecological Outcomes of Totoaba Aquaculture"
 output:
-  html_document: default
+html_document: default
 ---
 
 ####0. Libraries
@@ -19,70 +19,54 @@ library(ggpubr)
 
 ####1. Data
 
-```{r data_read, cache = FALSE}
-knitr::read_chunk('data.R')
+```{r dat_read, cache = FALSE}
+knitr::read_chunk('./scripts/dat.R')
 ```
 
-```{r data}
+```{r dat}
 ```
 
 ####2. Functions
 
-```{r functions_read}
-
-knitr::read_chunk('functions.R')
-
-```
-
-```{r functions}
-```
-
-####3. Set-Up
-
-```{r set_read}
-
-knitr::read_chunk('set.R')
-
-```
-
-```{r set}
-```
-
-####4. Hog Function
-
 ```{r fun_read}
 
-knitr::read_chunk('fun.R')
+knitr::read_chunk('./scripts/fun.R')
 
 ```
 
 ```{r fun}
 ```
 
-####5. Hog Runs
+####3. Set-Up
+
+```{r set_read}
+
+knitr::read_chunk('./scripts/set.R')
+
+```
+
+```{r set}
+```
+
+
+####5. Runs
 
 ```{r run_read}
-knitr::read_chunk('run.R')
+knitr::read_chunk('./scripts/run.R')
 ```
 
 ```{r run}
 ```
 
-####6. Hog Outputs
+####6. Outputs
 
 Visualization and tables.
 
 ```{r vis_read}
-knitr::read_chunk('vis.R')
+knitr::read_chunk('./scripts/vis.R')
 ```
 
 ```{r vis}
-```
-
-```{r tab}
-
-
-
 ```
 
 ####Appendix: Equations and Variable, Parameter Definitions

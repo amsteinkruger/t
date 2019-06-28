@@ -2,14 +2,16 @@
 
 # Market
 #  Estimate inverse demand.
-nlm = nls(p ~ q * a + (g ^ b) + c, data = ma_dat, start = c(a = -5.00, b = 2.00, c = 20))
+nlm = nls(p ~ q * a + (g ^ b) + c, 
+          data = dat_p, 
+          start = c(a = -5.00, b = 2.00, c = 20))
 #  Clean results.
 nlm_tidy = tidy(nlm)
 
 # Aquaculture
 #  Estimate incremental mortalities.
 #  Regression:
-am_reg = nls(m_months ~ b1 * exp(b2 * a_months), aq_mort_dat, start = list(b1 = 8.00, b2 = - 1.00))
+am_reg = nls(m_months ~ b1 * exp(b2 * a_months), dat_aqm, start = list(b1 = 8.00, b2 = - 1.00))
 #  Clean results.
 am_reg_tidy = tidy(am_reg)
 

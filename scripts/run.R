@@ -6,8 +6,7 @@ results = list()
 for(i in 7:n){par = select(pars, i)
               output = fun(par)
               output$Run = i
-              output$Scenario = ifelse(output$Run < (7 + n / 2), "w/o Aquaculture", "w/ Aquaculture")
-              #output$Estimate = ifelse(output$Run == 1 | output$Run == 4, "Central", "Outer")
+              output$Scenario = ifelse(output$Run < (7 + n / 2), "w/o Aquaculture", "w/ Aquaculture") # Band-Aid.
               results[[i]] = output}
 
 # Go from list to dataframe for easier processing.
