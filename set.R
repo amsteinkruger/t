@@ -105,3 +105,11 @@ pars[(7 + n / 2 + 1):(7 + n - 1)] = pars[4]
 pars["dens_aq", 7:(7 + n - 1)] = runif(n, 
                                        min = pars["dens_aq", 2], 
                                        max = pars["dens_aq", 3])
+
+pars["y_arb", 7:(7 + n - 1)] = runif(n, 
+                                     min = 0, 
+                                     max = 5000)
+
+pars["m_juv_am", 7:(7 + n - 1)] = runif(n, 
+                                     min = 0.5, 
+                                     max = 0.9)
