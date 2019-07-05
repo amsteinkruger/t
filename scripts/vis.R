@@ -4,6 +4,9 @@
 library(ggpubr)
 library(gridExtra)
 library(showtext)
+# For rayshading heatmap experiment.
+remotes::install_github("tylermorganwall/rayshader")
+library(rayshader)
 
 # Load Avenir from an open text file in the working directory.
 #  package showtext works for certain graphic devices so that saved files display Avenir but previews in RStudio do not.
@@ -12,24 +15,39 @@ font_add("avenir", "avenir.otf")
 showtext_auto()
 
 # Stock and catch of reproductive biomass in numbers and mass.
-results_sum =  results %>% #filter(results, Age > 3)
+results_sum =  results %>% 
+  na.omit() %>% # This is a Band-Aid to filter out any surprise NAs. Swap out for a better solution in set.R.
+  filter(Age > 7) %>% # This is a quick trick to filter out juveniles and subadults and keep reproductive biomass.
   mutate(Biomass = fun_l_w(pars$default[4], fun_a_l(Age - 0.5, pars$default[1], pars$default[2], pars$default[3]),  pars$default[5]) / 1000 * Result) %>% 
-  group_by(Year, Variable, Run, Scenario) %>% # Run, #, Estimate, Scenario
-  summarize(SumNum = sum(Result), SumBio = sum(Biomass)) %>% 
+  group_by(Year, 
+           Variable, 
+           Run, 
+           Scenario) %>% # Run, #, Estimate, Scenario
+  summarize(SumNum = sum(Result), 
+            SumBio = sum(Biomass)) %>% 
   ungroup() %>% 
   mutate(Run = as.factor(Run))
 
 # Plot the summary numbers.
 #  Check whether inputs are tonnes or numbers.
-plot_n = 
-  ggplot(filter(results_sum, Variable == "Numbers")) + # & Estimate == "Central"
-  geom_hline(yintercept = 12136, size = 0.95, color = "#EF5645") +
-  geom_line(aes(x = Year + 2016, y = SumBio * 0.33, group = Run, color = Scenario), size = 1.15, alpha = 0.10) + #, linetype = Estimate #, color = Scenario
+plot_n_lin = 
+  ggplot(filter(results_sum, 
+                Variable == "Numbers")) + 
+  geom_hline(yintercept = 12136, 
+             size = 0.95, 
+             color = "#EF5645") +
+  geom_line(aes(x = Year + 2016, 
+                y = SumBio * 0.33, 
+                group = Run, 
+                color = Scenario), 
+            size = 1.15, 
+            alpha = 0.01) + 
   scale_color_manual(values = c("#04859B", "#003660")) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 20000), labels = scales::comma) +
+  scale_y_continuous(expand = c(0, 0), 
+                     labels = scales::comma) + #limits = c(0, 20000), 
   scale_x_continuous(expand = c(0, 0.25)) +  
-  labs(x = "Year", y = "Tonnes of Biomass") +
-  theme_classic(base_family = "avenir") +
+  labs(x = "Year", y = "Biomass (Tonnes)") + 
+  theme_classic() + #base_family = "avenir"
   theme(panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "transparent", color = NA),
@@ -37,7 +55,62 @@ plot_n =
         legend.position = "none") +
   facet_wrap(~Scenario)
 
-print(plot_n)
+plot_n_bin = 
+  ggplot(filter(results_sum, 
+                Variable == "Numbers"), 
+         aes(x = Year + 2016, 
+             y = SumBio * 0.33)) +
+  geom_bin2d(binwidth = c(1, 500)) +
+  geom_hline(yintercept = 12136, 
+             size = 0.95, 
+             color = "#EF5645") +
+  scale_fill_distiller(palette = "Blues", 
+                       direction = 1) +
+  scale_y_continuous(expand = c(0, 0), 
+                     limits = c(0, 20000),
+                     labels = scales::comma) + #, 
+  scale_x_continuous(expand = c(0, 0.25)) +  
+  labs(x = "Year", 
+       y = "Biomass (Tonnes)") + #Tonnes of Biomass
+  theme_classic() + #base_family = "avenir"
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "grey75"),
+        #panel.background = element_rect(fill = "transparent", color = NA),
+        plot.background = element_rect(fill = "transparent", color = NA)) + #,
+        #legend.position = "none") +
+  facet_wrap(~Scenario)
+
+plot_n_hex = 
+  ggplot(filter(results_sum, 
+                Variable == "Numbers"), 
+         aes(x = Year, 
+             y = SumBio * 0.33)) +
+  geom_hex(binwidth = c(1, 500)) +
+  geom_hline(yintercept = 12136, 
+             size = 0.95, 
+             color = "#EF5645") +
+  scale_fill_distiller(palette = "Blues", 
+                       direction = 1) +
+  scale_y_continuous(expand = c(0, 0), 
+                     limits = c(0, 20000),
+                     labels = scales::comma) + 
+  scale_x_continuous(expand = c(0, 0.25)) +  
+  labs(x = "Year", 
+       y = "Biomass (Tonnes)") + 
+  theme_classic() + #base_family = "avenir"
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "grey75"),
+        #panel.background = element_rect(fill = "transparent", color = NA),
+        plot.background = element_rect(fill = "transparent", color = NA),
+        legend.position = "none") +
+  facet_wrap(~Scenario)
+
+# These lines run that neat spinning 3D viz thing you've seen on the internet. Not worthwhile.
+#plot_gg(plot_n_ray, width = 4, height = 4, scale = 300, multicore = TRUE)
+#render_snapshot("plot_n_ray.png")
+#render_movie(filename = plot_n_ray, type = "oscillate")
 
 # Data wrangling for a cleaner dataframe.
 results_sum_pi = results %>% 
@@ -46,13 +119,93 @@ results_sum_pi = results %>%
 
 # Profits for in both scenarios, sort of.
 plot_pi = 
-  ggplot(results_sum_pi) +
-  geom_col(aes(x = Year, y = Result, fill = Variable), position = "dodge") +
-  scale_fill_brewer(palette = "Set1", direction = -1) +
+  ggplot(results_sum_pi, 
+         aes(x = factor(Year + 2016), 
+             y = Result, 
+             fill = Variable)) +
+  geom_boxplot(color = "black") + 
+  scale_fill_brewer(palette = "Set1", 
+                    direction = -1) +
+  scale_color_brewer(palette = "Set1", 
+                     direction = -1) +
   scale_y_continuous(labels = scales::comma) +
-  scale_x_continuous(expand = c(0, 0), breaks = seq(1, 10), labels = scales::comma) +  
-  labs(x = "Year", y = "Fat Stacks") +
+  scale_x_discrete(expand = c(0.05, 0.05), 
+                   breaks = c(2017, 2025, 2032)) +  
+  labs(x = "", 
+       y = "") +
+  theme_classic() +
+  facet_wrap(~Variable + Scenario)
+
+# Principal Component Analysis of parameters on biomass in final year.
+library(devtools)
+install_github("vqv/ggbiplot")
+library(ggbiplot)
+library(factoextra)
+
+# Wrangle parameter sets for association with corresponding runs.
+pars_pca = pars %>% 
+  select(7:length(pars)) %>% 
+  t() %>% 
+  as_tibble() %>% 
+  rownames_to_column("Run") 
+
+# Set up results w/o age structure w/ parameters for PCA.
+results_pca = results_sum %>% # This is reproductive biomass only (7+).
+  filter(Variable == "Numbers", 
+         Year == max(Year)) %>% # Get rid of non-stock results and reduce down to final year's results.
+  left_join(pars_pca, by = "Run") %>%  # Join parameters by run. Check that fact-char conversion sometime.
+  select_if(function(.) n_distinct(.) != 1) %>% # Filter out cols, especially parameters, without variance.
+  select(-Run, -SumNum) %>% # Filter out unhelpful cols.
+  mutate(Scenario = ifelse(Scenario == "w/ Aquaculture", # Mind the hard-coding for values.
+                           1,
+                           0))
+
+# Run PCA
+pca = prcomp(results_pca, scale = TRUE)
+
+# Plot PCs.
+plot_pc = 
+ggbiplot(pca, 
+         groups = factor(results_pca$Scenario), 
+         ellipse = TRUE,
+         alpha = 0.10) +
+  scale_color_brewer(palette = "Set1", 
+                     direction = -1) +
   theme_classic()
 
-print(plot_pi)
+# Tabulate PCA.
+# factoextra option.
+#factoextra::facto_summarize(pca, "var")
+# w/o factoextra: yoink importance.
+pca_imp <- data.frame(summary(pca)$importance)
+# ditto rotations (what are these someone help)
+pca_rot <- data.frame(summary(pca)$rotation)
 
+  # Save interesting plots.
+# Biomass.
+ggsave("plot_n_bin.png", 
+       plot_n_bin, 
+       dpi = 300, 
+       width = 4.5, 
+       height = 6.0)
+# Profit.
+ggsave("plot_pi.png", 
+       plot_pi, 
+       dpi = 300, 
+       width = 6.5, 
+       height = 6.5)
+# PCA.
+ggsave("plot_pc.png", 
+       plot_pc, 
+       dpi = 300, 
+       width = 6.5, 
+       height = 6.5)
+
+# Save tables, too.
+library(kableExtra)
+# Importances of PCs.
+kable(pca_imp, "html") %>%
+  cat(., file = "pca_imp.html")
+# Rotations of varaibles in PCs.
+kable(pca_rot, "html") %>%
+  cat(., file = "pca_rot.html")

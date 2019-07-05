@@ -99,19 +99,18 @@ pars["eta_limit", 1:6] = 0.1
 
 # Extend the dataframe for n runs.
 #  Define your n real quick. Put this into par.csv and be better about data management.
-n = 200
+n = 5000 # n = 10000 ~> 105.3833m runtime (2019/7/3).
 pars[7:(7 + n / 2)] = pars[1]
 pars[(7 + n / 2 + 1):(7 + n - 1)] = pars[4]
 
-# Fill the spaghetti runs with draws from appropriate distributions by variable. If you squint hard enough, this part is coherent.
-pars["dens_aq", 7:(7 + n - 1)] = runif(n, 
-                                       min = pars["dens_aq", 2], 
-                                       max = pars["dens_aq", 3])
+# Fill the spaghetti runs with draws from appropriate distributions by variable. If you squint hard enough, this part is great.
+
+for(i in 1:(nrow(pars) - 21)){pars[i, 7:(7 + n - 1)] = ifelse(is.na(runif(n, min = pars[i, 2], max = pars[i, 3])), 
+                                                             pars[i, 7:(7 + n - 1)],
+                                                             runif(n, min = pars[i, 2], max = pars[i, 3]))}
+
+pars = pars[ , colSums(is.na(pars)) == 0]
 
 pars["y_arb", 7:(7 + n - 1)] = runif(n, 
                                      min = 0, 
-                                     max = 5000)
-
-pars["m_juv_am", 7:(7 + n - 1)] = runif(n, 
-                                     min = 0.5, 
-                                     max = 0.9)
+                                     max = 15000)
