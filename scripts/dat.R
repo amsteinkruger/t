@@ -15,4 +15,7 @@ dat_aqm = read_csv("./data/dat_aqm.csv")
 
 # Fishery
 #  Biomass at age for 2017 from INAPESCA (2018).
-dat_b = read_csv("./data/dat_b.csv")
+#  From the thesis.
+#dat_b = read_csv("./data/dat_b.csv")
+#  From the stock assessment.
+fi_biom_dat = read_csv("./data/dat_bio.csv")

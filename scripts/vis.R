@@ -5,7 +5,7 @@ library(ggpubr)
 library(gridExtra)
 library(showtext)
 # For rayshading heatmap experiment.
-remotes::install_github("tylermorganwall/rayshader")
+#remotes::install_github("tylermorganwall/rayshader")
 library(rayshader)
 
 # Load Avenir from an open text file in the working directory.
@@ -16,8 +16,8 @@ showtext_auto()
 
 # Stock and catch of reproductive biomass in numbers and mass.
 results_sum =  results %>% 
-  na.omit() %>% # This is a Band-Aid to filter out any surprise NAs. Swap out for a better solution in set.R.
-  filter(Age > 7) %>% # This is a quick trick to filter out juveniles and subadults and keep reproductive biomass.
+  #na.omit() %>% # This is a Band-Aid to filter out any surprise NAs. Swap out for a better solution in set.R.
+  #filter(Age < 3) %>% # This is a quick trick to filter out juveniles and subadults and keep reproductive biomass.
   mutate(Biomass = fun_l_w(pars$default[4], fun_a_l(Age - 0.5, pars$default[1], pars$default[2], pars$default[3]),  pars$default[5]) / 1000 * Result) %>% 
   group_by(Year, 
            Variable, 
@@ -37,14 +37,15 @@ plot_n_lin =
              size = 0.95, 
              color = "#EF5645") +
   geom_line(aes(x = Year + 2016, 
-                y = SumBio * 0.33, 
+                y = SumBio, 
                 group = Run, 
                 color = Scenario), 
             size = 1.15, 
-            alpha = 0.01) + 
+            alpha = 0.10) + 
   scale_color_manual(values = c("#04859B", "#003660")) +
-  scale_y_continuous(expand = c(0, 0), 
-                     labels = scales::comma) + #limits = c(0, 20000), 
+  scale_y_continuous(expand = c(0, 0),
+                     limits = c(0, 20000),
+                     labels = scales::comma) + 
   scale_x_continuous(expand = c(0, 0.25)) +  
   labs(x = "Year", y = "Biomass (Tonnes)") + 
   theme_classic() + #base_family = "avenir"
@@ -59,13 +60,12 @@ plot_n_bin =
   ggplot(filter(results_sum, 
                 Variable == "Numbers"), 
          aes(x = Year + 2016, 
-             y = SumBio * 0.33)) +
+             y = SumBio)) +
   geom_bin2d(binwidth = c(1, 500)) +
   geom_hline(yintercept = 12136, 
              size = 0.95, 
              color = "#EF5645") +
-  scale_fill_distiller(palette = "Blues", 
-                       direction = 1) +
+  scale_fill_viridis_c(option = "E") +
   scale_y_continuous(expand = c(0, 0), 
                      limits = c(0, 20000),
                      labels = scales::comma) + #, 
@@ -77,21 +77,20 @@ plot_n_bin =
         panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "grey75"),
         #panel.background = element_rect(fill = "transparent", color = NA),
-        plot.background = element_rect(fill = "transparent", color = NA)) + #,
-        #legend.position = "none") +
+        plot.background = element_rect(fill = "transparent", color = NA),
+        legend.position = "none") +  
   facet_wrap(~Scenario)
 
 plot_n_hex = 
   ggplot(filter(results_sum, 
                 Variable == "Numbers"), 
          aes(x = Year, 
-             y = SumBio * 0.33)) +
+             y = SumBio)) +
   geom_hex(binwidth = c(1, 500)) +
   geom_hline(yintercept = 12136, 
              size = 0.95, 
              color = "#EF5645") +
-  scale_fill_distiller(palette = "Blues", 
-                       direction = 1) +
+  scale_fill_viridis_c(option = "E") +
   scale_y_continuous(expand = c(0, 0), 
                      limits = c(0, 20000),
                      labels = scales::comma) + 
@@ -103,8 +102,8 @@ plot_n_hex =
         panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "grey75"),
         #panel.background = element_rect(fill = "transparent", color = NA),
-        plot.background = element_rect(fill = "transparent", color = NA),
-        legend.position = "none") +
+        plot.background = element_rect(fill = "transparent", color = NA)#,
+        ) + # legend.position = "none"
   facet_wrap(~Scenario)
 
 # These lines run that neat spinning 3D viz thing you've seen on the internet. Not worthwhile.
@@ -116,6 +115,9 @@ plot_n_hex =
 results_sum_pi = results %>% 
   filter(Variable == "Aquaculture Profit" |
          Variable == "Poaching Profit")
+
+results_sum_pi = results %>% 
+  filter(Variable == "Effort" & Result < 500 | Variable == "Effort" & Result > 0 )
 
 # Profits for in both scenarios, sort of.
 plot_pi = 
@@ -138,7 +140,7 @@ plot_pi =
 
 # Principal Component Analysis of parameters on biomass in final year.
 library(devtools)
-install_github("vqv/ggbiplot")
+#install_github("vqv/ggbiplot")
 library(ggbiplot)
 library(factoextra)
 
@@ -171,7 +173,12 @@ ggbiplot(pca,
          alpha = 0.10) +
   scale_color_brewer(palette = "Set1", 
                      direction = -1) +
-  theme_classic()
+  theme_classic() +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "transparent", color = NA),
+        plot.background = element_rect(fill = "transparent", color = NA),
+        legend.position = "none")
 
 # Tabulate PCA.
 # factoextra option.
@@ -183,6 +190,11 @@ pca_rot <- data.frame(summary(pca)$rotation)
 
   # Save interesting plots.
 # Biomass.
+ggsave("plot_n_lin.png", 
+       plot_n_lin, 
+       dpi = 300, 
+       width = 4.5, 
+       height = 6.0)
 ggsave("plot_n_bin.png", 
        plot_n_bin, 
        dpi = 300, 

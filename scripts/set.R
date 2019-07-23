@@ -94,23 +94,29 @@ pars[4:6] = pars[1:3]
 # Define the aquaculture switch for two scenarios.
 pars["switch_aq", 1:3] = 0
 pars["switch_aq", 4:6] = 1
-pars["y_arb", 1:6] = 1500
-pars["eta_limit", 1:6] = 0.1
 
 # Extend the dataframe for n runs.
 #  Define your n real quick. Put this into par.csv and be better about data management.
-n = 5000 # n = 10000 ~> 105.3833m runtime (2019/7/3).
+n = 1000 # n = 10000 ~> 105.3833m runtime (2019/7/3).
 pars[7:(7 + n / 2)] = pars[1]
-pars[(7 + n / 2 + 1):(7 + n - 1)] = pars[4]
+pars[(7 + n / 2 + 1):(6 + n)] = pars[4]
 
 # Fill the spaghetti runs with draws from appropriate distributions by variable. If you squint hard enough, this part is great.
+pars["e_2017", 7:(n + 6)] = runif(n, 
+                                  min = pars["e_2017", 2], 
+                                  max = pars["e_2017", 3])
 
-for(i in 1:(nrow(pars) - 21)){pars[i, 7:(7 + n - 1)] = ifelse(is.na(runif(n, min = pars[i, 2], max = pars[i, 3])), 
-                                                             pars[i, 7:(7 + n - 1)],
-                                                             runif(n, min = pars[i, 2], max = pars[i, 3]))}
+pars["c_2017", 7:(n + 6)] = runif(n, 
+                                  min = pars["c_2017", 2], 
+                                  max = pars["c_2017", 3])
 
-pars = pars[ , colSums(is.na(pars)) == 0]
+pars["eta_limit", 7:(n + 6)] = runif(n, 
+                                     min = pars["eta_limit", 2], 
+                                     max = pars["eta_limit", 3])
 
-pars["y_arb", 7:(7 + n - 1)] = runif(n, 
-                                     min = 0, 
-                                     max = 15000)
+pars["y_arb", (7 + n / 2):(6 + n)] = runif(n / 2, 
+                                           min = 2500, 
+                                           max = 25000)
+
+# Band-Aid for NAs.
+#pars = pars[ , colSums(is.na(pars)) == 0]

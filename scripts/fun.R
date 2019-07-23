@@ -23,7 +23,7 @@ fun_p = function(q, g, a_ma, b_ma, c_ma){p = q * a_ma + g ^ b_ma + c_ma
                                          return(ifelse(p > 0, p, 0))}
 
 # Ages to natural mortalities in aquaculture.
-fun_a_aqmort = function(a, b1, b2, mmin){m = b1 * exp(b2 * a * 12) + mmin} # Turn that 1 into a parameter for the minimum mortality.
+fun_a_aqmort = function(a, b1, b2, mmin){m = b1 * exp(b2 * a * 12) + mmin}
 
 # Weights to optimal stocking densities in numbers.
 fun_ns = function(cage_size_aq, dens_aq, w){ns = (cage_size_aq * dens_aq) / w}
@@ -36,10 +36,13 @@ fun = function(par){
   # Run intermediate set-up.
   #  Fishery.
   #   Numbers in 2017.
-  n0 = dat_b %>%
-    mutate(n = 1000 * bprop_2017 * Biomasa / fun_l_w(a_lw, fun_a_l(Edad, linf_al, k_al, t0_al), b_lw)) %>% 
-    select(n)
-  n0 = n0[[1]]
+  #   This is code lifted from the current (20190703) stock assessment project.
+  n0 = fi_biom_dat$n
+  #   This is code from the thesis project.
+  #n0 = dat_b %>%
+  #  mutate(n = 1000 * bprop_2017 * Biomasa / fun_l_w(a_lw, fun_a_l(Edad, linf_al, k_al, t0_al), b_lw)) %>% 
+  #  select(n)
+  #n0 = n0[[1]]
   #   Catchability.
   # F = qENS > q = F / ENS; N is in numbers, F is in tonnes, and S is in proportions, so conversions are in order.
   q = 1000 * f_2017 / sum(n0 * fun_l_w(a_lw, fun_a_l(seq(a_0, a_i), linf_al, k_al, t0_al), b_lw) * fun_l_s(fun_a_l(seq(a_0, a_i), linf_al, k_al, t0_al), a_ls, b_ls, m_ls) * e_2017)
@@ -63,7 +66,7 @@ fun = function(par){
   y = matrix(nrow = t_i - t_0 + 1, ncol = a_i - a_0 + 1) # Build a matrix of catch at age.
   p_mat = matrix(nrow = t_i - t_0 + 1, ncol = a_i - a_0 + 1) # Build a matrix of prices at age.
   a_matrix = matrix(nrow = a_i - a_0 + 1, ncol = t_i - t_0 + 1) # Build a matrix of ages for reference in functions. Transposed.
-  rec = as.numeric(vector(length = a_i - a_0 + 1))  # Build a vector of recruitment at age.
+  rec = as.numeric(vector(length = t_i - t_0 + 1))  # Build a vector of recruitment at age.
   e = as.numeric(vector(length = t_i - t_0 + 1))  # Build a vector of effort. This is the variable for optimization in the economic component.
   r_fi = as.numeric(vector(length = t_i - t_0 + 1))  # Build a vector of total revenues.
   c_fi = as.numeric(vector(length = t_i - t_0 + 1))  # Build a vector of total costs.
@@ -115,7 +118,7 @@ fun = function(par){
                     a_ma, b_ma, c_ma) * loss
   r_fi[1] = sum(p_mat[1,] * fun_l_w(a_lw, fun_a_l(a_matrix[1, ], linf_al, k_al, t0_al), b_lw) * y[1, ] * by1 * by2 * 1000) # Constant for conversion to grams of buche.
   c_fi[1] = e[1] * c_2017 # Costs for first year.
-  rec[1] = fun_rec(sum(n[1, 2:(t_i - t_0 + 1)]), a_r, b_r, d_r) # Recruitment for first year.
+  rec[1] = fun_rec(sum(n[1, 2:(a_i - a_0 + 1)]), a_r, b_r, d_r) # Recruitment for first year. Start of column designation is hard-coded. 
   eta = (e[1] * eta_limit) / (r_fi[1] - c_fi[1]) # Parameter to restrict changes in effort.
   
   #  Aquaculture.
@@ -190,8 +193,10 @@ fun = function(par){
     b[i, 1] = (n[i, 1] - m[i, 1]) * fun_a_bmort(a_matrix[i, 1], b_b, a_mat_am, n0)
     
     # Effort for time i and all cohorts from past effort, revenues, costs, and a stiffness parameter.
-    #e[i] = ifelse(e[i - 1] + eta * (r_fi[i - 1] - c_fi[i - 1]) > 0, e[i - 1] + eta * (r_fi[i - 1] - c_fi[i - 1]) > 0, 0) # Bound positive.
-    e[i] = e[i - 1] + eta * (r_fi[i - 1] - c_fi[i - 1])
+    e[i] = ifelse(e[i - 1] + eta * (r_fi[i - 1] - c_fi[i - 1]) > 0, 
+                  e[i - 1] + eta * (r_fi[i - 1] - c_fi[i - 1]), 
+                  0) # Bound positive.
+    #e[i] = e[i - 1] + eta * (r_fi[i - 1] - c_fi[i - 1])
     
     #  Catches from effort and the rest.
     for(j in 2:(a_i - a_0 + 1)){
@@ -247,12 +252,12 @@ fun = function(par){
     r_aq[i] = (r0_aq[i] * h_aq[i] + rt0_aq[i] * hinv_aq[i])
     c_aq[i] = c0_aq[i] * hinv_aq[i] + l_z * nstart * h_aq[i]
     
-    # Prices in matrix. Use this one. Think harder about the lag problem.
+    # Prices in matrix. 
     for(j in 1:(a_i - a_0 + 1)){
       p_mat[i, j] = fun_p(sum(fun_l_w(a_lw, fun_a_l(a_matrix[i, ], linf_al, k_al, t0_al), b_lw) * y[i, ] * by1 * by2, # Fishery production.
-                              switch_aq * (y0_aq[i] * h_aq[i] + nt0_aq[i] * w0_aq[i] * by1 * by2 * hinv_aq[i])) # Aquaculture production.
+                              (y0_aq[i] * h_aq[i])) # Aquaculture production. #  + nt0_aq[i] * w0_aq[i] * by1 * by2 * hinv_aq[i] #switch_aq * 
                           / 1000, # Conversion to tonnes.
-                          fun_l_w(a_lw, fun_a_l(a_matrix[i, j], linf_al, k_al, t0_al), b_lw) * by1 * by2 * 1000, 
+                          fun_l_w(a_lw, fun_a_l(a_matrix[i, j], linf_al, k_al, t0_al), b_lw) * by1 * by2, 
                           a_ma, 
                           b_ma, 
                           c_ma) * loss
@@ -273,6 +278,12 @@ fun = function(par){
   #  Catches.
   tidyy = melt(y)
   tidyy$var = "Catches"
+  #  Recruitment.
+  tidyrec = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
+  tidyrec$Var1 = seq(1, t_i - t_0 + 1)
+  tidyrec$Var2 = NA
+  tidyrec$value = rec
+  tidyrec$var = "Recruitment"
   #  Prices. Using prices for a 13y/o fish for easy reference. It's representativish.
   tidyp = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
   tidyp$Var1 = seq(1, t_i - t_0 + 1)
@@ -322,7 +333,7 @@ fun = function(par){
   tidypi_aq$value = r_aq - c_aq
   tidypi_aq$var = "Aquaculture Profit"
   #  Everything!
-  tidy = bind_rows(tidyn, tidyy, tidyp, tidye, tidyr_fi, tidyc_fi, tidypi_fi, tidyr_aq, tidyc_aq, tidypi_aq)
+  tidy = bind_rows(tidyn, tidyy, tidyrec, tidyp, tidye, tidyr_fi, tidyc_fi, tidypi_fi, tidyr_aq, tidyc_aq, tidypi_aq)
   tidy$group = ifelse(tidy$Var2 < a_mat_am, "Machorro", ifelse(tidy$Var2 < a_old_am, "Pre-Adulto", "Adulto"))
   tidy = rename(tidy, Year = Var1, Age = Var2, Result = value, Variable = var, Group = group)
   
