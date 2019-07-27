@@ -102,6 +102,7 @@ pars[7:(7 + n / 2)] = pars[1]
 pars[(7 + n / 2 + 1):(6 + n)] = pars[4]
 
 # Fill the spaghetti runs with draws from appropriate distributions by variable. If you squint hard enough, this part is great.
+#  Fishery.
 pars["e_2017", 7:(n + 6)] = runif(n, 
                                   min = pars["e_2017", 2], 
                                   max = pars["e_2017", 3])
@@ -117,6 +118,31 @@ pars["eta_limit", 7:(n + 6)] = runif(n,
 pars["y_arb", (7 + n / 2):(6 + n)] = runif(n / 2, 
                                            min = 2500, 
                                            max = 25000)
+
+#  Aquaculture.
+pars["sale_size_aq", 7:(n + 6)] = runif(n, 
+                                        min = pars["sale_size_aq", 2], 
+                                        max = pars["sale_size_aq", 3])
+
+pars["cage_size_aq", 7:(n + 6)] = runif(n, 
+                                        min = pars["cage_size_aq", 2], 
+                                        max = pars["cage_size_aq", 3])
+
+pars["by1", 7:(n + 6)] = runif(n, 
+                                        min = pars["by1", 2], 
+                                        max = pars["by1", 3])
+
+pars["by2", 7:(n + 6)] = runif(n, 
+                               min = pars["by2", 2], 
+                               max = pars["by2", 3])
+
+#pars["mmin_aq", 7:(n + 6)] = runif(n, 
+#                                   min = pars["mmin_aq", 3], 
+#                                   max = pars["mmin_aq", 2])
+
+#pars["disc_aq", 7:(n + 6)] = runif(n, 
+#                                   min = pars["disc_aq", 3], 
+#                                   max = pars["disc_aq", 2])
 
 # Band-Aid for NAs.
 #pars = pars[ , colSums(is.na(pars)) == 0]

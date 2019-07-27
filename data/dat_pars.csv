@@ -6,7 +6,7 @@ a ,a_lw,Length-Weight,0.000005,0.000004128,0.000004128,-,Aquaculture and Fishery
 b,b_lw,Length-Weight,3.0635,3.24674,3.24674,-,Aquaculture and Fishery,INAPESCA (2018),,,1,1
 Stocking Denisty,dens_aq,Numbers at Age,20,10,30,(kg/cub.m.),Aquaculture,"innovasea, other aquaculture folks?, HSWRI pers. comm.",,,0,0
 Cage Size ,cage_size_aq,Numbers at Age,8000,8000,11000,(cubic meters),Aquaculture,InnovaSea AquaPod,,InnovaSea Evolution,1,0
-First Saleable Size ,sale_size_aq,Numbers at Age,2,2,2,(kg),Aquaculture,,,,1,1
+First Saleable Size ,sale_size_aq,Numbers at Age,2,1,3,(kg),Aquaculture,,,,1,1
 Buche yield ,by1,Buche Weights,0.0161,0.0137,0.0161,Proportion,Aquaculture and Fishery,UABC & PhD (INAPESCA wild),"Goto et al, 2019",,0,1
 Buche Dry weight yield,by2,Buche Weights,0.31,0.31,0.37,Proportion,Aquaculture and Fishery,UABC & PhD (INAPESCA wild),,"Goto et al, 2019",1,0
 Fish Round Yield,f_z,Wet Weight Revenues,0.7,0.7,0.7,Proportion,Aquaculture,,,,1,1

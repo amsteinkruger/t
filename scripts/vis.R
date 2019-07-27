@@ -81,43 +81,15 @@ plot_n_bin =
         legend.position = "none") +  
   facet_wrap(~Scenario)
 
-plot_n_hex = 
-  ggplot(filter(results_sum, 
-                Variable == "Numbers"), 
-         aes(x = Year, 
-             y = SumBio)) +
-  geom_hex(binwidth = c(1, 500)) +
-  geom_hline(yintercept = 12136, 
-             size = 0.95, 
-             color = "#EF5645") +
-  scale_fill_viridis_c(option = "E") +
-  scale_y_continuous(expand = c(0, 0), 
-                     limits = c(0, 20000),
-                     labels = scales::comma) + 
-  scale_x_continuous(expand = c(0, 0.25)) +  
-  labs(x = "Year", 
-       y = "Biomass (Tonnes)") + 
-  theme_classic() + #base_family = "avenir"
-  theme(panel.grid.major = element_blank(), 
-        panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "grey75"),
-        #panel.background = element_rect(fill = "transparent", color = NA),
-        plot.background = element_rect(fill = "transparent", color = NA)#,
-        ) + # legend.position = "none"
-  facet_wrap(~Scenario)
-
 # These lines run that neat spinning 3D viz thing you've seen on the internet. Not worthwhile.
 #plot_gg(plot_n_ray, width = 4, height = 4, scale = 300, multicore = TRUE)
 #render_snapshot("plot_n_ray.png")
 #render_movie(filename = plot_n_ray, type = "oscillate")
 
-# Data wrangling for a cleaner dataframe.
+# Data wrangling for profit. This generalizes well to revenues and costs.
 results_sum_pi = results %>% 
   filter(Variable == "Aquaculture Profit" |
          Variable == "Poaching Profit")
-
-results_sum_pi = results %>% 
-  filter(Variable == "Effort" & Result < 500 | Variable == "Effort" & Result > 0 )
 
 # Profits for in both scenarios, sort of.
 plot_pi = 
@@ -139,7 +111,8 @@ plot_pi =
   facet_wrap(~Variable + Scenario)
 
 # Principal Component Analysis of parameters on biomass in final year.
-library(devtools)
+#  Watch out for plyr-dplyr conflict in loading these libraries - fix wrt key.Rmd (1).
+#library(devtools)
 #install_github("vqv/ggbiplot")
 library(ggbiplot)
 library(factoextra)
@@ -156,11 +129,13 @@ results_pca = results_sum %>% # This is reproductive biomass only (7+).
   filter(Variable == "Numbers", 
          Year == max(Year)) %>% # Get rid of non-stock results and reduce down to final year's results.
   left_join(pars_pca, by = "Run") %>%  # Join parameters by run. Check that fact-char conversion sometime.
-  select_if(function(.) n_distinct(.) != 1) %>% # Filter out cols, especially parameters, without variance.
-  select(-Run, -SumNum) %>% # Filter out unhelpful cols.
+  #select_if(function(.) n_distinct(.) != 1) %>% # Filter out cols, especially parameters, without variance.
+  #select(-Run, -SumNum) %>% # Filter out unhelpful cols.
   mutate(Scenario = ifelse(Scenario == "w/ Aquaculture", # Mind the hard-coding for values.
                            1,
-                           0))
+                           0)) %>% 
+  select(Scenario, SumBio, e_2017, c_2017, eta_limit, sale_size_aq, cage_size_aq, by1, by2) %>% 
+  na.omit()
 
 # Run PCA
 pca = prcomp(results_pca, scale = TRUE)
