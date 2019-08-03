@@ -13,7 +13,7 @@ fun_a_nmort = function(a, a_mat, a_old, m_juv, m_mat, m_old){s = ifelse(a < a_ma
 fun_l_s = function(l, a, b, m){s = a / (1 + exp(b - m * l))}
 
 # Ages to bycatch mortalities.
-fun_a_bmort = function(a, b_b, a_mat, n0){b = ifelse(a < a_mat, 0.20, 0)}#(b_b / round(a_mat)) / n0[round(a_mat)], 0)}
+fun_a_bmort = function(a, b_b, a_mat, n0){b = ifelse(a < a_mat, 0.20, 0)}#(b_b / round(a_mat)) / n0[round(a_mat)], 0)} The code in use is a Band-Aid. Bycatch = 0.2 for a < a_mat.
 
 # Numbers at age to recruitment - Shepherd Recruitment Function.
 fun_rec = function(n, a_rec, b_rec, d_rec){n0 = (a_rec * n) / ((1 + n / b_rec) ^ d_rec)}
@@ -690,38 +690,36 @@ fun = function(par){
   r_fi = as.numeric(vector(length = t_i - t_0 + 1))  # Build a vector of total revenues.
   c_fi = as.numeric(vector(length = t_i - t_0 + 1))  # Build a vector of total costs.
   #  Aquaculture.
-  a0_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  a1_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  h_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  hinv_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  l0_aq = as.numeric(vector(length = t_i - t_0 + 1)) #x
-  w0_aq = as.numeric(vector(length = t_i - t_0 + 1)) #x
-  nm0_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  ns0_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  nt0_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  n0_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  rt0_aq = as.numeric(vector(length = t_i - t_0 + 1)) #x
-  y0_aq = as.numeric(vector(length = t_i - t_0 + 1)) #x
-  p0_aq = as.numeric(vector(length = t_i - t_0 + 1)) 
-  rmaw0_aq = as.numeric(vector(length = t_i - t_0 + 1))   
-  rround0_aq = as.numeric(vector(length = t_i - t_0 + 1)) #x
-  r0_aq = as.numeric(vector(length = t_i - t_0 + 1)) 
-  c0_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  l1_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  w1_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  nm1_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  ns1_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  nt1_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  n1_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  rt1_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  y1_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  p1_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  rmaw1_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  rround1_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  r1_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  c1_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  r_aq = as.numeric(vector(length = t_i - t_0 + 1))
-  c_aq = as.numeric(vector(length = t_i - t_0 + 1))
+  #   Current.
+  a0_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages) # Ages of stock.
+  l0_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages) # Lengths.
+  w0_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages) # Weights.
+  nm0_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages)# Mortalities.
+  ns0_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages)# Survivors.
+  nt0_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages)# Trimming.
+  n0_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages) # Leftovers.
+  rt0_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages)# Revenues, trimming.
+  p0_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages) # Prices, maw.
+  r0_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages) # Revenues, maw.
+  c0_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages) # Costs.
+  #   Led.
+  a1_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages)
+  l1_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages)
+  w1_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages)
+  nm1_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages)
+  ns1_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages)
+  nt1_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages)
+  n1_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages)
+  rt1_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages)
+  p1_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages)
+  r1_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages)
+  c1_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages)
+  #   Outputs.
+  h_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages)    # Decision.
+  hinv_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages) # Decision, inverse.
+  r_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages)    # Revenues.
+  c_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages)    # Costs.
+  y_aq = matrix(nrow = t_i - t_0 + 1, ncol = c_cages)    # Production, wet tonnes.
   
   # Add initial values.
   #  Fishery.
@@ -742,44 +740,48 @@ fun = function(par){
   
   #  Aquaculture.
   #   Current.
-  a0_aq[1] = a_0
-  l0_aq[1] = fun_a_l(a0_aq[1], linf_al_aq, k_al_aq, t0_al_aq)
-  w0_aq[1] = fun_l_w(a_lw, l0_aq[1], b_lw)
-  nm0_aq[1] = nstart * (0.01 * fun_a_aqmort(a0_aq[1], b1_mort_aq, b2_mort_aq, mmin_aq))
-  ns0_aq[1] = nstart * (1 - 0.01 * fun_a_aqmort(a0_aq[1], b1_mort_aq, b2_mort_aq, mmin_aq)) # Note leading mortality.
-  nt0_aq[1] = ifelse(ns0_aq[1] - fun_ns(cage_size_aq, dens_aq, w0_aq[1]) > 0, 
-                     ns0_aq[1] - fun_ns(cage_size_aq, dens_aq, w0_aq[1]), 
-                     0)
-  n0_aq[1] = nstart - nm0_aq[1] - nt0_aq[1]
-  p0_aq[1] = p_mat[1, round(a0_aq[1] + 0.5)] * 1000 # Conversion for price in grams to revenue from kilograms of dry maw.
-  rt0_aq[1] = nt0_aq[1] * w0_aq[1] * by1 * by2 * p0_aq[1] * switch_aq + nt0_aq[1] * w0_aq[1] * f_z * g_z # Trimming revenues for maw and wet product. Fix placeholder names.
-  r0_aq[1] = w0_aq[1] * n0_aq[1] * by1 * by2 * n0_aq[1] * p0_aq[1] * switch_aq + n0_aq[1] * w0_aq[1] * f_z * g_z # Harvest revenues for maw and wet product. Fix placeholder names.
-  c0_aq[1] = n0_aq[1] * w0_aq[1] * h_z * j_z * 365 # Fix placeholder variable names.
+  a0_aq[1,] = round(runif(c_cages, 0, ceiling(a_sale))) # Ages set from random uniform distribution.
+  l0_aq[1,] = fun_a_l(a0_aq[1,], linf_al_aq, k_al_aq, t0_al_aq)
+  w0_aq[1,] = fun_l_w(a_lw, l0_aq[1,], b_lw)
+  nm0_aq[1,] = nstart * (0.01 * fun_a_aqmort(a0_aq[1,], b1_mort_aq, b2_mort_aq, mmin_aq))
+  ns0_aq[1,] = nstart * (1 - 0.01 * fun_a_aqmort(a0_aq[1,], b1_mort_aq, b2_mort_aq, mmin_aq)) # Note leading mortality.
+  nt0_aq[1,] = ifelse(ns0_aq[1,] - fun_ns(cage_size_aq, dens_aq, w0_aq[1,]) > 0, 
+                      ns0_aq[1,] - fun_ns(cage_size_aq, dens_aq, w0_aq[1,]), 
+                      0)
+  n0_aq[1,] = nstart - nm0_aq[1,] - nt0_aq[1,]
+  #for(j in 1:c_cages){p0_aq[1, j] = p_mat[1, a0_aq[1, j]] * 1000} # Looping to enable position references in the price matrix.
+  p0_aq[1,] = rep(10, c_cages)
+  rt0_aq[1,] = nt0_aq[1,] * w0_aq[1,] * by1 * by2 * p0_aq[1,] * switch_aq + nt0_aq[1,] * w0_aq[1,] * f_z * g_z # Trimming revenues for maw and wet product. Fix placeholder names.
+  r0_aq[1,] = w0_aq[1,] * n0_aq[1,] * by1 * by2 * n0_aq[1,] * p0_aq[1,] * switch_aq + n0_aq[1,] * w0_aq[1,] * f_z * g_z # Harvest revenues for maw and wet product. Fix placeholder names.
+  c0_aq[1,] = n0_aq[1,] * w0_aq[1,] * h_z * j_z * 365 # Fix placeholder variable names.
   
   #   Led.
-  a1_aq[1] = a0_aq[1] + 1
-  l1_aq[1] = fun_a_l(a1_aq[1], linf_al_aq, k_al_aq, t0_al_aq)
-  w1_aq[1] = fun_l_w(a_lw, l1_aq[1], b_lw)
+  a1_aq[1,] = a0_aq[1,] + 1
+  l1_aq[1,] = fun_a_l(a1_aq[1,], linf_al_aq, k_al_aq, t0_al_aq)
+  w1_aq[1,] = fun_l_w(a_lw, l1_aq[1,], b_lw)
   # Since this implementation of mortality/survival and trimming require iteration to work, the corresponding lead variables are spaghetti.
-  nm1_aq[1] = (nstart * (1 - 0.01 * fun_a_aqmort(a1_aq[1] - 1, b1_mort_aq, b2_mort_aq, mmin_aq)) - 
-                 ifelse(nstart * (1 - 0.01 * fun_a_aqmort(a1_aq[1] - 1, b1_mort_aq, b2_mort_aq, mmin_aq) - fun_ns(cage_size_aq, dens_aq, w1_aq[1])) > 0, 
-                        nstart * (1 - 0.01 * fun_a_aqmort(a1_aq[1] - 1, b1_mort_aq, b2_mort_aq, mmin_aq) - fun_ns(cage_size_aq, dens_aq, w1_aq[1])), 
-                        0)) * (0.01 * fun_a_aqmort(a1_aq[1], b1_mort_aq, b2_mort_aq, mmin_aq))
-  ns1_aq[1] = (nstart * (1 - 0.01 * fun_a_aqmort(a1_aq[1] - 1, b1_mort_aq, b2_mort_aq, mmin_aq)) - 
-                 ifelse(nstart * (1 - 0.01 * fun_a_aqmort(a1_aq[1] - 1, b1_mort_aq, b2_mort_aq, mmin_aq) - fun_ns(cage_size_aq, dens_aq, w1_aq[1])) > 0, 
-                        nstart * (1 - 0.01 * fun_a_aqmort(a1_aq[1] - 1, b1_mort_aq, b2_mort_aq, mmin_aq) - fun_ns(cage_size_aq, dens_aq, w1_aq[1])), 
-                        0)) * (1 - 0.01 * fun_a_aqmort(a1_aq[1], b1_mort_aq, b2_mort_aq, mmin_aq))
-  nt1_aq[1] = ifelse(ns1_aq[1] - fun_ns(cage_size_aq, dens_aq, w1_aq[1]), ns1_aq[1] - fun_ns(cage_size_aq, dens_aq, w1_aq[1]), 0)
-  n1_aq[1] = fun_ns(cage_size_aq, dens_aq, w1_aq[1])
-  p1_aq[1] = p_mat[1, round(a1_aq[1] + 0.5)] * 1000 # Conversion for price in grams to revenue from kilograms of dry maw.
-  rt1_aq[1] = nt1_aq[1] * w1_aq[1] * by1 * by2 * p1_aq[1] * switch_aq + nt1_aq[1] * w1_aq[1] * f_z * g_z # Trimming revenues for maw and wet product. Fix placeholder names.
-  r1_aq[1] = w1_aq[1] * n1_aq[1] * by1 * by2 * n1_aq[1] * p1_aq[1] * switch_aq + n1_aq[1] * w1_aq[1] * f_z * g_z # Harvest revenues for maw and wet product. Fix placeholder names.
-  c1_aq[1] = n1_aq[1] * w1_aq[1] * h_z * j_z * 365 # Fix placeholder variable names.
+  nm1_aq[1,] = (nstart * (1 - 0.01 * fun_a_aqmort(a1_aq[1,] - 1, b1_mort_aq, b2_mort_aq, mmin_aq)) - 
+                 ifelse(nstart * (1 - 0.01 * fun_a_aqmort(a1_aq[1,] - 1, b1_mort_aq, b2_mort_aq, mmin_aq) - fun_ns(cage_size_aq, dens_aq, w1_aq[1,])) > 0, 
+                        nstart * (1 - 0.01 * fun_a_aqmort(a1_aq[1,] - 1, b1_mort_aq, b2_mort_aq, mmin_aq) - fun_ns(cage_size_aq, dens_aq, w1_aq[1,])), 
+                        0)) * (0.01 * fun_a_aqmort(a1_aq[1,], b1_mort_aq, b2_mort_aq, mmin_aq))
+  ns1_aq[1,] = (nstart * (1 - 0.01 * fun_a_aqmort(a1_aq[1,] - 1, b1_mort_aq, b2_mort_aq, mmin_aq)) - 
+                 ifelse(nstart * (1 - 0.01 * fun_a_aqmort(a1_aq[1,] - 1, b1_mort_aq, b2_mort_aq, mmin_aq) - fun_ns(cage_size_aq, dens_aq, w1_aq[1,])) > 0, 
+                        nstart * (1 - 0.01 * fun_a_aqmort(a1_aq[1,] - 1, b1_mort_aq, b2_mort_aq, mmin_aq) - fun_ns(cage_size_aq, dens_aq, w1_aq[1,])), 
+                        0)) * (1 - 0.01 * fun_a_aqmort(a1_aq[1,], b1_mort_aq, b2_mort_aq, mmin_aq))
+  nt1_aq[1,] = ifelse(ns1_aq[1,] - fun_ns(cage_size_aq, dens_aq, w1_aq[1,]), ns1_aq[1,] - fun_ns(cage_size_aq, dens_aq, w1_aq[1,]), 0)
+  n1_aq[1,] = fun_ns(cage_size_aq, dens_aq, w1_aq[1,])
+  p0_aq[1,] = rep(10, c_cages)
+  #for(j in 1:c_cages){p0_aq[1, j] = p_mat[1, a0_aq[1, j]] * 1000} # Looping to enable position references in the price matrix.
+  rt1_aq[1,] = nt1_aq[1,] * w1_aq[1,] * by1 * by2 * p1_aq[1,] * switch_aq + nt1_aq[1,] * w1_aq[1,] * f_z * g_z # Trimming revenues for maw and wet product. Fix placeholder names.
+  r1_aq[1,] = w1_aq[1,] * n1_aq[1,] * by1 * by2 * n1_aq[1,] * p1_aq[1,] * switch_aq + n1_aq[1,] * w1_aq[1,] * f_z * g_z # Harvest revenues for maw and wet product. Fix placeholder names.
+  c1_aq[1,] = n1_aq[1,] * w1_aq[1,] * h_z * j_z * 365 # Fix placeholder variable names.
   
-  h_aq[1] = 0
-  hinv_aq[1] = 1
-  r_aq[1] = r0_aq[1] * h_aq[1] + rt0_aq[1] * hinv_aq[1]
-  c_aq[1] = c0_aq[1] * hinv_aq[1] + l_z * nstart * h_aq[1] + k_z
+  h_aq[1,] = 0
+  hinv_aq[1,] = 1
+  
+  r_aq[1,] = r0_aq[1,] * h_aq[1,] + rt0_aq[1,] * hinv_aq[1,]
+  c_aq[1,] = c0_aq[1,] * hinv_aq[1,] + l_z * nstart * h_aq[1,] + k_z
+  y_aq[1,] = n0_aq[1,] * w0_aq[1,] * h_aq[1,] + nt0_aq[1,] * w0_aq[1,] * hinv_aq[1,]
   
   # Add iterations.
   for(i in 2:(t_i - t_0 + 1)){
@@ -827,45 +829,45 @@ fun = function(par){
     rec[i] = fun_rec(sum(n[i, 2:(a_i - a_0 + 1)]), a_r, b_r, d_r)
     
     # Aquaculture.
-    a0_aq[i] = a0_aq[i - 1] * hinv_aq[i - 1] + 1
-    a1_aq[i] = a0_aq[i] + 1
+    a0_aq[i,] = a0_aq[i - 1,] * hinv_aq[i - 1,] + 1
+    l0_aq[i,] = fun_a_l(a0_aq[i,], linf_al_aq, k_al_aq, t0_al_aq)
+    w0_aq[i,] = fun_l_w(a_lw, l0_aq[i,], b_lw)
+    nm0_aq[i,] = (nstart * h_aq[i - 1,] + n0_aq[i - 1,] * hinv_aq[i - 1,]) * (0.01 * fun_a_aqmort(a0_aq[i,], b1_mort_aq, b2_mort_aq, mmin_aq)) # Note leading mortality.
+    ns0_aq[i,] = (nstart * h_aq[i - 1,] + n0_aq[i - 1,] * hinv_aq[i - 1,]) * (1 - 0.01 * fun_a_aqmort(a0_aq[i,], b1_mort_aq, b2_mort_aq, mmin_aq)) # Note leading mortality.
+    nt0_aq[i,] = ifelse(ns0_aq[i,] - fun_ns(cage_size_aq, dens_aq, w0_aq[i,]) > 0, ns0_aq[i,] - fun_ns(cage_size_aq, dens_aq, w0_aq[i,]), 0)
+    n0_aq[i,] = (nstart * h_aq[i - 1,] + n0_aq[i - 1,] * hinv_aq[i - 1,]) - nm0_aq[i,] - nt0_aq[i,]
+    p0_aq[i,] = p_mat[i - 1, a0_aq[i,]] * 1000 # Conversion for price in grams to revenue from kilograms of dry maw.
+    rt0_aq[i,] = nt0_aq[i,] * w0_aq[i,] * by1 * by2 * p0_aq[i,] * switch_aq + nt0_aq[i,] * w0_aq[i,] * f_z * g_z # Trimming revenues.
+    r0_aq[i,] = n0_aq[i,] * w0_aq[i,] * by1 * by2 * p0_aq[i,] * switch_aq + n0_aq[i,] * w0_aq[i,] * f_z * g_z # Harvest revenues.
+    c0_aq[i,] = n0_aq[i,] * w0_aq[i,] * h_z * j_z * 365 # Fix placeholder variable names.
     
-    l0_aq[i] = fun_a_l(a0_aq[i], linf_al_aq, k_al_aq, t0_al_aq)
-    w0_aq[i] = fun_l_w(a_lw, l0_aq[i], b_lw)
-    nm0_aq[i] = (nstart * h_aq[i - 1] + n0_aq[i - 1] * hinv_aq[i - 1]) * (0.01 * fun_a_aqmort(a0_aq[i], b1_mort_aq, b2_mort_aq, mmin_aq)) # Note leading mortality.
-    ns0_aq[i] = (nstart * h_aq[i - 1] + n0_aq[i - 1] * hinv_aq[i - 1]) * (1 - 0.01 * fun_a_aqmort(a0_aq[i], b1_mort_aq, b2_mort_aq, mmin_aq)) # Note leading mortality.
-    nt0_aq[i] = ifelse(ns0_aq[i] - fun_ns(cage_size_aq, dens_aq, w0_aq[i]) > 0, ns0_aq[i] - fun_ns(cage_size_aq, dens_aq, w0_aq[i]), 0)
-    n0_aq[i] = (nstart * h_aq[i - 1] + n0_aq[i - 1] * hinv_aq[i - 1]) - nm0_aq[i] - nt0_aq[i]
-    p0_aq[i] = p_mat[i - 1, a0_aq[i]] * 1000 # Conversion for price in grams to revenue from kilograms of dry maw.
-    rt0_aq[i] = nt0_aq[i] * w0_aq[i] * by1 * by2 * p0_aq[i] * switch_aq + nt0_aq[i] * w0_aq[i] * f_z * g_z # Trimming revenues.
-    r0_aq[i] = n0_aq[i] * w0_aq[i] * by1 * by2 * p0_aq[i] * switch_aq + n0_aq[i] * w0_aq[i] * f_z * g_z # Harvest revenues.
-    c0_aq[i] = n0_aq[1] * w0_aq[1] * h_z * j_z * 365 # Fix placeholder variable names.
+    a1_aq[i,] = a0_aq[i,] + 1
+    l1_aq[i,] = fun_a_l(a1_aq[i,], linf_al_aq, k_al_aq, t0_al_aq)
+    w1_aq[i,] = fun_l_w(a_lw, l1_aq[i,], b_lw)
+    nm1_aq[i,] = (nstart * h_aq[i - 1,] + n1_aq[i - 1,] * hinv_aq[i - 1,]) * (0.01 * fun_a_aqmort(a1_aq[i,], b1_mort_aq, b2_mort_aq, mmin_aq)) # Note leading mortality.
+    ns1_aq[i,] = (nstart * h_aq[i - 1,] + n1_aq[i - 1,] * hinv_aq[i - 1,]) * (1 - 0.01 * fun_a_aqmort(a1_aq[i,], b1_mort_aq, b2_mort_aq, mmin_aq)) # Note leading mortality.
+    nt1_aq[i,] = ifelse(ns1_aq[i,] - fun_ns(cage_size_aq, dens_aq, w1_aq[i,]) > 0, ns1_aq[i,] - fun_ns(cage_size_aq, dens_aq, w1_aq[i,]), 0)
+    n1_aq[i,] = (nstart * h_aq[i - 1,] + n1_aq[i - 1,] * hinv_aq[i - 1,]) - nm1_aq[i,] - nt1_aq[i,]
+    p1_aq[i,] = p_mat[i - 1, a1_aq[i,]] * 1000 # Conversion for price in grams to revenue from kilograms of dry maw.
+    rt1_aq[i,] = nt1_aq[i,] * w1_aq[i,] * by1 * by2 * p1_aq[i,] * switch_aq + nt1_aq[i,] * w1_aq[i,] * f_z * g_z # Trimming revenues.
+    r1_aq[i,] = n1_aq[i,] * w1_aq[i,] * by1 * by2 * p1_aq[i,] * switch_aq + n1_aq[i,] * w1_aq[i,] * f_z * g_z # Harvest revenues.
+    c1_aq[i,] = n1_aq[i,] * w1_aq[i,] * h_z * j_z * 365 # Fix placeholder variable names.
     
-    l1_aq[i] = fun_a_l(a1_aq[i], linf_al_aq, k_al_aq, t0_al_aq)
-    w1_aq[i] = fun_l_w(a_lw, l1_aq[i], b_lw)
-    nm1_aq[i] = (nstart * h_aq[i - 1] + n1_aq[i - 1] * hinv_aq[i - 1]) * (0.01 * fun_a_aqmort(a1_aq[i], b1_mort_aq, b2_mort_aq, mmin_aq)) # Note leading mortality.
-    ns1_aq[i] = (nstart * h_aq[i - 1] + n1_aq[i - 1] * hinv_aq[i - 1]) * (1 - 0.01 * fun_a_aqmort(a1_aq[i], b1_mort_aq, b2_mort_aq, mmin_aq)) # Note leading mortality.
-    nt1_aq[i] = ifelse(ns1_aq[i] - fun_ns(cage_size_aq, dens_aq, w1_aq[i]) > 0, ns1_aq[i] - fun_ns(cage_size_aq, dens_aq, w1_aq[i]), 0)
-    n1_aq[i] = (nstart * h_aq[i - 1] + n1_aq[i - 1] * hinv_aq[i - 1]) - nm1_aq[i] - nt1_aq[i]
-    p1_aq[i] = p_mat[i - 1, a1_aq[i]] * 1000 # Conversion for price in grams to revenue from kilograms of dry maw.
-    rt1_aq[i] = nt1_aq[i] * w1_aq[i] * by1 * by2 * p1_aq[i] * switch_aq + nt1_aq[i] * w1_aq[i] * f_z * g_z # Trimming revenues.
-    r1_aq[i] = n1_aq[i] * w1_aq[i] * by1 * by2 * p1_aq[i] * switch_aq + n1_aq[i] * w1_aq[i] * f_z * g_z # Harvest revenues.
-    c1_aq[i] = n1_aq[1] * w1_aq[1] * h_z * j_z * 365 # Fix placeholder variable names.
-    
-    h_aq[i] = ifelse(a0_aq[i] > ceiling(a_sale), # Wrapper for minimum sale age.
-                     ifelse(r0_aq[i] - l_z * nstart > rt0_aq[i] - c0_aq[i] + disc_aq * (r1_aq[i] - l_z * nstart), # Faustmann.
+    h_aq[i,] = ifelse(a0_aq[i,] > ceiling(a_sale), # Wrapper for minimum sale age.
+                     ifelse(r0_aq[i,] - l_z * nstart > rt0_aq[i,] - c0_aq[i,] + disc_aq * (r1_aq[i,] - l_z * nstart), # Faustmann.
                             1, 
                             0), 
                      0)
-    hinv_aq[i] = (h_aq[i] - 1) ^ 2
+    hinv_aq[i,] = (h_aq[i,] - 1) ^ 2
     
-    r_aq[i] = r0_aq[i] * h_aq[i] + rt0_aq[i] * hinv_aq[i]
-    c_aq[i] = c0_aq[i] * hinv_aq[i] + l_z * nstart * h_aq[i] + k_z
+    y_aq[i,] = n0_aq[i,] * w0_aq[i,] * h_aq[i,] + nt0_aq[i,] * w0_aq[i,] * hinv_aq[i,]
+    r_aq[i,] = r0_aq[i,] * h_aq[i,] + rt0_aq[i,] * hinv_aq[i,]
+    c_aq[i,] = c0_aq[i,] * hinv_aq[i,] + l_z * nstart * h_aq[i,] + k_z
     
     # Prices in matrix. 
     for(j in 1:(a_i - a_0 + 1)){
       p_mat[i, j] = fun_p(sum(fun_l_w(a_lw, fun_a_l(a_matrix[i, ], linf_al, k_al, t0_al), b_lw) * y[i, ] * by1 * by2, # Fishery production.
-                              (n0_aq[i] * w0_aq[i] * by1 * by2 * h_aq[i] + nt0_aq[i] * w0_aq[i] * by1 * by2 * hinv_aq[i]) * switch_aq) # Aquaculture production. 
+                              (n0_aq[i,] * w0_aq[i,] * by1 * by2 * h_aq[i,] + nt0_aq[i,] * w0_aq[i,] * by1 * by2 * hinv_aq[i,]) * switch_aq) # Aquaculture production. 
                           / 1000, # Conversion to tonnes.
                           fun_l_w(a_lw, fun_a_l(a_matrix[i, j], linf_al, k_al, t0_al), b_lw) * by1 * by2, 
                           a_ma, 
@@ -906,44 +908,26 @@ fun = function(par){
   tidye$Var2 = NA
   tidye$value = e
   tidye$var = "Effort"
-  #  Poaching Revenue.
-  tidyr_fi = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
-  tidyr_fi$Var1 = seq(1, t_i - t_0 + 1)
-  tidyr_fi$Var2 = NA
-  tidyr_fi$value = r_fi
-  tidyr_fi$var = "Poaching Revenue"
-  #  Poaching Cost.
-  tidyc_fi = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
-  tidyc_fi$Var1 = seq(1, t_i - t_0 + 1)
-  tidyc_fi$Var2 = NA
-  tidyc_fi$value = c_fi
-  tidyc_fi$var = "Poaching Cost"
   #  Poaching Profit.
   tidypi_fi = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
   tidypi_fi$Var1 = seq(1, t_i - t_0 + 1)
   tidypi_fi$Var2 = NA
   tidypi_fi$value = r_fi - c_fi
   tidypi_fi$var = "Poaching Profit"
-  #  Aquaculture Revenue.
-  tidyr_aq = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
-  tidyr_aq$Var1 = seq(1, t_i - t_0 + 1)
-  tidyr_aq$Var2 = NA
-  tidyr_aq$value = r_aq
-  tidyr_aq$var = "Aquaculture Revenue"
-  #  Aquaculture Cost.
-  tidyc_aq = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
-  tidyc_aq$Var1 = seq(1, t_i - t_0 + 1)
-  tidyc_aq$Var2 = NA
-  tidyc_aq$value = c_aq
-  tidyc_aq$var = "Aquaculture Cost"
+  #  Aquaculture Production.
+  tidyy_aq = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
+  tidyy_aq$Var1 = seq(1, t_i - t_0 + 1)
+  tidyy_aq$Var2 = NA
+  tidyy_aq$value = rowSums(y_aq) / 1000 # Summing cages and converting from kilograms to tonnes.
+  tidyy_aq$var = "Aquaculture Production (Wet Tonnes)"
   # Aquaculture Profit.
   tidypi_aq = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
   tidypi_aq$Var1 = seq(1, t_i - t_0 + 1)
   tidypi_aq$Var2 = NA
-  tidypi_aq$value = r_aq - c_aq
+  tidypi_aq$value = rowSums(r_aq) - rowSums(c_aq) 
   tidypi_aq$var = "Aquaculture Profit"
   #  Everything!
-  tidy = bind_rows(tidyn, tidyy, tidyrec, tidyp, tidye, tidyr_fi, tidyc_fi, tidypi_fi, tidyr_aq, tidyc_aq, tidypi_aq)
+  tidy = bind_rows(tidyn, tidyy, tidyrec, tidyp, tidye, tidypi_fi, tidyy_aq, tidypi_aq) 
   tidy$group = ifelse(tidy$Var2 < a_mat_am, "Machorro", ifelse(tidy$Var2 < a_old_am, "Pre-Adulto", "Adulto"))
   tidy = rename(tidy, Year = Var1, Age = Var2, Result = value, Variable = var, Group = group)
   

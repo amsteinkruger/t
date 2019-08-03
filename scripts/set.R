@@ -28,9 +28,7 @@ pars_full = pars %>%
           module = "Fishery", 
           source_def = "Intermediate", 
           source_pess = NA, 
-          source_opt = NA, 
-          same_pess = NA, 
-          same_opt = NA) %>% 
+          source_opt = NA) %>% 
   add_row(name_long = "Size Premium", 
           name_short = "b_ma", "function" = "Demand", 
           default = nlm_tidy$estimate[2], 
@@ -40,9 +38,7 @@ pars_full = pars %>%
           module = "Fishery", 
           source_def = "Intermediate", 
           source_pess = NA, 
-          source_opt = NA, 
-          same_pess = NA, 
-          same_opt = NA) %>%
+          source_opt = NA) %>%
   add_row(name_long = "Choke Price", 
           name_short = "c_ma", 
           "function" = "Demand", 
@@ -52,9 +48,7 @@ pars_full = pars %>%
           units = "-", module = "Fishery", 
           source_def = "Intermediate", 
           source_pess = NA, 
-          source_opt = NA, 
-          same_pess = NA, 
-          same_opt = NA) %>%
+          source_opt = NA) %>%
   # Add aquaculture outputs to parameter table.
   add_row(name_long = "Aq. Mortality Coefficient", 
           name_short = "b1_mort_aq", 
@@ -66,9 +60,7 @@ pars_full = pars %>%
           module = "Aquaculture", 
           source_def = "Intermediate", 
           source_pess = NA, 
-          source_opt = NA, 
-          same_pess = NA, 
-          same_opt = NA) %>%
+          source_opt = NA) %>%
   add_row(name_long = "Aq. Mortality Coefficient", 
           name_short = "b2_mort_aq", 
           "function" = "Aquaculture Mortality", 
@@ -79,9 +71,7 @@ pars_full = pars %>%
           module = "Aquaculture", 
           source_def = "Intermediate", 
           source_pess = NA, 
-          source_opt = NA, 
-          same_pess = NA, 
-          same_opt = NA)
+          source_opt = NA)
     
 # Turn parameters into a matrix for multiple model runs.
 pars = pars_full %>% 
@@ -115,10 +105,6 @@ pars["eta_limit", 7:(n + 6)] = runif(n,
                                      min = pars["eta_limit", 2], 
                                      max = pars["eta_limit", 3])
 
-pars["y_arb", (7 + n / 2):(6 + n)] = runif(n / 2, 
-                                           min = 2500, 
-                                           max = 25000)
-
 #  Aquaculture.
 pars["sale_size_aq", 7:(n + 6)] = runif(n, 
                                         min = pars["sale_size_aq", 2], 
@@ -135,6 +121,10 @@ pars["by1", 7:(n + 6)] = runif(n,
 pars["by2", 7:(n + 6)] = runif(n, 
                                min = pars["by2", 2], 
                                max = pars["by2", 3])
+
+pars["c_cages", 7:(n + 6)] = runif(n, 
+                               min = pars["c_cages", 2], 
+                               max = pars["c_cages", 3])
 
 #pars["mmin_aq", 7:(n + 6)] = runif(n, 
 #                                   min = pars["mmin_aq", 3], 

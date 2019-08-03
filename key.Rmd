@@ -8,7 +8,7 @@ html_document: default
 
 ```{r libraries, warning = FALSE, error = FALSE, message = FALSE}
 
-library(plyr) # Trying to fix a problem with plyr loading after dplyr in vis.R.
+library(plyr) # Fixing plyr loading after dplyr in vis.R.
 library(knitr)
 library(tidyverse)
 library(janitor)

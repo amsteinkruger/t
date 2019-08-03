@@ -1,18 +1,20 @@
 # ---- vis ----
 
 # Set-up.
-library(ggpubr)
-library(gridExtra)
-library(showtext)
 # For rayshading heatmap experiment.
 #remotes::install_github("tylermorganwall/rayshader")
-library(rayshader)
+#library(rayshader)
+# For fonts.
+#library(showtext)
+# For joining and formatting plots.
+#library(gridExtra)
+#library(ggpubr)
 
 # Load Avenir from an open text file in the working directory.
 #  package showtext works for certain graphic devices so that saved files display Avenir but previews in RStudio do not.
-font_paths(".")
-font_add("avenir", "avenir.otf")
-showtext_auto()
+#font_paths(".")
+#font_add("avenir", "avenir.otf")
+#showtext_auto()
 
 # Stock and catch of reproductive biomass in numbers and mass.
 results_sum =  results %>% 
@@ -22,26 +24,45 @@ results_sum =  results %>%
   group_by(Year, 
            Variable, 
            Run, 
-           Scenario) %>% # Run, #, Estimate, Scenario
+           Scenario) %>% 
   summarize(SumNum = sum(Result), 
             SumBio = sum(Biomass)) %>% 
   ungroup() %>% 
   mutate(Run = as.factor(Run))
 
+# Ditto, but by mean of runs.
+results_summer = results_sum %>% 
+  group_by(Year, 
+           Variable, 
+           Scenario) %>% 
+  summarize(AveNum = mean(SumNum),
+            AveBio = mean(SumBio)) %>% 
+  ungroup()
+
 # Plot the summary numbers.
 #  Check whether inputs are tonnes or numbers.
 plot_n_lin = 
-  ggplot(filter(results_sum, 
-                Variable == "Numbers")) + 
+  ggplot() + 
+  # Threshold (e.g. K * 0.6)
   geom_hline(yintercept = 12136, 
              size = 0.95, 
              color = "#EF5645") +
-  geom_line(aes(x = Year + 2016, 
+  # Runs.
+  geom_line(data = filter(results_sum, 
+                          Variable == "Numbers"),
+            aes(x = Year + 2016, 
                 y = SumBio, 
                 group = Run, 
                 color = Scenario), 
             size = 1.15, 
-            alpha = 0.10) + 
+            alpha = 0.05) + 
+  # Mean of runs.
+  geom_point(data = filter(results_summer, 
+                          Variable == "Numbers"),
+            aes(x = Year + 2016,
+                y = AveBio,
+                color = Scenario),
+            size = 1.25) +
   scale_color_manual(values = c("#04859B", "#003660")) +
   scale_y_continuous(expand = c(0, 0),
                      limits = c(0, 20000),
@@ -56,59 +77,102 @@ plot_n_lin =
         legend.position = "none") +
   facet_wrap(~Scenario)
 
-plot_n_bin = 
-  ggplot(filter(results_sum, 
-                Variable == "Numbers"), 
-         aes(x = Year + 2016, 
-             y = SumBio)) +
-  geom_bin2d(binwidth = c(1, 500)) +
-  geom_hline(yintercept = 12136, 
-             size = 0.95, 
-             color = "#EF5645") +
-  scale_fill_viridis_c(option = "E") +
-  scale_y_continuous(expand = c(0, 0), 
-                     limits = c(0, 20000),
-                     labels = scales::comma) + #, 
-  scale_x_continuous(expand = c(0, 0.25)) +  
-  labs(x = "Year", 
-       y = "Biomass (Tonnes)") + #Tonnes of Biomass
-  theme_classic() + #base_family = "avenir"
-  theme(panel.grid.major = element_blank(), 
-        panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "grey75"),
-        #panel.background = element_rect(fill = "transparent", color = NA),
-        plot.background = element_rect(fill = "transparent", color = NA),
-        legend.position = "none") +  
-  facet_wrap(~Scenario)
+#plot_n_bin = 
+#  ggplot(filter(results_sum, 
+#                Variable == "Numbers"), 
+#         aes(x = Year + 2016, 
+#             y = SumBio)) +
+#  geom_bin2d(binwidth = c(1, 500)) +
+  #geom_point(data = filter(results_summer, 
+  #                         Variable == "Numbers"),
+  #           aes(x = Year + 2016,
+  #               y = AveBio,
+  #               color = Scenario),
+  #           size = 1.25,
+  #           linetype = "dotted") +
+#  geom_hline(yintercept = 12136, 
+#             size = 0.95, 
+#             color = "#EF5645") +
+#  scale_fill_viridis_c(option = "E") +
+#  scale_y_continuous(expand = c(0, 0), 
+#                     limits = c(0, 20000),
+#                     labels = scales::comma) + #, 
+#  scale_x_continuous(expand = c(0, 0.25)) +  
+#  labs(x = "Year", 
+#       y = "Biomass (Tonnes)") + #Tonnes of Biomass
+#  theme_classic() + #base_family = "avenir"
+#  theme(panel.grid.major = element_blank(), 
+#        panel.grid.minor = element_blank(),
+#        panel.background = element_rect(fill = "grey75"),
+#        #panel.background = element_rect(fill = "transparent", color = NA),
+#        plot.background = element_rect(fill = "transparent", color = NA),
+#        legend.position = "none") +  
+#  facet_wrap(~Scenario)
 
-# These lines run that neat spinning 3D viz thing you've seen on the internet. Not worthwhile.
-#plot_gg(plot_n_ray, width = 4, height = 4, scale = 300, multicore = TRUE)
-#render_snapshot("plot_n_ray.png")
-#render_movie(filename = plot_n_ray, type = "oscillate")
-
-# Data wrangling for profit. This generalizes well to revenues and costs.
+# Data wrangling for profit. This generalizes well to price and production.
 results_sum_pi = results %>% 
   filter(Variable == "Aquaculture Profit" |
          Variable == "Poaching Profit")
 
-# Profits for in both scenarios, sort of.
+# Profits for both scenarios.
 plot_pi = 
   ggplot(results_sum_pi, 
          aes(x = factor(Year + 2016), 
-             y = Result, 
+             y = Result / 1000000, 
              fill = Variable)) +
   geom_boxplot(color = "black") + 
   scale_fill_brewer(palette = "Set1", 
                     direction = -1) +
   scale_color_brewer(palette = "Set1", 
                      direction = -1) +
-  scale_y_continuous(labels = scales::comma) +
+  scale_y_continuous(labels = scales::comma,
+                     limits = c(-50,50)) +
   scale_x_discrete(expand = c(0.05, 0.05), 
-                   breaks = c(2017, 2025, 2032)) +  
+                   breaks = c(2017, 2025, 2032)) + 
   labs(x = "", 
        y = "") +
   theme_classic() +
   facet_wrap(~Variable + Scenario)
+
+# Data wrangling for production.
+results_sum_pr = results %>% 
+  filter(Variable == "Aquaculture Production (Wet Tonnes)")
+
+# Production for both scenarios.
+plot_pr = 
+  ggplot(results_sum_pr, 
+         aes(x = factor(Year + 2016), 
+             y = Result)) +
+  geom_boxplot(color = "black") + 
+  scale_fill_brewer(palette = "Set1", 
+                    direction = -1) +
+  scale_y_continuous(labels = scales::comma) +
+  scale_x_discrete(expand = c(0.05, 0.05), 
+                   breaks = c(2017, 2025, 2032)) + 
+  labs(x = "", 
+       y = "") +
+  theme_classic() +
+  facet_wrap(~Scenario)
+
+# Data wrangling for price (a = 13).
+results_sum_p = results %>% 
+  filter(Variable == "Price")
+
+# Production for both scenarios.
+plot_p = 
+  ggplot(results_sum_p, 
+         aes(x = factor(Year + 2016), 
+             y = Result)) +
+  geom_boxplot(color = "black") + 
+  scale_fill_brewer(palette = "Set1", 
+                    direction = -1) +
+  scale_y_continuous(labels = scales::comma) +
+  scale_x_discrete(expand = c(0.05, 0.05), 
+                   breaks = c(2017, 2025, 2032)) + 
+  labs(x = "", 
+       y = "") +
+  theme_classic() +
+  facet_wrap(~Scenario)
 
 # Principal Component Analysis of parameters on biomass in final year.
 #  Watch out for plyr-dplyr conflict in loading these libraries - fix wrt key.Rmd (1).
@@ -134,7 +198,7 @@ results_pca = results_sum %>% # This is reproductive biomass only (7+).
   mutate(Scenario = ifelse(Scenario == "w/ Aquaculture", # Mind the hard-coding for values.
                            1,
                            0)) %>% 
-  select(Scenario, SumBio, e_2017, c_2017, eta_limit, sale_size_aq, cage_size_aq, by1, by2) %>% 
+  select(Scenario, SumBio) %>% #, c_2017 #, cage_size_aq, by1, by2 #, e_2017, eta_limit, sale_size_aq
   na.omit()
 
 # Run PCA
@@ -170,11 +234,11 @@ ggsave("plot_n_lin.png",
        dpi = 300, 
        width = 4.5, 
        height = 6.0)
-ggsave("plot_n_bin.png", 
-       plot_n_bin, 
-       dpi = 300, 
-       width = 4.5, 
-       height = 6.0)
+#ggsave("plot_n_bin.png", 
+#       plot_n_bin, 
+#       dpi = 300, 
+#       width = 4.5, 
+#       height = 6.0)
 # Profit.
 ggsave("plot_pi.png", 
        plot_pi, 
@@ -189,10 +253,16 @@ ggsave("plot_pc.png",
        height = 6.5)
 
 # Save tables, too.
-library(kableExtra)
+#library(kableExtra)
 # Importances of PCs.
-kable(pca_imp, "html") %>%
-  cat(., file = "pca_imp.html")
+#kable(pca_imp, "html") %>%
+#  cat(., file = "pca_imp.html")
 # Rotations of varaibles in PCs.
-kable(pca_rot, "html") %>%
-  cat(., file = "pca_rot.html")
+#kable(pca_rot, "html") %>%
+#  cat(., file = "pca_rot.html")
+
+print(plot_n_lin)
+print(plot_pi)
+print(plot_pr)
+print(plot_p)
+print(plot_pc)
