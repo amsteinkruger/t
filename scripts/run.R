@@ -8,10 +8,11 @@ results = vector("list", n)
 
 # Loop through parameter sets.
 for(i in 7:(n + 6)){par = select(pars, i)
-                      output = fun(par)
-                      output$Run = i
-                      output$Scenario = ifelse(output$Run < (7 + n / 2), "w/o Aquaculture", "w/ Aquaculture") # Band-Aid.
-                      results[[i]] = output}
+                    output = fun(par)
+                    output$Run = i
+                    output$Scenario = ifelse(output$Run < (7 + n / 2), "Domestic Markets", "Export and Domestic Markets") # Band-Aid: Terrible!
+                    output$Cages = par["c_cages",] # Band-Aid: This carries one parameter through, but compact code to carry all through would be nice.
+                    results[[i]] = output}
 
 # Go from list to dataframe for easier processing.
 results = bind_rows(results)

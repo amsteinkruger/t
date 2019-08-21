@@ -122,9 +122,9 @@ pars["by2", 7:(n + 6)] = runif(n,
                                min = pars["by2", 2], 
                                max = pars["by2", 3])
 
-pars["c_cages", 7:(n + 6)] = runif(n, 
-                               min = pars["c_cages", 2], 
-                               max = pars["c_cages", 3])
+pars["c_cages", (7 + n / 2 + 1):(7 + n)] = ceiling(runif(n, 
+                                                         min = pars["c_cages", 2], 
+                                                         max = pars["c_cages", 3]))
 
 #pars["mmin_aq", 7:(n + 6)] = runif(n, 
 #                                   min = pars["mmin_aq", 3], 

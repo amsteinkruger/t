@@ -11,7 +11,7 @@ Buche yield ,by1,Buche Weights,0.0161,0.0137,0.0161,Proportion,Aquaculture and F
 Buche Dry weight yield,by2,Buche Weights,0.31,0.31,0.37,Proportion,Aquaculture and Fishery,UABC & PhD (INAPESCA wild),,"Goto et al, 2019"
 Fish Round Yield,f_z,Wet Weight Revenues,0.7,0.7,0.7,Proportion,Aquaculture,,,
 Fish Round Price,g_z,Wet Weight Revenues,6.5,6.5,6.5,USD,Aquaculture,Sistema Nacional de Informacion e Integracion de Mercados (2019),,
-Feed Requirements,h_z,Feed at Weight,0.04,0.08,0.01,Proportion,Aquaculture,CREMES recommendation,Tuna Ranching Book,Lit Review Comp
+Feed Requirements,h_z,Feed at Weight,0.02,0.08,0.01,Proportion,Aquaculture,CREMES recommendation,Tuna Ranching Book,Lit Review Comp
 Feed Cost,j_z,No Harvest Cost,2,2,1.545,USD/kg,Aquaculture,"pers. comm. GMG, Eartch Ocean Farms (2019)",,Intrafish (2019)
 Overhead,k_z,No Harvest Cost,170000,170000,170000,USD/cage,Aquaculture,"pers. comm. Felipe Ramirez (10/16/2018), InnovaSea (11/5/2018); pers. comm. Tyler Korte (11/5/2018), Blue Ocean Mariculture; pers. comm. Earth Ocean Farms S.A. de C.V. (2018); Salary tabulator (2017 SHCP); Cygnus MIA (2017)",,
 Cost per fry,l_z,Harvest Cost,2,2,2,,Aquaculture,CREMES (2018),,
@@ -42,8 +42,8 @@ Alpha,a_r,Recruitment,131.35,131.35,131.35,-,Fishery,INAPESCA (2018),,
 Beta,b_r,Recruitment,30700,30700,30700,-,Fishery,INAPESCA (2018),,
 Delta,d_r,Recruitment,1.639951478,1.639951478,1.639951478,-,Fishery,INAPESCA (2018),,
 Start Year,t_0,-,0,0,0,,All,INAPESCA (2018),,
-End Year,t_i,-,15,15,15,,All,INAPESCA (2018),,
+End Year,t_i,-,10,10,10,,All,INAPESCA (2018),,
 Start Age,a_0,-,0.5,0.5,0.5,,All,INAPESCA (2018),,
 End Age,a_i,-,26.5,26.5,26.5,,All,INAPESCA (2018),,
 Arbitrary Aquaculture Output,y_arb,Price Matrix,0,0,0,Metric Tonnes,All,-,,
-Cages,c_cages,Aquaculture,10,5,15,Count,Aquaculture,,,
+Cages,c_cages,Aquaculture,0,1,50,Count,Aquaculture,,,
