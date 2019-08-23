@@ -1,7 +1,7 @@
 # ---- dat ----
 
 # Parameters.
-pars = read_csv("./data/dat_pars.csv") %>% 
+dat_par = read_csv("./data/dat_pars.csv") %>% 
   clean_names()
 
 # Market

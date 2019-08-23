@@ -16,7 +16,7 @@ am_reg = nls(m_months ~ b1 * exp(b2 * a_months), dat_aqm, start = list(b1 = 8.00
 am_reg_tidy = tidy(am_reg)
 
 # Pull initial and intermediate parameters together.
-pars_full = pars %>%
+pars_full = dat_par %>%
   # Add market outputs to parameter table.
   add_row(name_long = "Quantity Elasticity", 
           name_short = "a_ma", 
@@ -74,65 +74,54 @@ pars_full = pars %>%
           source_opt = NA)
     
 # Turn parameters into a matrix for multiple model runs.
-pars = pars_full %>% 
+pars_base = pars_full %>% 
   select(2, 4:6) %>%
   column_to_rownames(var = "name_short")
 
-# Build out a matrix of parameters for sensitivity analysis.
-pars[4:6] = pars[1:3]
+# Define n runs. This would be better off in the parameter set.
+n = 100 # n = 10000 ~> 105m runtime (2019/7/3).
 
-# Define the aquaculture switch for two scenarios.
-pars["switch_aq", 1:3] = 0
-pars["switch_aq", 4:6] = 1
+# Build n runs w/o aquaculture.
+pars_0 = pars_base[1]
+pars_0[2:n] = pars_0[1]
 
-# Extend the dataframe for n runs.
-#  Define your n real quick. Put this into par.csv and be better about data management.
-n = 1000 # n = 10000 ~> 105.3833m runtime (2019/7/3).
-pars[7:(7 + n / 2)] = pars[1]
-pars[(7 + n / 2 + 1):(6 + n)] = pars[4]
-
-# Fill the spaghetti runs with draws from appropriate distributions by variable. If you squint hard enough, this part is great.
+# Draws. 
+#  Switch.
+pars_0["switch_aq", ] = 0
 #  Fishery.
-pars["e_2017", 7:(n + 6)] = runif(n, 
-                                  min = pars["e_2017", 2], 
-                                  max = pars["e_2017", 3])
+pars_0["e_2017", ] = runif(n, 
+                                  min = pars_base["e_2017", 2], 
+                                  max = pars_base["e_2017", 3])
 
-pars["c_2017", 7:(n + 6)] = runif(n, 
-                                  min = pars["c_2017", 2], 
-                                  max = pars["c_2017", 3])
+pars_0["c_2017", ] = runif(n, 
+                                  min = pars_base["c_2017", 2], 
+                                  max = pars_base["c_2017", 3])
 
-pars["eta_limit", 7:(n + 6)] = runif(n, 
-                                     min = pars["eta_limit", 2], 
-                                     max = pars["eta_limit", 3])
+pars_0["eta_limit", ] = runif(n, 
+                                     min = pars_base["eta_limit", 2], 
+                                     max = pars_base["eta_limit", 3])
 
 #  Aquaculture.
-pars["sale_size_aq", 7:(n + 6)] = runif(n, 
-                                        min = pars["sale_size_aq", 2], 
-                                        max = pars["sale_size_aq", 3])
+pars_0["sale_size_aq", 1:n] = runif(n, 
+                                        min = pars_base["sale_size_aq", 2], 
+                                        max = pars_base["sale_size_aq", 3])
 
-pars["cage_size_aq", 7:(n + 6)] = runif(n, 
-                                        min = pars["cage_size_aq", 2], 
-                                        max = pars["cage_size_aq", 3])
+pars_0["cage_size_aq", 1:n] = runif(n, 
+                                        min = pars_base["cage_size_aq", 2], 
+                                        max = pars_base["cage_size_aq", 3])
 
-pars["by1", 7:(n + 6)] = runif(n, 
-                                        min = pars["by1", 2], 
-                                        max = pars["by1", 3])
+pars_0["by1", 1:n] = runif(n, 
+                                        min = pars_base["by1", 2], 
+                                        max = pars_base["by1", 3])
 
-pars["by2", 7:(n + 6)] = runif(n, 
-                               min = pars["by2", 2], 
-                               max = pars["by2", 3])
+pars_0["by2", 1:n] = runif(n, 
+                               min = pars_base["by2", 2], 
+                               max = pars_base["by2", 3])
 
-pars["c_cages", (7 + n / 2 + 1):(7 + n)] = ceiling(runif(n, 
-                                                         min = pars["c_cages", 2], 
-                                                         max = pars["c_cages", 3]))
+pars_0["c_cages", 1:n] = ceiling(runif(n, 
+                                       min = pars_base["c_cages", 2], 
+                                       max = pars_base["c_cages", 3]))
 
-#pars["mmin_aq", 7:(n + 6)] = runif(n, 
-#                                   min = pars["mmin_aq", 3], 
-#                                   max = pars["mmin_aq", 2])
-
-#pars["disc_aq", 7:(n + 6)] = runif(n, 
-#                                   min = pars["disc_aq", 3], 
-#                                   max = pars["disc_aq", 2])
-
-# Band-Aid for NAs.
-#pars = pars[ , colSums(is.na(pars)) == 0]
+# Build n runs w/ aquaculture.
+pars_1 = pars_0
+pars_1["switch_aq", ] = 1

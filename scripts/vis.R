@@ -143,7 +143,10 @@ plot_pi_neg =
   theme_classic() +
   facet_wrap(~Variable + Scenario)
 
-plot_pi = grid.arrange(plot_pi_pos, plot_pi_neg, nrow = 1, ncol = 1)
+# Put in a tricky bit of grid work here for overlapping plots. Or not.
+
+# Data wrangling for differences.
+
 
 # Data wrangling for production.
 results_sum_pr = results %>% 

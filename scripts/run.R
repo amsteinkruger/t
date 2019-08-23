@@ -4,18 +4,26 @@
 watch_go = proc.time()
 
 # Build a home for results of runs.
-results = vector("list", n)
+results_0 = vector("list", n)
+results_1 = vector("list", n)
 
 # Loop through parameter sets.
-for(i in 7:(n + 6)){par = select(pars, i)
+for(i in 1:n){par = select(pars_0, i)
                     output = fun(par)
                     output$Run = i
-                    output$Scenario = ifelse(output$Run < (7 + n / 2), "Domestic Markets", "Export and Domestic Markets") # Band-Aid: Terrible!
+                    output$Scenario = "Status Quo" # Band-Aid: This would be better outside of the loop.
                     output$Cages = par["c_cages",] # Band-Aid: This carries one parameter through, but compact code to carry all through would be nice.
-                    results[[i]] = output}
+                    results_0[[i]] = output}
+
+for(i in 1:n){par = select(pars_1, i)
+output = fun(par)
+output$Run = i
+output$Scenario = "Counterfactual" # Band-Aid: This would be better outside of the loop.
+output$Cages = par["c_cages",] # Band-Aid: This carries one parameter through, but compact code to carry all through would be nice.
+results_1[[i]] = output}
 
 # Go from list to dataframe for easier processing.
-results = bind_rows(results)
+results = bind_rows(results_0, results_1)
 
 # Clock model runtime.
 watch_stop = proc.time() - watch_go
