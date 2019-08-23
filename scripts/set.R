@@ -79,7 +79,7 @@ pars_base = pars_full %>%
   column_to_rownames(var = "name_short")
 
 # Define n runs. This would be better off in the parameter set.
-n = 100 # n = 10000 ~> 105m runtime (2019/7/3).
+n = 1000 # n = 10000 ~> 105m runtime (2019/7/3).
 
 # Build n runs w/o aquaculture.
 pars_0 = pars_base[1]
