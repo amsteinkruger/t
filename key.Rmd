@@ -64,121 +64,44 @@ knitr::read_chunk('./scripts/run.R')
 ```{r run}
 ```
 
-####6. Outputs
+####6. Analysis and Visualization
 
-Visualization and tables.
+#####6.1 Biomass
+```{r bio_read}
+knitr::read_chunk('./scripts/bio.R')
+```
 
-```{r vis_read}
-knitr::read_chunk('./scripts/vis.R')
+```{r bio}
+```
+
+#####6.2 Profit
+```{r pi_read}
+knitr::read_chunk('./scripts/pi.R')
+```
+
+```{r pi}
+```
+
+#####6.3 Demand
+```{r dem_read}
+knitr::read_chunk('./scripts/dem.R')
 ```
 
 ```{r vis}
 ```
 
-####Appendix: Equations and Variable, Parameter Definitions
-Put these in the earlier sections!
+#####6.4 PCA
+```{r pca_read}
+knitr::read_chunk('./scripts/pca.R')
+```
 
-#####Ages to Lengths | Edad y Tamaño
+```{r pca}
+```
 
-$L(t) = L_\infty ( 1 - e^{ - K ( t - t_0 )})$
+#####6.5 Map
+```{r map_read}
+knitr::read_chunk('./scripts/map.R')
+```
 
-Variable   | Definition                   | Value
----------- | ---------------------------  | ---------
-*L*        | Length (Centimeters)         | 
-$L_\infty$ | Maximum Length (Centimeters) | 180.0000
-$K_{fi}$   | Catabolic Constant (INAPESCA)| 0.155000
-$K_{aq}$   | Catabolic Constant (EOF)     | 0.228560
-*t*        | Age (Years)                  | 
-$t_0$      | Age, *L* = 0                 | 0.000000
-
-#####Lengths to Weights | Tamaño y Peso
-
-$W = aL^b$
-
-Variable   | Definition                  | Value
----------- | --------------------------- | -------
-*W*        | Weight (Kilograms)          |
-*L*        | Length (Centimeters)        |
-*a*        | Parameter                   | 0.000004128
-*b*        | Parameter                   | 3.246740000
-
-#####Ages to Marginal Natural Mortalities | Edad y Mortalidad Natural Marginal
-
-Marginal Mortality at Age:
-$N_a = N_{a-1}e^{-M_a}$
-
-Ages        | $-M_a$ 
------------ | -----------
-0 - 2.5     | 0.549
-3.5 - 19.5  | 0.069
-20.5 - 26.5 | 0.411
-
-#####Ages to Bycatch Mortalities
-
-$N_{2.5, t} = N_{1.5, t} * b$
-
-$b = 0.20$
-
-#####Ages to Poaching Mortalities (Selectivities)
-
-$s = \frac{a}{e^{b - m * l}}$
-
-Variable   | Definition                          | Value
----------- | ----------------------------------- | ---------------------------
-a          | Shape Parameter                     | 0.95
-b          | Shape Parameter                     | 19.88
-m          | Shape Parameter                     | 0.13
-l          | Length (Centimeters)                |
-
-
-#####Numbers at Age to Recruitment | Números por Edad y Reclutamiento
-
-$n_{0, t} = \frac{\alpha N_{a, t-1}}{[1 + (N_{a, t-1} / \beta)]^{\delta}}$
-
-Variable   | Definition                          | Value
----------- | ----------------------------------- | ---------------------------
-$N_{0, t}$ | Recruits                            |
-$N_{a, t}$ | Cohort of Age *a*                   |
-$\alpha$   | Parameter                           | 131.35
-$\beta$    | Parameter                           | 3.07
-$\delta$   | Parameter                           | 1.639951478
-
-
-#####Inverse Demand Specification
-
-$p_{g, t} = \beta_0 + \beta_1Y_t + g_{a}^{\beta_2}$
-
-Variable   | Definition                                
----------- | -----------------------------------------
-$p_{g, t}$ | USD2018 / Gram of Dried Buche            
-$Y_t$      | Tonnes of Dried Buche (Total Production)
-$g_{a}$    | Grams of Dried Buche (Individual Product)
-$\beta_0$  | Coefficient (Choke Price)
-$\beta_1$  | Coefficient (Quantity Elasticity)
-$\beta_2$  | Coefficient (Exponential Price Premium)
-
-#####Effort
-
-$E_{t} = E_{t - 1} + \eta\pi_{t-1}$
-
-Variable   | Definition                               
----------- | -----------------------------------------
-$E_t$      | Effort in Boat-Years
-$\eta$     | Resistance Parameter (i.e. limit to entry, exit)
-$\pi$      | Profit (USD2018)
-
-#####Catch
-
-$y_{a, t} = qE_ts_{a}n_{a, t}$
-
-Variable        | Definition                               
---------------- | -----------------------------------------
-$y_{a, t}$      | Numbers Caught by Cohort and Time
-q               | Catchability
-$E_t$           | Effort in Boat-Years
-$s_a$           | Proportional Selectivity
-$n_{a, t}$      | Numbers by Cohort and Time
-
-#####Stock
-
-$N_t = \sum (n_{a, t - 1} - n_{a, t - 1}m_{a, t - 1} - n_{a, t - 1}m_{a, t - 1}b_{a, t - 1} - y_{a, t - 1}) + n_{0, t - 1}$
+```{r map}
+```
