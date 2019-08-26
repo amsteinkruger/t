@@ -44,13 +44,23 @@ results_pi =
            Variable,
            Cages) %>% 
   summarize(Mea = mean(Mea)) %>% 
-  ungroup()
+  ungroup() %>% 
+  mutate(Years = ifelse(Years > 1, 
+                        ifelse(Years > 2,
+                               ifelse(Years > 3,
+                                      ifelse(Years > 4,
+                                             "2033 - 2036",
+                                             "2029 - 2032"),
+                                      "2025 - 2028"),
+                               "2021 - 2024"),
+                        "2017 - 2020")) %>% 
+  mutate(Years = as.factor(Years))
 
 
 # Plot differences.
 plot_pi = 
   ggplot(data = results_pi) + 
-  geom_col(aes(x = Years + 2016,
+  geom_col(aes(x = Years,
                y = Mea,
                fill = Cages),
            position = "dodge") +
@@ -59,9 +69,13 @@ plot_pi =
              linetype = "dashed") +
   scale_fill_manual(values = pal_fil) +
   labs(x = "", y = "\u0394 \u03C0 (US$M 2018)") +
-  scale_x_continuous(breaks = c(2017, 2022, 2027),
-                     expand = c(0, 0.75)) + 
+  #scale_x_continuous(breaks = c(2017, 2022, 2027),
+  #                   expand = c(0, 0.75)) +
+  scale_y_continuous(breaks = c(-20, 0, 25, 50, 75)) +
   theme_classic() +
+  theme(axis.text.x = element_text(angle = 45,
+                                   hjust = 0.50,
+                                   vjust = 0.60)) +
   facet_wrap(~Variable)
 
 # Print for .Rmd

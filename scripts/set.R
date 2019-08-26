@@ -3,13 +3,13 @@
 # Visualization
 #  Set up palettes.
 pal_fil = viridis(4, 
-                  begin = 0.25, 
-                  end = 0.75, 
+                  begin = 0.00, 
+                  end = 0.50, 
                   direction = -1, 
                   option = "D")
 pal_col = viridis(4, 
-                  begin = 0.25, 
-                  end = 0.75, 
+                  begin = 0.00, 
+                  end = 0.50, 
                   direction = -1, 
                   option = "D")
 

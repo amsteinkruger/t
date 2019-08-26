@@ -33,7 +33,7 @@ results_cag = results_sum %>%
   group_by(Year,
            Scenario,
            Cages) %>% 
-  summarize(AveBio = mean(SumBio),
+  summarize(MedBio = median(SumBio),
             ForBio = quantile(SumBio, 0.40),
             SixBio = quantile(SumBio, 0.60)) %>% 
   ungroup()
@@ -72,12 +72,13 @@ plot_bio =
                   ymax = SixBio,
                   color = Cages,
                   group = Cages,
-                  fill = Cages)) +
-  geom_line(data = results_cag,
+                  fill = Cages),
+              alpha = 0.75) +
+  geom_point(data = results_cag,
             aes(x = Year + 2016,
-                y = AveBio,
+                y = MedBio,
                 color = Cages),
-            linetype = "dashed") +
+            shape = 18) +
   geom_ribbon(data = filter(results_sce, # Quantiles for status quo runs.
                             Scenario == "Status Quo"),
               aes(x = Year + 2016,
@@ -85,12 +86,13 @@ plot_bio =
                   ymax = SixBio),
               fill = "grey85",
               color = "grey75") +
-  geom_line(data = filter(results_sce, # Quantiles for status quo runs.
+  geom_point(data = filter(results_sce, # Quantiles for status quo runs.
                           Scenario == "Status Quo"),
-              aes(x = Year + 2016,
-                  y = MedBio),
-              color = "grey70") +
-  geom_vline(data = results_summer,
+             aes(x = Year + 2016,
+                 y = MedBio),
+             color = "grey65",
+             shape = 18) +
+  geom_vline(data = results_sce,
              aes(xintercept = 3 + 2016),
              color = "firebrick4",
              linetype = "dashed") +
@@ -99,7 +101,7 @@ plot_bio =
   scale_y_continuous(expand = c(0, 0),
                      limits = c(0, 20000),
                      labels = scales::comma) + 
-  scale_x_continuous(breaks = c(2017, 2022, 2027),
+  scale_x_continuous(#breaks = c(2017, 2022, 2027),
                      expand = c(0, 0.75)) +  
   labs(x = "Year", y = "Biomass (Tonnes)") + 
   theme_classic() + 
