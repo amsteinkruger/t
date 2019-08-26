@@ -1,28 +1,26 @@
 # ---- bio ----
 
-# Summarize biomass.
-results_sum =  results %>% 
-  #na.omit() %>% # This is a Band-Aid to filter out any surprise NAs. Swap out for a better solution in set.R.
-  #filter(Age < 3) %>% # This is a quick trick to filter out juveniles and subadults and keep reproductive biomass.
+# Summarize results for ribbon panels.
+#  Find biomass for each cohort and year, then sum by cohort.
+results_sum = results %>% 
   filter(Variable == "Numbers") %>% 
-  mutate(Biomass = fun_l_w(pars_base$default[4], 
+  mutate(Biomass = fun_l_w(pars_base[4, 1], 
                            fun_a_l(Age - 0.5, 
-                                   pars_base$default[1], 
-                                   pars_base$default[2], 
-                                   pars_base$default[3]),  
-                           pars_base$default[5]) / 1000 * Result) %>% 
-  group_by(Year, 
-           Variable, 
+                                   pars_base[1, 1], 
+                                   pars_base[2, 1], 
+                                   pars_base[3, 1]),  
+                           pars_base[5, 1]) / 1000 * Result) %>% 
+  group_by(Year,
            Run, 
            Scenario,
            Cages) %>% 
   summarize(SumNum = sum(Result), 
             SumBio = sum(Biomass)) %>% 
-  ungroup() %>% 
-  mutate(Run = as.factor(Run))
+  ungroup() 
 
-# Summarize biomass by cages and quantiles.
-results_summer = results_sum %>% 
+# Keep counterfactual runs. Bin runs by scale of aquaculture, then find quantile outcomes.
+results_cag = results_sum %>% 
+  filter(Scenario == "Counterfactual") %>% 
   mutate(Cages = ifelse(Cages > 0, 
                         ifelse(Cages > 25, 
                                ifelse(Cages > 50, 
@@ -32,8 +30,7 @@ results_summer = results_sum %>%
                                       "25 - 50"), 
                                "1 - 25"),
                         "0")) %>% 
-  group_by(Year, 
-           Variable, 
+  group_by(Year,
            Scenario,
            Cages) %>% 
   summarize(AveBio = mean(SumBio),
@@ -41,64 +38,71 @@ results_summer = results_sum %>%
             SixBio = quantile(SumBio, 0.60)) %>% 
   ungroup()
 
-# Ditto, but just more so?
-results_summerer = results_sum %>% 
-  group_by(Year, 
-           Variable, 
+#  Find maxima and minima of all runs and quantiles. Filter for status quo runs for inner quantiles in geom_ribbon below.
+results_sce = results_sum %>% 
+  group_by(Year,
            Scenario) %>% 
-  summarize(MaxBio = max(SumBio),
+  summarize(MedBio = median(SumBio),
+            MaxBio = max(SumBio),
             MinBio = min(SumBio),
-            TweBio = quantile(SumBio, 0.20),
-            SevBio = quantile(SumBio, 0.80)) %>% 
+            TenBio = quantile(SumBio, 0.10),
+            NinBio = quantile(SumBio, 0.90),
+            ForBio = quantile(SumBio, 0.40),
+            SixBio = quantile(SumBio, 0.60)) %>% 
   ungroup()
 
 # Plot the summary numbers.
 plot_bio = 
   ggplot() + 
-  geom_ribbon(data = filter(results_summerer, 
-                            Variable == "Numbers"),
+  geom_ribbon(data = results_sce,  # Outer runs.
               aes(x = Year + 2016,
                   ymin = MinBio, 
                   ymax = MaxBio),
-              alpha = 0.25) +
-  geom_ribbon(data = filter(results_summerer, 
-                            Variable == "Numbers"),
+              fill = "grey95",
+              color = "grey85") +
+  geom_ribbon(data = results_sce,  # Outer runs.
               aes(x = Year + 2016,
-                  ymin = TweBio, 
-                  ymax = SevBio),
-              alpha = 0.50) +
-  geom_ribbon(data = filter(results_summer, 
-                            Variable == "Numbers",
-                            Scenario == "Counterfactual"),
+                  ymin = TenBio, 
+                  ymax = NinBio),
+              fill = "grey90",
+              color = "grey80") +
+  geom_ribbon(data = results_cag,  # Quantiles for counterfactual runs by production scale.
               aes(x = Year + 2016,
                   ymin = ForBio, 
                   ymax = SixBio,
                   color = Cages,
                   group = Cages,
-                  fill = Cages),
-              alpha = 0.50) +
-  geom_ribbon(data = filter(results_summer, 
-                            Variable == "Numbers",
+                  fill = Cages)) +
+  geom_line(data = results_cag,
+            aes(x = Year + 2016,
+                y = AveBio,
+                color = Cages),
+            linetype = "dashed") +
+  geom_ribbon(data = filter(results_sce, # Quantiles for status quo runs.
                             Scenario == "Status Quo"),
               aes(x = Year + 2016,
                   ymin = ForBio, 
                   ymax = SixBio),
-              alpha = 0.75) +
-  scale_color_manual(values = c("steelblue1", 
-                                "steelblue2", 
-                                "steelblue3", 
-                                "steelblue4")) +
-  scale_fill_manual(values = c("steelblue1", 
-                               "steelblue2", 
-                               "steelblue3", 
-                               "steelblue4")) +
+              fill = "grey85",
+              color = "grey75") +
+  geom_line(data = filter(results_sce, # Quantiles for status quo runs.
+                          Scenario == "Status Quo"),
+              aes(x = Year + 2016,
+                  y = MedBio),
+              color = "grey70") +
+  geom_vline(data = results_summer,
+             aes(xintercept = 3 + 2016),
+             color = "firebrick4",
+             linetype = "dashed") +
+  scale_color_manual(values = pal_col) +
+  scale_fill_manual(values = pal_fil) +
   scale_y_continuous(expand = c(0, 0),
-                     limits = c(0, 15000),
+                     limits = c(0, 20000),
                      labels = scales::comma) + 
   scale_x_continuous(breaks = c(2017, 2022, 2027),
                      expand = c(0, 0.75)) +  
   labs(x = "Year", y = "Biomass (Tonnes)") + 
-  theme_classic() + #base_family = "avenir"
+  theme_classic() + 
   theme(panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "transparent", color = NA),

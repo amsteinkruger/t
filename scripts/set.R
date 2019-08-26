@@ -1,5 +1,19 @@
 # ---- set ----
 
+# Visualization
+#  Set up palettes.
+pal_fil = viridis(4, 
+                  begin = 0.25, 
+                  end = 0.75, 
+                  direction = -1, 
+                  option = "D")
+pal_col = viridis(4, 
+                  begin = 0.25, 
+                  end = 0.75, 
+                  direction = -1, 
+                  option = "D")
+
+
 # Market
 #  Estimate inverse demand.
 nlm = nls(p ~ q * a + (g ^ b) + c, 
@@ -21,9 +35,9 @@ pars_full = dat_par %>%
   add_row(name_long = "Quantity Elasticity", 
           name_short = "a_ma", 
           "function" = "Demand", 
-          default = nlm_tidy$estimate[1], 
-          pessimistic = nlm_tidy$estimate[1] - nlm_tidy$std.error[1], 
-          optimistic = nlm_tidy$estimate[1] + nlm_tidy$std.error[1], 
+          mid = nlm_tidy$estimate[1], 
+          low = nlm_tidy$estimate[1] - nlm_tidy$std.error[1], 
+          high = nlm_tidy$estimate[1] + nlm_tidy$std.error[1], 
           units = "-", 
           module = "Fishery", 
           source_def = "Intermediate", 
@@ -31,9 +45,9 @@ pars_full = dat_par %>%
           source_opt = NA) %>% 
   add_row(name_long = "Size Premium", 
           name_short = "b_ma", "function" = "Demand", 
-          default = nlm_tidy$estimate[2], 
-          pessimistic = nlm_tidy$estimate[2] - nlm_tidy$std.error[2], 
-          optimistic = nlm_tidy$estimate[2] + nlm_tidy$std.error[2], 
+          mid = nlm_tidy$estimate[2], 
+          low = nlm_tidy$estimate[2] - nlm_tidy$std.error[2], 
+          high = nlm_tidy$estimate[2] + nlm_tidy$std.error[2], 
           units = "-", 
           module = "Fishery", 
           source_def = "Intermediate", 
@@ -42,9 +56,9 @@ pars_full = dat_par %>%
   add_row(name_long = "Choke Price", 
           name_short = "c_ma", 
           "function" = "Demand", 
-          default = nlm_tidy$estimate[3], 
-          pessimistic = nlm_tidy$estimate[3] - nlm_tidy$std.error[3], 
-          optimistic = nlm_tidy$estimate[3] + nlm_tidy$std.error[3], 
+          mid = nlm_tidy$estimate[3], 
+          low = nlm_tidy$estimate[3] - nlm_tidy$std.error[3], 
+          high = nlm_tidy$estimate[3] + nlm_tidy$std.error[3], 
           units = "-", module = "Fishery", 
           source_def = "Intermediate", 
           source_pess = NA, 
@@ -53,9 +67,9 @@ pars_full = dat_par %>%
   add_row(name_long = "Aq. Mortality Coefficient", 
           name_short = "b1_mort_aq", 
           "function" = "Aquaculture Mortality", 
-          default = am_reg_tidy$estimate[1], 
-          pessimistic = am_reg_tidy$estimate[1] + am_reg_tidy$std.error[1],
-          optimistic = am_reg_tidy$estimate[1] - am_reg_tidy$std.error[1], 
+          mid = am_reg_tidy$estimate[1], 
+          low = am_reg_tidy$estimate[1] + am_reg_tidy$std.error[1],
+          high = am_reg_tidy$estimate[1] - am_reg_tidy$std.error[1], 
           units = "-", 
           module = "Aquaculture", 
           source_def = "Intermediate", 
@@ -64,9 +78,9 @@ pars_full = dat_par %>%
   add_row(name_long = "Aq. Mortality Coefficient", 
           name_short = "b2_mort_aq", 
           "function" = "Aquaculture Mortality", 
-          default = am_reg_tidy$estimate[2], 
-          pessimistic = am_reg_tidy$estimate[2] + am_reg_tidy$std.error[2], 
-          optimistic = am_reg_tidy$estimate[2] - am_reg_tidy$std.error[2], 
+          mid = am_reg_tidy$estimate[2], 
+          low = am_reg_tidy$estimate[2] + am_reg_tidy$std.error[2], 
+          high = am_reg_tidy$estimate[2] - am_reg_tidy$std.error[2], 
           units = "-", 
           module = "Aquaculture", 
           source_def = "Intermediate", 
@@ -78,8 +92,8 @@ pars_base = pars_full %>%
   select(2, 4:6) %>%
   column_to_rownames(var = "name_short")
 
-# Define n runs. This would be better off in the parameter set.
-n = 100 # n = 10000 ~> 105m runtime (2019/7/3).
+# Define n runs.
+n = 1000
 
 # Build n runs w/o aquaculture.
 pars_0 = pars_base[1]
@@ -89,6 +103,10 @@ pars_0[2:n] = pars_0[1]
 #  Switch.
 pars_0["switch_aq", ] = 0
 #  Fishery.
+#pars_0["f_2017", ] = runif(n, 
+#                           min = pars_base["f_2017", 2], 
+#                           max = pars_base["f_2017", 3])
+
 pars_0["e_2017", ] = runif(n, 
                                   min = pars_base["e_2017", 2], 
                                   max = pars_base["e_2017", 3])
@@ -109,6 +127,18 @@ pars_0["sale_size_aq", 1:n] = runif(n,
 pars_0["cage_size_aq", 1:n] = runif(n, 
                                         min = pars_base["cage_size_aq", 2], 
                                         max = pars_base["cage_size_aq", 3])
+
+pars_0["dens_aq", 1:n] = runif(n, 
+                                    min = pars_base["dens_aq", 2], 
+                                    max = pars_base["dens_aq", 3])
+
+pars_0["mmin_aq", 1:n] = runif(n, 
+                               min = pars_base["mmin_aq", 2], 
+                               max = pars_base["mmin_aq", 3])
+
+pars_0["disc_aq", 1:n] = runif(n, 
+                               min = pars_base["disc_aq", 2], 
+                               max = pars_base["disc_aq", 3])
 
 pars_0["by1", 1:n] = runif(n, 
                                         min = pars_base["by1", 2], 

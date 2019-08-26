@@ -17,7 +17,7 @@ results_pi =
                                              "50 - 75"), 
                                       "25 - 50"), 
                                "1 - 25"),
-                        "0")) %>% 
+                        "0")) %>% # Bin scale.
   na.omit() %>% # Track down origin of NAs.
   group_by(Year, 
            Run,
@@ -26,35 +26,38 @@ results_pi =
            Cages) %>% 
   mutate(Result = ifelse(Scenario == "Counterfactual", 
                          Result, 
-                         -Result)) %>% 
+                         -Result)) %>% # Change sign on status quo runs for tidy difference calculation.
   ungroup() %>% 
   group_by(Year,
            Run,
            Variable,
            Cages) %>% 
-  summarize(Difference = sum(Result)) %>% 
+  summarize(Difference = sum(Result)) %>% # Sum runs by run for tidy difference.
   ungroup() %>% 
   group_by(Year, 
            Variable,
            Cages) %>% 
-  summarize(Med = median(Difference),
-            Mea = mean(Difference))
+  summarize(Mea = mean(Difference)) %>% # Summarize differences by scale bin.
+  ungroup %>% 
+  mutate(Years = ceiling(Year * 0.25)) %>% # Summarize mean differences by four-year average.
+  group_by(Years,
+           Variable,
+           Cages) %>% 
+  summarize(Mea = mean(Mea)) %>% 
+  ungroup()
 
 
 # Plot differences.
 plot_pi = 
   ggplot(data = results_pi) + 
-  geom_col(aes(x = Year + 2016,
+  geom_col(aes(x = Years + 2016,
                y = Mea,
                fill = Cages),
            position = "dodge") +
   geom_hline(aes(yintercept = 0),
              color = "firebrick",
              linetype = "dashed") +
-  scale_fill_manual(values = c("steelblue1", 
-                               "steelblue2", 
-                               "steelblue3", 
-                               "steelblue4")) +
+  scale_fill_manual(values = pal_fil) +
   labs(x = "", y = "\u0394 \u03C0 (US$M 2018)") +
   scale_x_continuous(breaks = c(2017, 2022, 2027),
                      expand = c(0, 0.75)) + 

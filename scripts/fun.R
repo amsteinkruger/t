@@ -36,13 +36,7 @@ fun = function(par){
   # Run intermediate set-up.
   #  Fishery.
   #   Numbers in 2017.
-  #   This is code lifted from the current (20190703) stock assessment project.
-  n0 = fi_biom_dat$n
-  #   This is code from the thesis project.
-  #n0 = dat_b %>%
-  #  mutate(n = 1000 * bprop_2017 * Biomasa / fun_l_w(a_lw, fun_a_l(Edad, linf_al, k_al, t0_al), b_lw)) %>% 
-  #  select(n)
-  #n0 = n0[[1]]
+  n0 = dat_bio$n * rnorm(1, mean = 1, sd = 0.085)
   #   Catchability.
   # F = qENS > q = F / ENS; N is in numbers, F is in tonnes, and S is in proportions, so conversions are in order.
   q = 1000 * f_2017 / sum(n0 * fun_l_w(a_lw, fun_a_l(seq(a_0, a_i), linf_al, k_al, t0_al), b_lw) * fun_l_s(fun_a_l(seq(a_0, a_i), linf_al, k_al, t0_al), a_ls, b_ls, m_ls) * e_2017)
@@ -131,7 +125,7 @@ fun = function(par){
   p0_aq[1,] = rep(10, c_cages)
   rt0_aq[1,] = nt0_aq[1,] * w0_aq[1,] * by1 * by2 * p0_aq[1,] * switch_aq + nt0_aq[1,] * w0_aq[1,] * f_z * g_z # Trimming revenues for maw and wet product. Fix placeholder names.
   r0_aq[1,] = w0_aq[1,] * n0_aq[1,] * by1 * by2 * n0_aq[1,] * p0_aq[1,] * switch_aq + n0_aq[1,] * w0_aq[1,] * f_z * g_z # Harvest revenues for maw and wet product. Fix placeholder names.
-  c0_aq[1,] = n0_aq[1,] * fun_l_w(a_lw, fun_a_l(a0_aq[1,] - 0.5, linf_al_aq, k_al_aq, t0_al_aq), b_lw) * h_z * j_z * 365 # Fix placeholder variable names.
+  c0_aq[1,] = n0_aq[1,] * fun_l_w(a_lw, fun_a_l(a0_aq[1,] - 0.5, linf_al_aq, k_al_aq, t0_al_aq), b_lw) * feed_prop_aq * feed_cost_aq * 365 # Fix placeholder variable names.
   
   #   Led.
   a1_aq[1,] = a0_aq[1,] + 1
@@ -151,7 +145,7 @@ fun = function(par){
   #for(j in 1:c_cages){p0_aq[1, j] = p_mat[1, a0_aq[1, j]] * 1000} # Looping to enable position references in the price matrix.
   rt1_aq[1,] = nt1_aq[1,] * w1_aq[1,] * by1 * by2 * p1_aq[1,] * switch_aq + nt1_aq[1,] * w1_aq[1,] * f_z * g_z # Trimming revenues for maw and wet product. Fix placeholder names.
   r1_aq[1,] = w1_aq[1,] * n1_aq[1,] * by1 * by2 * n1_aq[1,] * p1_aq[1,] * switch_aq + n1_aq[1,] * w1_aq[1,] * f_z * g_z # Harvest revenues for maw and wet product. Fix placeholder names.
-  c1_aq[1,] = n1_aq[1,] * fun_l_w(a_lw, fun_a_l(a1_aq[1,] - 0.5, linf_al_aq, k_al_aq, t0_al_aq), b_lw) * h_z * j_z * 365 # Fix placeholder variable names.
+  c1_aq[1,] = n1_aq[1,] * fun_l_w(a_lw, fun_a_l(a1_aq[1,] - 0.5, linf_al_aq, k_al_aq, t0_al_aq), b_lw) * feed_prop_aq * feed_cost_aq * 365 # Fix placeholder variable names.
   
   h_aq[1,] = 0
   hinv_aq[1,] = 1
@@ -215,7 +209,7 @@ fun = function(par){
     p0_aq[i,] = p_mat[i - 1, a0_aq[i,]] * 1000 # Conversion for price in grams to revenue from kilograms of dry maw.
     rt0_aq[i,] = nt0_aq[i,] * w0_aq[i,] * by1 * by2 * p0_aq[i,] * switch_aq + nt0_aq[i,] * w0_aq[i,] * f_z * g_z # Trimming revenues.
     r0_aq[i,] = n0_aq[i,] * w0_aq[i,] * by1 * by2 * p0_aq[i,] * switch_aq + n0_aq[i,] * w0_aq[i,] * f_z * g_z # Harvest revenues.
-    c0_aq[i,] = n0_aq[i,] * fun_l_w(a_lw, fun_a_l(a0_aq[i,] - 0.5, linf_al_aq, k_al_aq, t0_al_aq), b_lw) * h_z * j_z * 365
+    c0_aq[i,] = n0_aq[i,] * fun_l_w(a_lw, fun_a_l(a0_aq[i,] - 0.5, linf_al_aq, k_al_aq, t0_al_aq), b_lw) * feed_prop_aq * feed_cost_aq * 365
     
     a1_aq[i,] = a0_aq[i,] + 1
     w1_aq[i,] = fun_l_w(a_lw, fun_a_l(a1_aq[i,], linf_al_aq, k_al_aq, t0_al_aq), b_lw)
@@ -226,7 +220,7 @@ fun = function(par){
     p1_aq[i,] = p_mat[i - 1, a1_aq[i,]] * 1000 # Conversion for price in grams to revenue from kilograms of dry maw.
     rt1_aq[i,] = nt1_aq[i,] * w1_aq[i,] * by1 * by2 * p1_aq[i,] * switch_aq + nt1_aq[i,] * w1_aq[i,] * f_z * g_z # Trimming revenues.
     r1_aq[i,] = n1_aq[i,] * w1_aq[i,] * by1 * by2 * p1_aq[i,] * switch_aq + n1_aq[i,] * w1_aq[i,] * f_z * g_z # Harvest revenues.
-    c1_aq[i,] = n1_aq[i,] * fun_l_w(a_lw, fun_a_l(a1_aq[i,] - 0.5, linf_al_aq, k_al_aq, t0_al_aq), b_lw) * h_z * j_z * 365 # Fix placeholder variable names.
+    c1_aq[i,] = n1_aq[i,] * fun_l_w(a_lw, fun_a_l(a1_aq[i,] - 0.5, linf_al_aq, k_al_aq, t0_al_aq), b_lw) * feed_prop_aq * feed_cost_aq * 365 # Fix placeholder variable names.
     
     h_aq[i,] = ifelse(a0_aq[i,] > ceiling(a_sale), # Wrapper for minimum sale age.
                      ifelse(r0_aq[i,] - l_z * nstart > rt0_aq[i,] - c0_aq[i,] + disc_aq * (r1_aq[i,] - l_z * nstart), # Faustmann.

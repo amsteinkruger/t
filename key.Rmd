@@ -6,21 +6,13 @@ html_document: default
 
 ####0. Libraries
 
-```{r libraries, warning = FALSE, error = FALSE, message = FALSE}
+```{r lib_read}
 
-#  Watch out for plyr-dplyr conflict in loading.
-#library(devtools)
-#install_github("vqv/ggbiplot") # For updates to ggbiplot development.
-library(plyr) # Fixing plyr loading after dplyr in vis.R.
-library(knitr)
-library(tidyverse)
-library(janitor)
-library(broom)
-library(reshape2)
-library(ggpubr)
-library(ggbiplot)
-library(factoextra)
+knitr::read_chunk('./scripts/lib.R')
 
+```
+
+```{r lib}
 ```
 
 ####1. Data
@@ -55,7 +47,7 @@ knitr::read_chunk('./scripts/set.R')
 ```
 
 
-####5. Runs
+####4. Runs
 
 ```{r run_read}
 knitr::read_chunk('./scripts/run.R')
@@ -64,9 +56,10 @@ knitr::read_chunk('./scripts/run.R')
 ```{r run}
 ```
 
-####6. Analysis and Visualization
+####5. Analysis and Visualization
 
-#####6.1 Biomass
+#####5.1 Biomass
+
 ```{r bio_read}
 knitr::read_chunk('./scripts/bio.R')
 ```
@@ -74,7 +67,8 @@ knitr::read_chunk('./scripts/bio.R')
 ```{r bio}
 ```
 
-#####6.2 Profit
+#####5.2 Profit
+
 ```{r pi_read}
 knitr::read_chunk('./scripts/pi.R')
 ```
@@ -82,7 +76,8 @@ knitr::read_chunk('./scripts/pi.R')
 ```{r pi}
 ```
 
-#####6.3 Demand
+#####5.3 Demand
+
 ```{r dem_read}
 knitr::read_chunk('./scripts/dem.R')
 ```
@@ -90,7 +85,8 @@ knitr::read_chunk('./scripts/dem.R')
 ```{r vis}
 ```
 
-#####6.4 PCA
+#####5.4 PCA
+
 ```{r pca_read}
 knitr::read_chunk('./scripts/pca.R')
 ```
@@ -98,7 +94,8 @@ knitr::read_chunk('./scripts/pca.R')
 ```{r pca}
 ```
 
-#####6.5 Map
+#####5.5 Map
+
 ```{r map_read}
 knitr::read_chunk('./scripts/map.R')
 ```
