@@ -16,3 +16,6 @@ library(factoextra)
 library(viridisLite)
 
 # Remember to add spatial packages.
+library(sf)
+library(rgdal)
+library(rnaturalearth)

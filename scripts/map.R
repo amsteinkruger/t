@@ -2,31 +2,53 @@
 
 # Generate a map of the Gulf of California displaying local topographies, bathymetries, and features of interest in publication quality.
 
-# Libraries
-#library(readr)
-#library(dplyr)
-#library(ggplot2)
-#library(grid)
-#library(sf)
-#library(rgdal)
-#library(rnaturalearth)
+# Coordinate Reference System
+#crs = "+init=epsg:4485"
+crs = "+proj=robin"
 
 # Data
-#  Read data from local sources.
-#   Seizures.
-#dat_int = read_csv("tma_int.csv")
-#  IUCN Range.
-#dat_range = st_read("tma_range.gpkg")
+#  Interdictions.
+int = read_csv("./data/dat_int.csv")
 
-# Read data from cloud sources.
-#  Land.
-#ocean = ne_download(scale = 110, type = "ocean", category = "physical", returnclass = "sf")
-#  Countries.
-#count = ne_download(scale = 10, type = "countries", category = "cultural", returnclass = "sf")
-#  Coastlines.
-#coast = ne_download(scale = 10, type = "coastline", category = "physical", returnclass = "sf")
-# Rivers.
-#river = ne_download(scale = 10, type = "rivers_lake_centerlines", category = "physical", returnclass = "sf")
+int = 
+  st_as_sf(dat_int, 
+           coords = c("long", "lat"), 
+           crs = "+proj=longlat") %>% 
+  st_transform(crs)
+
+# Read data from rnaturalearth.
+#  Dry.
+land = 
+  ne_download(scale = 10, 
+              type = "land", 
+              category = "physical", 
+              returnclass = "sf") %>% 
+  st_transform(crs)
+
+#  Wet.
+ocean = 
+  ne_download(scale = 10, 
+                    type = "ocean", 
+              category = "physical",
+              returnclass = "sf") %>% 
+  st_transform(crs)
+
+#  Wet among dry.
+river = 
+  ne_download(scale = 10, 
+              type = "rivers_lake_centerlines", 
+              category = "physical", 
+              returnclass = "sf") %>% 
+  st_transform(crs)
+
+# Concrete.
+urban = 
+  ne_download(scale = 10, 
+              type = "urban_areas", 
+              category = "cultural", 
+              returnclass = "sf") %>% 
+  st_transform(crs)
+
 # Bathymetry.
 #bathy0 = ne_download(scale = 10, type = "bathymetry_L_0", category = "physical", returnclass = "sf")
 #bathy200 = ne_download(scale = 10, type = "bathymetry_K_200", category = "physical", returnclass = "sf")
@@ -42,5 +64,45 @@
 #              bathy3000, 
 #              bathy4000)
 
-# Urban Areas.
-#urban = ne_download(scale = 10, type = "urban_areas", category = "cultural", returnclass = "sf")
+
+#  Define area.
+lonbox = c(-115, -109, -109, -115, -115)
+latbox = c(33, 33, 22.75, 22.75, 33)
+#  Transform area to CRS.
+box = cbind(lonbox, latbox) %>% 
+  list() %>% 
+  st_polygon() %>% 
+  st_sfc(crs = "+proj=longlat") %>% 
+  st_transform(crs = crs) %>% 
+  st_bbox
+
+# Plot.
+map = 
+  ggplot() + 
+  geom_sf(data = ocean, 
+          color = NA, 
+          fill = "slategray1") +
+  geom_sf(data = land, 
+          color = NA, 
+          fill = "slategray3") +
+  geom_sf(data = urban, 
+          color = NA, 
+          fill = "slategray4") +
+  geom_sf(data = river, 
+          color = "slategray1") +
+  geom_sf(data = int,
+          shape = 1) +
+  #scale_fill_manual(values = c("#EF5645", "#7A8D39")) +
+  #geom_sf(data = points, aes(fill = type), pch = 21, size = 2.25) +
+  coord_sf(xlim = c(box["xmin"], 
+                    box["xmax"]), 
+           ylim = c(box["ymin"], 
+                    box["ymax"]), 
+           datum = NA) +
+  #labs(caption = "Here's your caption.", title = "Here's your title.") +
+  theme_classic() #+
+  #theme(panel.background = element_rect(fill = "#003660", colour = NA)) +
+  #theme(legend.position = "none")
+
+print(map)
+
