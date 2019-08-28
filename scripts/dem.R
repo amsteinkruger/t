@@ -31,11 +31,6 @@ fun_dem =
 # Plot the production-demand frontier.
 plot_dem = 
   ggplot() +
-  geom_path(data = ,
-            aes(x = ,
-                y = ),
-            color = ,
-            size = ) +
   geom_ribbon(data = ,
               aes(x = ,
                   ymin = 0,
@@ -46,6 +41,11 @@ plot_dem =
                   ymin = ,
                   ymax = Inf),
               fill = ) +
+  geom_path(data = ,
+            aes(x = ,
+                y = ),
+            color = ,
+            size = ) +
   geom_hline(yintercept = ) +
   theme_classic()
 

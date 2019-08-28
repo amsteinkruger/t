@@ -13,7 +13,6 @@ pal_col = viridis(4,
                   direction = -1, 
                   option = "D")
 
-
 # Market
 #  Estimate inverse demand.
 nlm = nls(p ~ q * a + (g ^ b) + c, 
@@ -60,16 +59,6 @@ pars_full = dat_par %>%
           low = nlm_tidy$estimate[3] - nlm_tidy$std.error[3], 
           high = nlm_tidy$estimate[3] + nlm_tidy$std.error[3], 
           units = "-", module = "Fishery", 
-          source_def = "Intermediate", 
-          source_pess = NA, 
-          source_opt = NA) %>%
-  add_row(name_long = "Choke Price Multiplier", 
-          name_short = "m_ma", 
-          "function" = "Demand", 
-          mid = 1, 
-          low = NA, 
-          high = NA, 
-          units = "-", module = "Aquaculture and Fishery", 
           source_def = "Intermediate", 
           source_pess = NA, 
           source_opt = NA) %>%
