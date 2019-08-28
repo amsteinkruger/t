@@ -63,6 +63,16 @@ pars_full = dat_par %>%
           source_def = "Intermediate", 
           source_pess = NA, 
           source_opt = NA) %>%
+  add_row(name_long = "Choke Price Multiplier", 
+          name_short = "m_ma", 
+          "function" = "Demand", 
+          mid = 1, 
+          low = NA, 
+          high = NA, 
+          units = "-", module = "Aquaculture and Fishery", 
+          source_def = "Intermediate", 
+          source_pess = NA, 
+          source_opt = NA) %>%
   # Add aquaculture outputs to parameter table.
   add_row(name_long = "Aq. Mortality Coefficient", 
           name_short = "b1_mort_aq", 
@@ -93,7 +103,7 @@ pars_base = pars_full %>%
   column_to_rownames(var = "name_short")
 
 # Define n runs.
-n = 5000
+n = 500
 
 # Build n runs w/o aquaculture.
 pars_0 = pars_base[1]

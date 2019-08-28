@@ -8,9 +8,9 @@ crs = "+proj=robin"
 
 # Data
 #  Interdictions.
-int = read_csv("./data/dat_int.csv")
+dat_int = read_csv("./data/dat_int.csv")
 
-int = 
+dat_int = 
   st_as_sf(dat_int, 
            coords = c("long", "lat"), 
            crs = "+proj=longlat") %>% 
@@ -77,7 +77,7 @@ box = cbind(lonbox, latbox) %>%
   st_bbox
 
 # Plot.
-map = 
+plot_map = 
   ggplot() + 
   geom_sf(data = ocean, 
           color = NA, 
@@ -90,7 +90,7 @@ map =
           fill = "slategray4") +
   geom_sf(data = river, 
           color = "slategray1") +
-  geom_sf(data = int,
+  geom_sf(data = dat_int,
           shape = 1) +
   #scale_fill_manual(values = c("#EF5645", "#7A8D39")) +
   #geom_sf(data = points, aes(fill = type), pch = 21, size = 2.25) +
@@ -104,5 +104,8 @@ map =
   #theme(panel.background = element_rect(fill = "#003660", colour = NA)) +
   #theme(legend.position = "none")
 
-print(map)
+# Print for .Rmd
+print(plot_map)
 
+# Save.
+ggsave("./out/plot_map.png", plot_map)
