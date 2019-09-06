@@ -92,7 +92,7 @@ pars_base = pars_full %>%
   column_to_rownames(var = "name_short")
 
 # Define n runs.
-n = 500
+n = 100
 
 # Build n runs w/o aquaculture.
 pars_0 = pars_base[1]

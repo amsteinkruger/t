@@ -1,4 +1,4 @@
-# ---- bio ----
+# ---- bio_err ----
 
 # Summarize results for ribbon panels.
 #  Find biomass for each cohort and year, then sum by cohort.
