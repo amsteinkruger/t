@@ -91,7 +91,7 @@ knitr::read_chunk('./scripts/pi.R')
 knitr::read_chunk('./scripts/dem.R')
 ```
 
-```{r vis}
+```{r dem}
 ```
 
 #####5.4 PCA

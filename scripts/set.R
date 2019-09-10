@@ -43,7 +43,8 @@ pars_full = dat_par %>%
           source_pess = NA, 
           source_opt = NA) %>% 
   add_row(name_long = "Size Premium", 
-          name_short = "b_ma", "function" = "Demand", 
+          name_short = "b_ma", 
+          "function" = "Demand", 
           mid = nlm_tidy$estimate[2], 
           low = nlm_tidy$estimate[2] - nlm_tidy$std.error[2], 
           high = nlm_tidy$estimate[2] + nlm_tidy$std.error[2], 

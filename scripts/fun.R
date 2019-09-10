@@ -259,36 +259,12 @@ fun = function(par){
   #  Catches.
   tidyy = melt(y)
   tidyy$var = "Catches"
-  #  Recruitment.
-  tidyrec = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
-  tidyrec$Var1 = seq(1, t_i - t_0 + 1)
-  tidyrec$Var2 = NA
-  tidyrec$value = rec
-  tidyrec$var = "Recruitment"
-  #  Prices. Using prices for a 13y/o fish for easy reference. It's representativish.
-  tidyp = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
-  tidyp$Var1 = seq(1, t_i - t_0 + 1)
-  tidyp$Var2 = NA
-  tidyp$value = p_mat[, 13]
-  tidyp$var = "Price"
-  #  Poaching Effort.
-  tidye = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
-  tidye$Var1 = seq(1, t_i - t_0 + 1)
-  tidye$Var2 = NA
-  tidye$value = e
-  tidye$var = "Effort"
   #  Poaching Profit.
   tidypi_fi = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
   tidypi_fi$Var1 = seq(1, t_i - t_0 + 1)
   tidypi_fi$Var2 = NA
   tidypi_fi$value = r_fi - c_fi
   tidypi_fi$var = "Poaching Profit"
-  #  Aquaculture Production.
-  tidyy_aq = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
-  tidyy_aq$Var1 = seq(1, t_i - t_0 + 1)
-  tidyy_aq$Var2 = NA
-  tidyy_aq$value = rowSums(y_aq) / 1000 # Summing cages and converting from kilograms to tonnes.
-  tidyy_aq$var = "Aquaculture Production (Wet Tonnes)"
   # Aquaculture Profit.
   tidypi_aq = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
   tidypi_aq$Var1 = seq(1, t_i - t_0 + 1)
@@ -296,7 +272,7 @@ fun = function(par){
   tidypi_aq$value = rowSums(r_aq) - rowSums(c_aq) 
   tidypi_aq$var = "Aquaculture Profit"
   #  Everything!
-  tidy = bind_rows(tidyn, tidyy, tidyrec, tidyp, tidye, tidypi_fi, tidyy_aq, tidypi_aq) 
+  tidy = bind_rows(tidyn, tidyy, tidypi_fi, tidypi_aq) 
   tidy$group = ifelse(tidy$Var2 < a_mat_am, "Machorro", ifelse(tidy$Var2 < a_old_am, "Pre-Adulto", "Adulto"))
   tidy = rename(tidy, Year = Var1, Age = Var2, Result = value, Variable = var, Group = group)
   
@@ -304,3 +280,29 @@ fun = function(par){
   return(tidy)
   
 }
+
+# Code for legacy output starts here. Clean this out.
+#  Recruitment.
+# tidyrec = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
+# tidyrec$Var1 = seq(1, t_i - t_0 + 1)
+# tidyrec$Var2 = NA
+# tidyrec$value = rec
+# tidyrec$var = "Recruitment"
+# #  Prices. Using prices for a 13y/o fish for easy reference. It's representativish.
+# tidyp = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
+# tidyp$Var1 = seq(1, t_i - t_0 + 1)
+# tidyp$Var2 = NA
+# tidyp$value = p_mat[, 13]
+# tidyp$var = "Price"
+# #  Poaching Effort.
+# tidye = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
+# tidye$Var1 = seq(1, t_i - t_0 + 1)
+# tidye$Var2 = NA
+# tidye$value = e
+# tidye$var = "Effort"
+# #  Aquaculture Production.
+# tidyy_aq = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
+# tidyy_aq$Var1 = seq(1, t_i - t_0 + 1)
+# tidyy_aq$Var2 = NA
+# tidyy_aq$value = rowSums(y_aq) / 1000 # Summing cages and converting from kilograms to tonnes.
+# tidyy_aq$var = "Aquaculture Production (Wet Tonnes)"
