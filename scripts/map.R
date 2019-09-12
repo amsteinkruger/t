@@ -49,6 +49,17 @@ urban =
               returnclass = "sf") %>% 
   st_transform(crs)
 
+# Concrete, again.
+roads = 
+  ne_download(scale = 10, 
+              type = "roads", 
+              category = "cultural", 
+              returnclass = "sf") %>% 
+  select(type, sov_a3, level) %>% 
+  filter(type == "Secondary Highway" | 
+         type == "Major Highway") %>%  
+  st_transform(crs)
+
 # Bathymetry.
 bathy0 = ne_download(scale = 10, 
                      type = "bathymetry_L_0", 
@@ -119,6 +130,8 @@ plot_map =
   geom_sf(data = urban, 
           color = NA, 
           fill = "grey50") +
+  geom_sf(data = roads, 
+          color = "grey50") +
   geom_sf(data = dat_int,
           color = "orangered2",
           shape = 1,
