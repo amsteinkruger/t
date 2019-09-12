@@ -12,10 +12,8 @@ library(broom)
 library(reshape2)
 library(ggpubr)
 library(ggbiplot)
+library(optimx)
 library(factoextra)
 library(viridisLite)
-
-# Remember to add spatial packages.
-library(sf)
 library(rgdal)
 library(rnaturalearth)
