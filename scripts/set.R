@@ -93,7 +93,7 @@ pars_base = pars_full %>%
   column_to_rownames(var = "name_short")
 
 # Define n runs.
-n = 1000
+n = 100
 
 # Build n runs w/o aquaculture.
 pars_0 = pars_base[1]
@@ -148,7 +148,9 @@ pars_0["by2", 1:n] = runif(n,
                                min = pars_base["by2", 2], 
                                max = pars_base["by2", 3])
 
-pars_0["c_cages", 1:n] = 5#ceiling(runif(n, 
+pars_0["c_cages", 1:n] = 5
+  
+                        #ceiling(runif(n, 
                         #               min = pars_base["c_cages", 2], 
                         #               max = pars_base["c_cages", 3]))
 
