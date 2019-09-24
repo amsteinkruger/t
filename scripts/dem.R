@@ -73,9 +73,7 @@ fun_dem = function(dem, opt){
 # test
 fun_dem(2.75, opt = list(pars_1, 100, med))
 # neat! it works (2019/09/12)
-# results of pseudo-optimization by hand, down to ~25t error in biomass w/ 100 runs.
-slapdash = data.frame(Cages = c(5, 10, 15, 25, 50, 75, 100), 
-                      Demand = c(1.125, 1.25, 1.415, 1.65, 2.05, 2.375, 2.75))
+
 
 
 # Optimize proportional, instantaneous change in demand to match increasing capitalization.
@@ -107,6 +105,9 @@ nlm = nlminb(start = 1,
 # set range of production scenarios
 # iterate
 
+# results of pseudo-optimization by hand, down to ~25t error in biomass w/ 100 runs.
+# slapdash = data.frame(Cages = c(5, 10, 15, 25, 50, 75, 100), 
+#                       Demand = c(1.125, 1.25, 1.415, 1.65, 2.05, 2.375, 2.75))
 
 # Plot the production-demand frontier.
 plot_dem = 
@@ -121,11 +122,11 @@ plot_dem =
   #                 ymin = ,
   #                 ymax = Inf),
   #             fill = ) +
-  geom_path(data = slapdash,
-            aes(x = Demand,
-                y = Cages),
-            #color = ,
-            size = 1.05) +
+  # geom_path(data = slapdash,
+  #           aes(x = Demand,
+  #               y = Cages),
+  #           #color = ,
+  #           size = 1.05) +
   geom_hline(yintercept = 10,
              linetype = "dashed") +
   labs(x = "Quantities Demanded (Proportion of 2017 Estimate)",

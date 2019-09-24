@@ -54,3 +54,9 @@ plot_bio_mat_pronum =
   scale_y_continuous(expand = c(0, 0)) +
   theme_classic() +
   facet_wrap(~Scenario)
+
+# Save.
+ggsave("./out/plot_mat.png", 
+       plot_bio_mat_pronum,
+       width = 8.5, 
+       height = 5.5)

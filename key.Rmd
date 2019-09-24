@@ -4,6 +4,15 @@ output:
 html_document: default
 ---
 
+For presentations, 
+9.32"w, 3.25"h (or not?)
+Proza Libre
+Open Sans
+Back: #073763ff
+Head: #f3f3f3
+Body: #efefef
+
+
 ####0. Libraries
 
 ```{r lib_read}

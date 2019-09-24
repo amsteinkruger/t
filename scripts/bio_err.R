@@ -115,4 +115,7 @@ plot_bio =
 print(plot_bio)
 
 # Save.
-ggsave("./out/plot_bio.png", plot_bio, width = 8.5, height = 5.5)
+ggsave("./out/plot_bio.png", 
+       plot_bio,
+       width = 9.32, 
+       height = 3.25)

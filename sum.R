@@ -53,5 +53,5 @@ results_pr = results %>%
 print(results_pr)
 
 # Easy code for cost results check.
-View(filter(results, Variable == "Poaching Cost per Metric Ton"))
-View(filter(results, Variable == "Aquaculture Cost per Metric Ton"))
+#View(filter(results, Variable == "Poaching Cost per Metric Ton"))
+#View(filter(results, Variable == "Aquaculture Cost per Metric Ton"))
