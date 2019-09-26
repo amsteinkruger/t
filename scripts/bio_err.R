@@ -20,7 +20,7 @@ results_sum = results %>%
 
 # Keep counterfactual runs. Bin runs by scale of aquaculture, then find quantile outcomes.
 results_cag = results_sum %>% 
-  filter(Scenario == "Counterfactual") %>% 
+  filter(Scenario == "Foreign and Domestic Markets") %>% 
   mutate(Cages = ifelse(Cages > 0, 
                         ifelse(Cages > 25, 
                                ifelse(Cages > 50, 
@@ -80,14 +80,14 @@ plot_bio =
                 color = Cages),
             shape = 18) +
   geom_ribbon(data = filter(results_sce, # Quantiles for status quo runs.
-                            Scenario == "Status Quo"),
+                            Scenario == "Domestic Market"),
               aes(x = Year + 2016,
                   ymin = ForBio, 
                   ymax = SixBio),
               fill = "grey85",
               color = "grey75") +
   geom_point(data = filter(results_sce, # Quantiles for status quo runs.
-                          Scenario == "Status Quo"),
+                          Scenario == "Domestic Market"),
              aes(x = Year + 2016,
                  y = MedBio),
              color = "grey65",
@@ -103,10 +103,13 @@ plot_bio =
                      labels = scales::comma) + 
   scale_x_continuous(#breaks = c(2017, 2022, 2027),
                      expand = c(0, 0.75)) +  
-  labs(x = "Year", y = "Biomass (Tonnes)") + 
+  guides(colour = guide_legend(reverse = T),
+         fill = guide_legend(reverse = T)) +
+  labs(x = "", y = "Biomass (Tonnes)") + 
   theme_classic() + 
-  theme(panel.grid.major = element_blank(), 
-        panel.grid.minor = element_blank(),
+  theme(legend.background = element_rect(fill = "transparent"),
+        strip.background = element_blank(),
+        strip.text = element_blank(),
         panel.background = element_rect(fill = "transparent", color = NA),
         plot.background = element_rect(fill = "transparent", color = NA)) + 
   facet_wrap(~Scenario)
@@ -117,5 +120,7 @@ print(plot_bio)
 # Save.
 ggsave("./out/plot_bio.png", 
        plot_bio,
-       width = 9.32, 
-       height = 3.25)
+       dpi = 300,
+       bg = "transparent",
+       width = 9.00, 
+       height = 4.13)

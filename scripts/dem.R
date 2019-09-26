@@ -137,4 +137,8 @@ plot_dem =
 print(plot_dem)
 
 # Save.
-ggsave("./out/plot_dem.png", plot_dem, dpi = 300, width = 6.5, height = 4.5)
+ggsave("./out/plot_dem.png", 
+       plot_dem, 
+       dpi = 300, 
+       width = 6.5, 
+       height = 4.5)

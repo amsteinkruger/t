@@ -36,7 +36,7 @@ fun = function(par){
   # Run intermediate set-up.
   #  Fishery.
   #   Numbers in 2017.
-  n0 = dat_bio$n * rnorm(1, mean = 1, sd = 0.085)
+  n0 = dat_bio$n * nprop
   #   Catchability.
   # F = qENS > q = F / ENS; N is in numbers, F is in tonnes, and S is in proportions, so conversions are in order.
   q = 1000 * f_2017 / sum(n0 * fun_l_w(a_lw, fun_a_l(seq(a_0, a_i), linf_al, k_al, t0_al), b_lw) * fun_l_s(fun_a_l(seq(a_0, a_i), linf_al, k_al, t0_al), a_ls, b_ls, m_ls) * e_2017)

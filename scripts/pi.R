@@ -3,28 +3,37 @@
 # Summarize profit impact.
 results_pi = 
   results %>% 
-  select(-Age, -Group) %>% 
+  select(-Age) %>% 
   filter(Variable == "Aquaculture Profit" |
-           Variable == "Poaching Profit") %>% 
-  mutate(Variable = str_remove(string = Variable, 
-                               pattern = " Profit")) %>%  
+           Variable == "Poaching Profit") %>%
+  mutate(Variable = str_remove(string = Variable,
+                               pattern = " Profit")) %>%
   mutate(Result = Result * 0.000001) %>%
   mutate(Cages = ifelse(Cages > 0, 
-                        ifelse(Cages > 25, 
-                               ifelse(Cages > 50, 
-                                      ifelse(Cages > 75, 
-                                             "75 - 100", 
-                                             "50 - 75"), 
-                                      "25 - 50"), 
-                               "1 - 25"),
+                        ifelse(Cages > 10, 
+                               ifelse(Cages > 15, 
+                                      ifelse(Cages > 20, 
+                                             "20 - 25", 
+                                             "15 - 20"), 
+                                      "10 - 15"), 
+                               "1 - 10"),
                         "0")) %>% # Bin scale.
+  # mutate(Cages = ifelse(Cages > 0, 
+  #                       ifelse(Cages > 25, 
+  #                              ifelse(Cages > 50, 
+  #                                     ifelse(Cages > 75, 
+  #                                            "75 - 100", 
+  #                                            "50 - 75"), 
+  #                                     "25 - 50"), 
+  #                              "1 - 25"),
+  #                       "0")) %>% # Bin scale.
   na.omit() %>% # Track down origin of NAs.
   group_by(Year, 
            Run,
            Variable, 
            Scenario,
            Cages) %>% 
-  mutate(Result = ifelse(Scenario == "Counterfactual", 
+  mutate(Result = ifelse(Scenario == "Foreign and Domestic Markets", 
                          Result, 
                          -Result)) %>% # Change sign on status quo runs for tidy difference calculation.
   ungroup() %>% 
@@ -76,10 +85,14 @@ plot_pi =
   theme(axis.text.x = element_text(angle = 45,
                                    hjust = 0.50,
                                    vjust = 0.60)) +
-  facet_wrap(~Variable)
+  facet_wrap(~Scenario)
 
 # Print for .Rmd
 print(plot_pi)
 
 # Save.
-ggsave("./out/plot_pi.png", plot_pi, width = 8.5, height = 5.5)
+ggsave("./out/plot_pi.png", 
+       plot_pi, 
+       dpi = 300,
+       width = 9.00, 
+       height = 4.13)
