@@ -77,15 +77,24 @@ plot_pi =
              color = "firebrick",
              linetype = "dashed") +
   scale_fill_manual(values = pal_fil) +
-  labs(x = "", y = "\u0394 \u03C0 (US$M 2018)") +
+  labs(x = "", 
+       y = "\u0394 \u03C0 (US$M 2018)", 
+       fill = "Net Pens") +
   #scale_x_continuous(breaks = c(2017, 2022, 2027),
   #                   expand = c(0, 0.75)) +
   scale_y_continuous(breaks = c(-20, 0, 25, 50, 75)) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45,
                                    hjust = 0.50,
-                                   vjust = 0.60)) +
-  facet_wrap(~Scenario)
+                                   vjust = 0.60),
+        legend.background = element_rect(fill = "transparent"),
+        legend.position = "top",
+        legend.text = element_text(margin = margin(l = 2.5, r = 2.5), hjust = 0),
+        strip.background = element_blank(),
+        strip.text = element_blank(),
+        panel.background = element_rect(fill = "transparent", color = NA),
+        plot.background = element_rect(fill = "transparent", color = NA)) +
+  facet_wrap(~Variable)
 
 # Print for .Rmd
 print(plot_pi)
@@ -94,5 +103,6 @@ print(plot_pi)
 ggsave("./out/plot_pi.png", 
        plot_pi, 
        dpi = 300,
-       width = 9.00, 
-       height = 4.13)
+       width = 6, 
+       height = 5,
+       bg = "transparent")

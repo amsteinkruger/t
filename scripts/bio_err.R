@@ -114,6 +114,57 @@ plot_bio =
         plot.background = element_rect(fill = "transparent", color = NA)) + 
   facet_wrap(~Scenario)
 
+# Plot summary numbers with overlay.
+pal_fil_alt = viridis(4, 
+                      begin = 0.00, 
+                      end = 0.50, 
+                      direction = -1, 
+                      option = "D",
+                      alpha = 0.35)
+pal_col = viridis(4, 
+                  begin = 0.00, 
+                  end = 0.50, 
+                  direction = -1, 
+                  option = "D")
+
+plot_bio = 
+  ggplot() + 
+  geom_ribbon(data = results_sce,  # Outer runs.
+              aes(x = Year + 2016,
+                  ymin = MinBio, 
+                  ymax = MaxBio,
+                  fill = Scenario,
+                  color = Scenario)) +
+  geom_point(data = results_sce,
+             aes(x = Year + 2016,
+                 y = MedBio,
+                 color = Scenario),
+             shape = 18,
+             size = 1.85) +
+  geom_vline(data = results_sce,
+             aes(xintercept = 3 + 2016),
+             color = "firebrick4",
+             linetype = "dashed") +
+  scale_color_manual(values = pal_col) +
+  scale_fill_manual(values = pal_fil_alt) +
+  scale_y_continuous(expand = c(0, 0),
+                     limits = c(0, 20000),
+                     labels = scales::comma) + 
+  scale_x_continuous(breaks = c(2019, 2027, 2034),
+    expand = c(0, 0)) +  
+  guides(colour = guide_legend(reverse = T),
+         fill = guide_legend(reverse = T)) +
+  labs(x = "", y = "Biomass (Tonnes)") + 
+  theme_classic() + 
+  theme(legend.background = element_rect(fill = "transparent"),
+        legend.title = element_blank(),
+        legend.position = "top",
+        legend.text = element_text(margin = margin(l = 5, r = 5), hjust = 0),
+        strip.background = element_blank(),
+        strip.text = element_blank(),
+        panel.background = element_rect(fill = "transparent", color = NA),
+        plot.background = element_rect(fill = "transparent", color = NA))
+
 # Print for .Rmd
 print(plot_bio)
 
@@ -122,5 +173,5 @@ ggsave("./out/plot_bio.png",
        plot_bio,
        dpi = 300,
        bg = "transparent",
-       width = 9.00, 
-       height = 4.13)
+       width = 6, 
+       height = 5)
