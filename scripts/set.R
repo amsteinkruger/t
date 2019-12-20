@@ -15,11 +15,18 @@ pal_col = viridis(4,
 
 # Market
 #  Estimate inverse demand.
-nlm = nls(p ~ q * a + (g ^ b) + c, 
-          data = dat_p, 
-          start = c(a = -5.00, b = 2.00, c = 20))
+#   Nonlinear model doesn't really pay off, but here's the code anyhow.
+# nlm = nls(p ~ q * a + (g ^ b) + c, 
+#           data = dat_p, 
+#           start = c(a = -5.00, b = 2.00, c = 20))
+
+#   Linear model works fine.
+lm_p = lm(p ~ q + g,
+          data = dat_p)
+
+
 #  Clean results.
-nlm_tidy = tidy(nlm)
+lm_tidy = tidy(lm_p)
 
 # Aquaculture
 #  Estimate incremental mortalities.
@@ -34,9 +41,9 @@ pars_full = dat_par %>%
   add_row(name_long = "Quantity Elasticity", 
           name_short = "a_ma", 
           "function" = "Demand", 
-          mid = nlm_tidy$estimate[1], 
-          low = nlm_tidy$estimate[1] - nlm_tidy$std.error[1], 
-          high = nlm_tidy$estimate[1] + nlm_tidy$std.error[1], 
+          mid = lm_tidy$estimate[2], 
+          low = lm_tidy$estimate[2] - lm_tidy$std.error[2], 
+          high = lm_tidy$estimate[2] + lm_tidy$std.error[2], 
           units = "-", 
           module = "Fishery", 
           source_def = "Intermediate", 
@@ -45,9 +52,9 @@ pars_full = dat_par %>%
   add_row(name_long = "Size Premium", 
           name_short = "b_ma", 
           "function" = "Demand", 
-          mid = nlm_tidy$estimate[2], 
-          low = nlm_tidy$estimate[2] - nlm_tidy$std.error[2], 
-          high = nlm_tidy$estimate[2] + nlm_tidy$std.error[2], 
+          mid = lm_tidy$estimate[3], 
+          low = lm_tidy$estimate[3] - lm_tidy$std.error[3], 
+          high = lm_tidy$estimate[3] + lm_tidy$std.error[3], 
           units = "-", 
           module = "Fishery", 
           source_def = "Intermediate", 
@@ -56,9 +63,9 @@ pars_full = dat_par %>%
   add_row(name_long = "Choke Price", 
           name_short = "c_ma", 
           "function" = "Demand", 
-          mid = nlm_tidy$estimate[3], 
-          low = nlm_tidy$estimate[3] - nlm_tidy$std.error[3], 
-          high = nlm_tidy$estimate[3] + nlm_tidy$std.error[3], 
+          mid = lm_tidy$estimate[1], 
+          low = lm_tidy$estimate[1] - lm_tidy$std.error[1], 
+          high = lm_tidy$estimate[1] + lm_tidy$std.error[1], 
           units = "-", module = "Fishery", 
           source_def = "Intermediate", 
           source_pess = NA, 

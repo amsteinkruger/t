@@ -51,6 +51,9 @@ results_sce = results_sum %>%
             SixBio = quantile(SumBio, 0.60)) %>% 
   ungroup()
 
+#  Run out a vector of facet labels by scenario.
+labs_bio_err = c(Counterfactual = "A", "Status Quo" = "B")
+
 # Plot the summary numbers.
 plot_bio = 
   ggplot() + 
@@ -109,7 +112,8 @@ plot_bio =
         panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "transparent", color = NA),
         plot.background = element_rect(fill = "transparent", color = NA)) + 
-  facet_wrap(~Scenario)
+  facet_wrap(~Scenario,
+             labeller = labeller(Scenario = labs_bio_err))
 
 # Print for .Rmd
 print(plot_bio)

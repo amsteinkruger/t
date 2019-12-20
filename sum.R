@@ -23,7 +23,7 @@ results_bio = results %>%
 print(results_bio)
 
 results_pi = results %>% 
-  filter(Variable == "Poaching Profit") %>% 
+  filter(Variable == "Poaching Profit" & Cages < 25) %>% 
   group_by(Run, Scenario) %>% 
   summarize(SumPi = sum(Result)) %>% 
   ungroup() %>% 
@@ -34,8 +34,21 @@ results_pi = results %>%
   mutate(abs = Counterfactual - `Status Quo`,
          pro = Counterfactual / `Status Quo`)
 
+results_pi_aq = results %>% 
+  filter(Variable == "Aquaculture Profit" & Cages < 25) %>% 
+  group_by(Run, Scenario) %>% 
+  summarize(SumPi = sum(Result, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  group_by(Scenario) %>% 
+  summarize(MedPi = median(SumPi, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  spread(key = Scenario, value = MedPi) %>% 
+  mutate(abs = Counterfactual - `Status Quo`,
+         pro = Counterfactual / `Status Quo`)
+
 # Differential and proportional impacts in profit for the median of runs in the final year.
 print(results_pi)
+print(results_pi_aq)
 
 results_pr = results %>% 
   filter(Variable == "Price") %>% 
@@ -53,5 +66,16 @@ results_pr = results %>%
 print(results_pr)
 
 # Easy code for cost results check.
-#View(filter(results, Variable == "Poaching Cost per Metric Ton"))
-#View(filter(results, Variable == "Aquaculture Cost per Metric Ton"))
+# View(filter(results, Variable == "Poaching Cost per Metric Ton"))
+# View(filter(results, Variable == "Aquaculture Cost per Metric Ton"))
+results_co = 
+  results %>% 
+  filter(Variable == "Poaching Cost per Metric Ton" | Variable == "Aquaculture Cost per Metric Ton") %>% 
+  filter(is.infinite(Result) == FALSE & is.na(Result) == FALSE) %>% 
+  filter(Result < quantile(Result, 0.75)) #%>% 
+  ggplot() +
+  geom_col(aes(x = Year,
+               y = Result,
+               fill = Variable),
+           position = "dodge2") +
+    facet_wrap(~Scenario)

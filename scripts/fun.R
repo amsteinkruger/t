@@ -19,8 +19,18 @@ fun_a_bmort = function(a, b_b, a_mat, n0){b = ifelse(a < a_mat, 0.20, 0)}#(b_b /
 fun_rec = function(n, a_rec, b_rec, d_rec){n0 = (a_rec * n) / ((1 + n / b_rec) ^ d_rec)}
 
 # Production and grams to price in multivariate inverse demand specification.
-fun_p = function(q, g, a_ma, b_ma, c_ma){p = q * a_ma + g ^ b_ma + c_ma
-                                         return(ifelse(p > 0, p, 0))}
+#  Deprecated nonlinear option.
+# fun_p = function(q, g, a_ma, b_ma, c_ma){p = q * a_ma + g ^ b_ma + c_ma
+#                                          return(ifelse(p > 0, p, 0))}
+#  Linear option.
+fun_p = function(q, g, a_ma, b_ma, c_ma)
+  
+  {
+  
+  p = q * a_ma + g * b_ma + c_ma
+  return(ifelse(p > 0, p, 0))
+  
+  }
 
 # Ages to natural mortalities in aquaculture.
 fun_a_aqmort = function(a, b1, b2, mmin){m = b1 * exp(b2 * a * 12) + mmin}
@@ -107,7 +117,7 @@ fun = function(par){
                     fun_l_w(a_lw, fun_a_l(a_matrix[1, ], linf_al, k_al, t0_al), b_lw) * by1 * by2 * 1000, 
                     a_ma, b_ma, c_ma) * loss
   r_fi[1] = sum(p_mat[1,] * fun_l_w(a_lw, fun_a_l(a_matrix[1, ], linf_al, k_al, t0_al), b_lw) * y[1, ] * by1 * by2 * 1000) # Constant for conversion to grams of buche.
-  c_fi[1] = e[1] * c_2017 # Costs for first year.
+  c_fi[1] = e[1] * c_2017 + r_fi[1] * 0.75 # Costs for first year. Mind the hard-coding for labor costs out of r_fi.
   rec[1] = fun_rec(sum(n[1, 2:(a_i - a_0 + 1)]), a_r, b_r, d_r) # Recruitment for first year. Start of column designation is hard-coded. 
   eta = (e[1] * eta_limit) / (r_fi[1] - c_fi[1]) # Parameter to restrict changes in effort.
   
@@ -220,7 +230,7 @@ fun = function(par){
     p1_aq[i,] = p_mat[i - 1, a1_aq[i,]] * 1000 # Conversion for price in grams to revenue from kilograms of dry maw.
     rt1_aq[i,] = nt1_aq[i,] * w1_aq[i,] * by1 * by2 * p1_aq[i,] * switch_aq + nt1_aq[i,] * w1_aq[i,] * f_z * g_z # Trimming revenues.
     r1_aq[i,] = n1_aq[i,] * w1_aq[i,] * by1 * by2 * p1_aq[i,] * switch_aq + n1_aq[i,] * w1_aq[i,] * f_z * g_z # Harvest revenues.
-    c1_aq[i,] = n1_aq[i,] * fun_l_w(a_lw, fun_a_l(a1_aq[i,] - 0.5, linf_al_aq, k_al_aq, t0_al_aq), b_lw) * feed_prop_aq * feed_cost_aq * 365 # Fix placeholder variable names.
+    c1_aq[i,] = n1_aq[i,] * fun_l_w(a_lw, fun_a_l(a1_aq[i,] - 0.5, linf_al_aq, k_al_aq, t0_al_aq), b_lw) * feed_prop_aq * feed_cost_aq * 365
     
     h_aq[i,] = ifelse(a0_aq[i,] > ceiling(a_sale), # Wrapper for minimum sale age.
                      ifelse(r0_aq[i,] - l_z * nstart > rt0_aq[i,] - c0_aq[i,] + disc_aq * (r1_aq[i,] - l_z * nstart), # Faustmann.
@@ -249,7 +259,7 @@ fun = function(par){
     r_fi[i] = sum(p_mat[i,] * fun_l_w(a_lw, fun_a_l(a_matrix[i, ], linf_al, k_al, t0_al), b_lw) * y[i, ] * by1 * by2 * 1000) # Constant for conversion to grams of buche.
     
     # Costs.
-    c_fi[i] = e[i] * c_2017
+    c_fi[i] = e[i] * c_2017 + r_fi[i] * 0.75 # Mind the hard-coding for labor costs in r_fi.
   }
   
   # Tidy results: numbers, recruitment, catches, effort, revenues, costs, profits.
@@ -327,7 +337,7 @@ fun = function(par){
                     var = X4)
   tidyc_aq$Var1 = seq(1, t_i - t_0 + 1)
   tidyc_aq$Var2 = NA
-  tidyc_aq$value = rowSums(c_aq) / ((rowSums(y_aq) * by1 * by2) / 1000) # Summing cages and converting from kilograms to tonnes.
+  tidyc_aq$value = rowSums(c_aq, na.rm = TRUE) / ((rowSums(y_aq, na.rm = TRUE) * by1 * by2) / 1000) # Summing cages and converting from kilograms to tonnes.
   tidyc_aq$var = "Aquaculture Cost per Metric Ton"
   #  Everything!
   tidy = bind_rows(tidyn, tidyy, tidypi_fi, tidypi_aq, tidyp, tidye, tidyc_fi, tidyc_aq)

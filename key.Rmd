@@ -70,7 +70,7 @@ knitr::read_chunk('./scripts/run.R')
 #####5.1.1 Biomass Trajectories
 
 ```{r bio_err_read}
-knitr::read_chunk('./scripts/bio.R')
+knitr::read_chunk('./scripts/bio_err.R')
 ```
 
 ```{r bio_err}

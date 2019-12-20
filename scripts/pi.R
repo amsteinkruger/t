@@ -3,7 +3,7 @@
 # Summarize profit impact.
 results_pi = 
   results %>% 
-  select(-Age, -Group) %>% 
+  select(-Age) %>% 
   filter(Variable == "Aquaculture Profit" |
            Variable == "Poaching Profit") %>% 
   mutate(Variable = str_remove(string = Variable, 
