@@ -46,17 +46,28 @@ plot_bio_mat_medbio =
 plot_bio_mat_pronum = 
   ggplot() +
   geom_tile(data = results_mat,
-            aes(x = Year,
+            aes(x = Year + 2016,
                 y = Age, 
                 fill = ProNum)) +
   scale_fill_viridis_c(option = "D") +
-  scale_x_continuous(expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0),
+                     breaks = c(2017, 2036)) +
   scale_y_continuous(expand = c(0, 0)) +
+  labs(x = "", y = "Age") +
   theme_classic() +
+  theme(legend.background = element_rect(fill = "transparent"),
+        legend.title = element_blank(),
+        strip.background = element_blank(),
+        #strip.text = element_blank(),
+        panel.background = element_rect(fill = "transparent", color = NA),
+        panel.spacing.x = unit(5, "lines"),
+        plot.background = element_rect(fill = "transparent", color = NA)) + 
   facet_wrap(~Scenario)
 
 # Save.
 ggsave("./out/plot_mat.png", 
        plot_bio_mat_pronum,
-       width = 8.5, 
-       height = 5.5)
+       dpi = 300,
+       bg = "transparent",
+       width = 9.00, 
+       height = 4.13)

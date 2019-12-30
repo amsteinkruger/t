@@ -16,8 +16,8 @@ results_bio = results %>%
   summarize(MedBio = median(SumBio)) %>% 
   ungroup() %>% 
   spread(key = Scenario, value = MedBio) %>% 
-  mutate(abs = Counterfactual - `Status Quo`,
-         pro = Counterfactual / `Status Quo`)
+  mutate(abs = `Foreign and Domestic Markets` - `Domestic Market`,
+         pro = `Foreign and Domestic Markets` / `Domestic Market`)
 
 # Differential and proportional impacts in biomass for the median of runs in the final year.
 print(results_bio)
@@ -31,8 +31,8 @@ results_pi = results %>%
   summarize(MedPi = median(SumPi)) %>% 
   ungroup() %>% 
   spread(key = Scenario, value = MedPi) %>% 
-  mutate(abs = Counterfactual - `Status Quo`,
-         pro = Counterfactual / `Status Quo`)
+  mutate(abs = `Foreign and Domestic Markets` - `Domestic Market`,
+         pro = `Foreign and Domestic Markets` / `Domestic Market`)
 
 results_pi_aq = results %>% 
   filter(Variable == "Aquaculture Profit" & Cages < 25) %>% 
@@ -43,8 +43,8 @@ results_pi_aq = results %>%
   summarize(MedPi = median(SumPi, na.rm = TRUE)) %>% 
   ungroup() %>% 
   spread(key = Scenario, value = MedPi) %>% 
-  mutate(abs = Counterfactual - `Status Quo`,
-         pro = Counterfactual / `Status Quo`)
+  mutate(abs = `Foreign and Domestic Markets` - `Domestic Market`,
+         pro = `Foreign and Domestic Markets` / `Domestic Market`)
 
 # Differential and proportional impacts in profit for the median of runs in the final year.
 print(results_pi)
@@ -59,8 +59,8 @@ results_pr = results %>%
   summarize(MedPr = median(MeaPr)) %>% 
   ungroup() %>% 
   spread(key = Scenario, value = MedPr) %>% 
-  mutate(abs = Counterfactual - `Status Quo`,
-         pro = Counterfactual / `Status Quo`)
+  mutate(abs = `Foreign and Domestic Markets` - `Domestic Market`,
+         pro = `Foreign and Domestic Markets` / `Domestic Market`)
 
 # Differential and proportional impacts in prices at a = 13.5 for the median of runs in the final year.
 print(results_pr)
@@ -79,3 +79,8 @@ results_co =
                fill = Variable),
            position = "dodge2") +
     facet_wrap(~Scenario)
+  
+median(filter(results_co, Variable == "Poaching Cost per Metric Ton" & Scenario == "Domestic Market")$Result, na.rm = TRUE)
+median(filter(results_co, Variable == "Aquaculture Cost per Metric Ton" & Scenario == "Domestic Market")$Result, na.rm = TRUE)
+median(filter(results_co, Variable == "Poaching Cost per Metric Ton" & Scenario == "Foreign and Domestic Markets")$Result, na.rm = TRUE)
+median(filter(results_co, Variable == "Aquaculture Cost per Metric Ton" & Scenario == "Foreign and Domestic Markets")$Result, na.rm = TRUE)

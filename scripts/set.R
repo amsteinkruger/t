@@ -100,7 +100,7 @@ pars_base = pars_full %>%
   column_to_rownames(var = "name_short")
 
 # Define n runs.
-n = 1000
+n = 2500
 
 # Build n runs w/o aquaculture.
 pars_0 = pars_base[1]
@@ -110,50 +110,52 @@ pars_0[2:n] = pars_0[1]
 #  Switch.
 pars_0["switch_aq", ] = 0
 #  Fishery.
-#pars_0["f_2017", ] = runif(n, 
-#                           min = pars_base["f_2017", 2], 
-#                           max = pars_base["f_2017", 3])
+pars_0["nprop", ] = rnorm(n, mean = 1, sd = 0.085)
 
-pars_0["e_2017", ] = runif(n, 
-                                  min = pars_base["e_2017", 2], 
-                                  max = pars_base["e_2017", 3])
+pars_0["f_2017", ] = runif(n,
+                           min = pars_base["f_2017", 2],
+                           max = pars_base["f_2017", 3])
 
-pars_0["c_2017", ] = runif(n, 
-                                  min = pars_base["c_2017", 2], 
-                                  max = pars_base["c_2017", 3])
-
-pars_0["eta_limit", ] = runif(n, 
-                                     min = pars_base["eta_limit", 2], 
-                                     max = pars_base["eta_limit", 3])
-
-#  Aquaculture.
-pars_0["sale_size_aq", 1:n] = runif(n, 
-                                        min = pars_base["sale_size_aq", 2], 
-                                        max = pars_base["sale_size_aq", 3])
-
-#pars_0["cage_size_aq", 1:n] = runif(n, 
-#                                        min = pars_base["cage_size_aq", 2], 
-#                                        max = pars_base["cage_size_aq", 3])
-
-pars_0["dens_aq", 1:n] = runif(n, 
-                               min = pars_base["dens_aq", 2], 
-                               max = pars_base["dens_aq", 3])
-
-pars_0["mmin_aq", 1:n] = runif(n, 
-                               min = pars_base["mmin_aq", 2], 
-                               max = pars_base["mmin_aq", 3])
-
-pars_0["disc_aq", 1:n] = runif(n, 
-                               min = pars_base["disc_aq", 2], 
-                               max = pars_base["disc_aq", 3])
-
-pars_0["by1", 1:n] = runif(n, 
-                           min = pars_base["by1", 2], 
-                           max = pars_base["by1", 3])
-
-pars_0["by2", 1:n] = runif(n, 
-                           min = pars_base["by2", 2], 
-                           max = pars_base["by2", 3])
+ pars_0["e_2017", ] = runif(n,
+                            min = pars_base["e_2017", 2],
+                            max = pars_base["e_2017", 3])
+ 
+ pars_0["c_2017", ] = runif(n, 
+                            min = pars_base["c_2017", 2], 
+                            max = pars_base["c_2017", 3])
+ 
+ pars_0["eta_limit", ] = runif(n, 
+                               min = pars_base["eta_limit", 2], 
+                               max = pars_base["eta_limit", 3])
+ 
+# #  Aquaculture.
+# pars_0["sale_size_aq", 1:n] = runif(n, 
+#                                     min = pars_base["sale_size_aq", 2], 
+#                                     max = pars_base["sale_size_aq", 3])
+# 
+# #pars_0["cage_size_aq", 1:n] = runif(n, 
+# #                                        min = pars_base["cage_size_aq", 2], 
+# #                                        max = pars_base["cage_size_aq", 3])
+# 
+# pars_0["dens_aq", 1:n] = runif(n, 
+#                                min = pars_base["dens_aq", 2], 
+#                                max = pars_base["dens_aq", 3])
+# 
+# pars_0["mmin_aq", 1:n] = runif(n, 
+#                                min = pars_base["mmin_aq", 2], 
+#                                max = pars_base["mmin_aq", 3])
+# 
+# pars_0["disc_aq", 1:n] = runif(n, 
+#                                min = pars_base["disc_aq", 2], 
+#                                max = pars_base["disc_aq", 3])
+# 
+# pars_0["by1", 1:n] = runif(n, 
+#                            min = pars_base["by1", 2], 
+#                            max = pars_base["by1", 3])
+# 
+# pars_0["by2", 1:n] = runif(n, 
+#                            min = pars_base["by2", 2], 
+#                            max = pars_base["by2", 3])
 
 pars_0["c_cages", 1:n] = ceiling(runif(n, 
                                        min = pars_base["c_cages", 2], 

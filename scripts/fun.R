@@ -46,7 +46,7 @@ fun = function(par){
   # Run intermediate set-up.
   #  Fishery.
   #   Numbers in 2017.
-  n0 = dat_bio$n * rnorm(1, mean = 1, sd = 0.085)
+  n0 = dat_bio$n * nprop
   #   Catchability.
   # F = qENS > q = F / ENS; N is in numbers, F is in tonnes, and S is in proportions, so conversions are in order.
   q = 1000 * f_2017 / sum(n0 * fun_l_w(a_lw, fun_a_l(seq(a_0, a_i), linf_al, k_al, t0_al), b_lw) * fun_l_s(fun_a_l(seq(a_0, a_i), linf_al, k_al, t0_al), a_ls, b_ls, m_ls) * e_2017)
@@ -117,7 +117,7 @@ fun = function(par){
                     fun_l_w(a_lw, fun_a_l(a_matrix[1, ], linf_al, k_al, t0_al), b_lw) * by1 * by2 * 1000, 
                     a_ma, b_ma, c_ma) * loss
   r_fi[1] = sum(p_mat[1,] * fun_l_w(a_lw, fun_a_l(a_matrix[1, ], linf_al, k_al, t0_al), b_lw) * y[1, ] * by1 * by2 * 1000) # Constant for conversion to grams of buche.
-  c_fi[1] = e[1] * c_2017 + r_fi[1] * 0.75 # Costs for first year. Mind the hard-coding for labor costs out of r_fi.
+  c_fi[1] = e[1] * c_2017 + r_fi[1] * 0.25 # Costs for first year. Mind the hard-coding for labor costs out of r_fi.
   rec[1] = fun_rec(sum(n[1, 2:(a_i - a_0 + 1)]), a_r, b_r, d_r) # Recruitment for first year. Start of column designation is hard-coded. 
   eta = (e[1] * eta_limit) / (r_fi[1] - c_fi[1]) # Parameter to restrict changes in effort.
   
@@ -259,7 +259,7 @@ fun = function(par){
     r_fi[i] = sum(p_mat[i,] * fun_l_w(a_lw, fun_a_l(a_matrix[i, ], linf_al, k_al, t0_al), b_lw) * y[i, ] * by1 * by2 * 1000) # Constant for conversion to grams of buche.
     
     # Costs.
-    c_fi[i] = e[i] * c_2017 + r_fi[i] * 0.75 # Mind the hard-coding for labor costs in r_fi.
+    c_fi[i] = e[i] * c_2017 + r_fi[i] * 0.25 # Mind the hard-coding for labor costs in r_fi.
   }
   
   # Tidy results: numbers, recruitment, catches, effort, revenues, costs, profits.
