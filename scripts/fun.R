@@ -117,13 +117,14 @@ fun = function(par){
                     fun_l_w(a_lw, fun_a_l(a_matrix[1, ], linf_al, k_al, t0_al), b_lw) * by1 * by2 * 1000, 
                     a_ma, b_ma, c_ma) * loss
   r_fi[1] = sum(p_mat[1,] * fun_l_w(a_lw, fun_a_l(a_matrix[1, ], linf_al, k_al, t0_al), b_lw) * y[1, ] * by1 * by2 * 1000) # Constant for conversion to grams of buche.
-  c_fi[1] = e[1] * c_2017 + r_fi[1] * 0.25 # Costs for first year. Mind the hard-coding for labor costs out of r_fi.
+  c_fi[1] = e[1] * c_2017 # + r_fi[1] * 0.75 # Costs for first year. Mind the hard-coding for labor costs out of r_fi.
   rec[1] = fun_rec(sum(n[1, 2:(a_i - a_0 + 1)]), a_r, b_r, d_r) # Recruitment for first year. Start of column designation is hard-coded. 
   eta = (e[1] * eta_limit) / (r_fi[1] - c_fi[1]) # Parameter to restrict changes in effort.
   
   #  Aquaculture.
   #   Current.
-  a0_aq[1,] = round(runif(c_cages, 0, ceiling(a_sale))) # Ages set from random uniform distribution.
+  # a0_aq[1,] = round(runif(c_cages, 0, ceiling(a_sale))) # Ages set from random uniform distribution.
+  a0_aq[1,] = rep(ceiling(a_sale), c_cages) # Ages set to first harvest.
   w0_aq[1,] = fun_l_w(a_lw, fun_a_l(a0_aq[1,], linf_al_aq, k_al_aq, t0_al_aq), b_lw)
   nm0_aq[1,] = nstart * (0.01 * fun_a_aqmort(a0_aq[1,], b1_mort_aq, b2_mort_aq, mmin_aq))
   ns0_aq[1,] = nstart * (1 - 0.01 * fun_a_aqmort(a0_aq[1,], b1_mort_aq, b2_mort_aq, mmin_aq)) # Note leading mortality.
@@ -132,7 +133,7 @@ fun = function(par){
                       0)
   n0_aq[1,] = nstart - nm0_aq[1,] - nt0_aq[1,]
   #for(j in 1:c_cages){p0_aq[1, j] = p_mat[1, a0_aq[1, j]] * 1000} # Looping to enable position references in the price matrix.
-  p0_aq[1,] = rep(10, c_cages)
+  p0_aq[1,] = rep(10, c_cages) # Watch out for this Band-Aid.
   rt0_aq[1,] = nt0_aq[1,] * w0_aq[1,] * by1 * by2 * p0_aq[1,] * switch_aq + nt0_aq[1,] * w0_aq[1,] * f_z * g_z # Trimming revenues for maw and wet product. Fix placeholder names.
   r0_aq[1,] = w0_aq[1,] * n0_aq[1,] * by1 * by2 * n0_aq[1,] * p0_aq[1,] * switch_aq + n0_aq[1,] * w0_aq[1,] * f_z * g_z # Harvest revenues for maw and wet product. Fix placeholder names.
   c0_aq[1,] = n0_aq[1,] * fun_l_w(a_lw, fun_a_l(a0_aq[1,] - 0.5, linf_al_aq, k_al_aq, t0_al_aq), b_lw) * feed_prop_aq * feed_cost_aq * 365 # Fix placeholder variable names.
@@ -259,7 +260,7 @@ fun = function(par){
     r_fi[i] = sum(p_mat[i,] * fun_l_w(a_lw, fun_a_l(a_matrix[i, ], linf_al, k_al, t0_al), b_lw) * y[i, ] * by1 * by2 * 1000) # Constant for conversion to grams of buche.
     
     # Costs.
-    c_fi[i] = e[i] * c_2017 + r_fi[i] * 0.25 # Mind the hard-coding for labor costs in r_fi.
+    c_fi[i] = e[i] * c_2017 # + r_fi[i] * 0.75 # Mind the hard-coding for labor costs in r_fi.
   }
   
   # Tidy results: numbers, recruitment, catches, effort, revenues, costs, profits.

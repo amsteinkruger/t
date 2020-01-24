@@ -24,7 +24,6 @@ pal_col = viridis(4,
 lm_p = lm(p ~ q + g,
           data = dat_p)
 
-
 #  Clean results.
 lm_tidy = tidy(lm_p)
 
@@ -128,34 +127,34 @@ pars_0["f_2017", ] = runif(n,
                                min = pars_base["eta_limit", 2], 
                                max = pars_base["eta_limit", 3])
  
-# #  Aquaculture.
-# pars_0["sale_size_aq", 1:n] = runif(n, 
-#                                     min = pars_base["sale_size_aq", 2], 
-#                                     max = pars_base["sale_size_aq", 3])
-# 
-# #pars_0["cage_size_aq", 1:n] = runif(n, 
-# #                                        min = pars_base["cage_size_aq", 2], 
-# #                                        max = pars_base["cage_size_aq", 3])
-# 
-# pars_0["dens_aq", 1:n] = runif(n, 
-#                                min = pars_base["dens_aq", 2], 
-#                                max = pars_base["dens_aq", 3])
-# 
-# pars_0["mmin_aq", 1:n] = runif(n, 
-#                                min = pars_base["mmin_aq", 2], 
-#                                max = pars_base["mmin_aq", 3])
-# 
-# pars_0["disc_aq", 1:n] = runif(n, 
-#                                min = pars_base["disc_aq", 2], 
-#                                max = pars_base["disc_aq", 3])
-# 
-# pars_0["by1", 1:n] = runif(n, 
-#                            min = pars_base["by1", 2], 
-#                            max = pars_base["by1", 3])
-# 
-# pars_0["by2", 1:n] = runif(n, 
-#                            min = pars_base["by2", 2], 
-#                            max = pars_base["by2", 3])
+#  Aquaculture.
+pars_0["sale_size_aq", 1:n] = runif(n,
+                                    min = pars_base["sale_size_aq", 2],
+                                    max = pars_base["sale_size_aq", 3])
+
+#pars_0["cage_size_aq", 1:n] = runif(n,
+#                                        min = pars_base["cage_size_aq", 2],
+#                                        max = pars_base["cage_size_aq", 3])
+
+pars_0["dens_aq", 1:n] = runif(n,
+                               min = pars_base["dens_aq", 2],
+                               max = pars_base["dens_aq", 3])
+
+pars_0["mmin_aq", 1:n] = runif(n,
+                               min = pars_base["mmin_aq", 2],
+                               max = pars_base["mmin_aq", 3])
+
+pars_0["disc_aq", 1:n] = runif(n,
+                               min = pars_base["disc_aq", 2],
+                               max = pars_base["disc_aq", 3])
+
+pars_0["by1", 1:n] = runif(n,
+                           min = pars_base["by1", 2],
+                           max = pars_base["by1", 3])
+
+pars_0["by2", 1:n] = runif(n,
+                           min = pars_base["by2", 2],
+                           max = pars_base["by2", 3])
 
 pars_0["c_cages", 1:n] = ceiling(runif(n, 
                                        min = pars_base["c_cages", 2], 
