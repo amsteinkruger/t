@@ -6,7 +6,9 @@ pal_fil = viridis(4,
                   begin = 0.00, 
                   end = 0.50, 
                   direction = -1, 
-                  option = "D")
+                  option = "D",
+                  alpha = 0.50)
+
 pal_col = viridis(4, 
                   begin = 0.00, 
                   end = 0.50, 
@@ -99,42 +101,66 @@ pars_base = pars_full %>%
   column_to_rownames(var = "name_short")
 
 # Define n runs.
-n = 2500
+n = 1000
 
 # Build n runs w/o aquaculture.
 pars_0 = pars_base[1]
 pars_0[2:n] = pars_0[1]
 
 # Draws. 
-#  Switch.
-pars_0["switch_aq", ] = 0
 #  Fishery.
-pars_0["nprop", ] = rnorm(n, mean = 1, sd = 0.085)
+pars_0["nprop", ] = rnorm(n, 
+                          mean = 1, 
+                          sd = 0.085)
+
+pars_0["a_r", ] = rnorm(n,
+                        mean = pars_base["a_r", 1],
+                        sd = pars_base["a_r", 1] - pars_base["a_r", 2])
+
+pars_0["b_r", ] = rnorm(n,
+                        mean = pars_base["b_r", 1],
+                        sd = pars_base["b_r", 1] - pars_base["b_r", 2])
+# 
+# pars_0["d_r", ] = rnorm(n,
+#                         mean = pars_base["d_r", 1],
+#                         sd = pars_base["d_r", 1] - pars_base["d_r", 2])
 
 pars_0["f_2017", ] = runif(n,
                            min = pars_base["f_2017", 2],
                            max = pars_base["f_2017", 3])
 
- pars_0["e_2017", ] = runif(n,
-                            min = pars_base["e_2017", 2],
-                            max = pars_base["e_2017", 3])
- 
- pars_0["c_2017", ] = runif(n, 
-                            min = pars_base["c_2017", 2], 
-                            max = pars_base["c_2017", 3])
- 
- pars_0["eta_limit", ] = runif(n, 
-                               min = pars_base["eta_limit", 2], 
-                               max = pars_base["eta_limit", 3])
+pars_0["e_2017", ] = runif(n,
+                           min = pars_base["e_2017", 2],
+                           max = pars_base["e_2017", 3])
+
+pars_0["c_2017", ] = runif(n,
+                           min = pars_base["c_2017", 2],
+                           max = pars_base["c_2017", 3])
+
+pars_0["c_crew", ] = runif(n,
+                           min = pars_base["c_crew", 2],
+                           max = pars_base["c_crew", 3])
+
+pars_0["eta_limit", ] = runif(n,
+                              min = pars_base["eta_limit", 2],
+                              max = pars_base["eta_limit", 3])
+
+pars_0["multi_en", ] = runif(n,
+                           min = pars_base["multi_en", 2],
+                           max = pars_base["multi_en", 3])
+
+pars_0["c_enf", ] = runif(n,
+                           min = pars_base["c_enf", 2],
+                           max = pars_base["c_enf", 3])
  
 #  Aquaculture.
 pars_0["sale_size_aq", 1:n] = runif(n,
                                     min = pars_base["sale_size_aq", 2],
                                     max = pars_base["sale_size_aq", 3])
 
-#pars_0["cage_size_aq", 1:n] = runif(n,
-#                                        min = pars_base["cage_size_aq", 2],
-#                                        max = pars_base["cage_size_aq", 3])
+pars_0["cage_size_aq", 1:n] = runif(n,
+                                       min = pars_base["cage_size_aq", 2],
+                                       max = pars_base["cage_size_aq", 3])
 
 pars_0["dens_aq", 1:n] = runif(n,
                                min = pars_base["dens_aq", 2],
@@ -156,10 +182,17 @@ pars_0["by2", 1:n] = runif(n,
                            min = pars_base["by2", 2],
                            max = pars_base["by2", 3])
 
-pars_0["c_cages", 1:n] = ceiling(runif(n, 
-                                       min = pars_base["c_cages", 2], 
+pars_0["c_cages", 1:n] = ceiling(runif(n,
+                                       min = pars_base["c_cages", 2],
                                        max = pars_base["c_cages", 3]))
 
 # Build n runs w/ aquaculture.
 pars_1 = pars_0
 pars_1["switch_aq", ] = 1
+# Build n runs w/ increased enforcement.
+pars_2 = pars_0
+pars_2["switch_en", ] = 1
+# Build n runs w/ aquaculture and increased enforcement.
+pars_3 = pars_0
+pars_3["switch_aq", ] = 1
+pars_3["switch_en", ] = 1

@@ -64,6 +64,8 @@ plot_bio_mat_pronum =
         plot.background = element_rect(fill = "transparent", color = NA)) + 
   facet_wrap(~Scenario)
 
+print(plot_bio_mat_pronum)
+
 # Save.
 ggsave("./out/plot_mat.png", 
        plot_bio_mat_pronum,

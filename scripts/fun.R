@@ -7,16 +7,28 @@ fun_a_l = function(a, linf, k, t0){l = linf * (1 - exp(-k * (a - t0)))}
 fun_l_w = function(a, l, b){w = a * l ^ b}
 
 # Ages to natural mortalities.
-fun_a_nmort = function(a, a_mat, a_old, m_juv, m_mat, m_old){s = ifelse(a < a_mat, m_juv, ifelse(a < a_old, m_mat, m_old))}
+fun_a_nmort = function(a, a_mat, a_old, m_juv, m_mat, m_old){s = 1 - ifelse(a < a_mat, 
+                                                                            exp(-m_juv), 
+                                                                            ifelse(a < a_old, 
+                                                                                   exp(-m_mat), 
+                                                                                   exp(-m_old)))}
 
 # Lengths to selectivities.
 fun_l_s = function(l, a, b, m){s = a / (1 + exp(b - m * l))}
 
 # Ages to bycatch mortalities.
-fun_a_bmort = function(a, b_b, a_mat, n0){b = ifelse(a < a_mat, 0.20, 0)}#(b_b / round(a_mat)) / n0[round(a_mat)], 0)} The code in use is a Band-Aid. Bycatch = 0.2 for a < a_mat.
+fun_a_bmort = function(a, b_b, a_mat, n0){b = ifelse(a < a_mat, 
+                                                     b_b / floor(a_mat) / n0[floor(a_mat)],  
+                                                     0)}
+
+#(b_b / round(a_mat)) / n0[round(a_mat)], 0)} The code in use is a Band-Aid. Bycatch = 0.2 for a < a_mat.
 
 # Numbers at age to recruitment - Shepherd Recruitment Function.
-fun_rec = function(n, a_rec, b_rec, d_rec){n0 = (a_rec * n) / ((1 + n / b_rec) ^ d_rec)}
+fun_rec = function(n, a_rec, b_rec, d_rec, f1_rec, f2_rec)
+  
+{n0 = ifelse((a_rec * n) / (1 + (n / b_rec) ^ d_rec) * exp(f1_rec * f2_rec) > 0, 
+             (a_rec * n) / (1 + (n / b_rec) ^ d_rec) * exp(f1_rec * f2_rec),
+             0)}
 
 # Production and grams to price in multivariate inverse demand specification.
 #  Deprecated nonlinear option.
@@ -68,6 +80,7 @@ fun = function(par){
   m = matrix(nrow = t_i - t_0 + 1, ncol = a_i - a_0 + 1) # Build a matrix of natural mortalities at age.
   b = matrix(nrow = t_i - t_0 + 1, ncol = a_i - a_0 + 1) # Build a matrix of bycatch at age.
   y = matrix(nrow = t_i - t_0 + 1, ncol = a_i - a_0 + 1) # Build a matrix of catch at age.
+  g = matrix(nrow = t_i - t_0 + 1, ncol = a_i - a_0 + 1) # Build a matrix of ghost catch at age.
   p_mat = matrix(nrow = t_i - t_0 + 1, ncol = a_i - a_0 + 1) # Build a matrix of prices at age.
   a_matrix = matrix(nrow = a_i - a_0 + 1, ncol = t_i - t_0 + 1) # Build a matrix of ages for reference in functions. Transposed.
   rec = as.numeric(vector(length = t_i - t_0 + 1))  # Build a vector of recruitment at age.
@@ -113,13 +126,14 @@ fun = function(par){
   b[1,] = (n[1,] - m[1,]) * fun_a_bmort(a_matrix[1,], b_b, a_mat_am, n0) # Bycatch mortalities by cohort for first year.
   e[1] = e_2017 # Effort in boats/season for 2017.
   y[1,] = (n[1,] - m[1,] - b[1,]) * q * e[1] * fun_l_s(fun_a_l(a_matrix[1,], linf_al, k_al, t0_al), a_ls, b_ls, m_ls) # Catch for first year by cohort.
+  g[1,] = (n[1,] - m[1,] - b[1,] - y[1,]) * g_r * q * e[1] * fun_l_s(fun_a_l(a_matrix[1,], linf_al, k_al, t0_al), a_ls, b_ls, m_ls) # Catch for first year by cohort.
   p_mat[1,] = fun_p(sum(fun_l_w(a_lw, fun_a_l(a_matrix[1, ], linf_al, k_al, t0_al), b_lw) * y[1, ] * by1 * by2) / 1000, # Prices from tonnes of production and grams of maw at age. Placeholder names.
                     fun_l_w(a_lw, fun_a_l(a_matrix[1, ], linf_al, k_al, t0_al), b_lw) * by1 * by2 * 1000, 
                     a_ma, b_ma, c_ma) * loss
   r_fi[1] = sum(p_mat[1,] * fun_l_w(a_lw, fun_a_l(a_matrix[1, ], linf_al, k_al, t0_al), b_lw) * y[1, ] * by1 * by2 * 1000) # Constant for conversion to grams of buche.
-  c_fi[1] = e[1] * c_2017 # + r_fi[1] * 0.75 # Costs for first year. Mind the hard-coding for labor costs out of r_fi.
-  rec[1] = fun_rec(sum(n[1, 2:(a_i - a_0 + 1)]), a_r, b_r, d_r) # Recruitment for first year. Start of column designation is hard-coded. 
-  eta = (e[1] * eta_limit) / (r_fi[1] - c_fi[1]) # Parameter to restrict changes in effort.
+  c_fi[1] = e[1] * c_2017 + (r_fi[1] - e[1] * c_2017) * c_crew + e[1] * switch_en * multi_en * c_enf # Costs for first year. Vessel costs, crew shares of profit, and enforcement intensification. 
+  rec[1] = fun_rec(sum(n[1, 2:(a_i - a_0 + 1)]), a_r, b_r, d_r, f1_r, f2_r) # Recruitment for first year. Start of column designation is hard-coded. 
+  eta = (e[1] * eta_limit) / abs(r_fi[1] - c_fi[1]) # Parameter to restrict changes in effort.
   
   #  Aquaculture.
   #   Current.
@@ -170,8 +184,8 @@ fun = function(par){
     for(j in 2:(a_i - a_0 + 1)){
       # Fishery.
       #  Numbers for time i and cohort j are numbers of the previous time and cohort less mortalities of the previous time and cohort.   
-      n[i, j] = ifelse(n[i - 1, j - 1] - m[i - 1, j - 1] - b[i - 1, j - 1] - y[i - 1, j - 1] > 0, 
-                       n[i - 1, j - 1] - m[i - 1, j - 1] - b[i - 1, j - 1] - y[i - 1, j - 1],
+      n[i, j] = ifelse(n[i - 1, j - 1] - m[i - 1, j - 1] - b[i - 1, j - 1] - y[i - 1, j - 1] - g[i - 1, j - 1] > 0, 
+                       n[i - 1, j - 1] - m[i - 1, j - 1] - b[i - 1, j - 1] - y[i - 1, j - 1] - g[i - 1, j - 1],
                        0)
       
       #  Natural mortalities for time i and cohort j are numbers for the same multipled by a constant factor for marginal mortality.
@@ -193,9 +207,8 @@ fun = function(par){
     
     # Effort for time i and all cohorts from past effort, revenues, costs, and a stiffness parameter.
     e[i] = ifelse(e[i - 1] + eta * (r_fi[i - 1] - c_fi[i - 1]) > 0, 
-                  e[i - 1] + eta * (r_fi[i - 1] - c_fi[i - 1]), 
+                  e[i - 1] + eta * (r_fi[i - 1] - c_fi[i - 1]),
                   0) # Bound positive.
-    #e[i] = e[i - 1] + eta * (r_fi[i - 1] - c_fi[i - 1])
     
     #  Catches from effort and the rest.
     for(j in 2:(a_i - a_0 + 1)){
@@ -207,8 +220,18 @@ fun = function(par){
                        0)
     }
     
+    #  Ghost catches from past effort, etc.
+    for(j in 2:(a_i - a_0 + 1)){
+      g[i, j] = ifelse((n[i, j] - m[i, j] - b[i, j] - y[i, j]) * g_r * q * e[i - 1] * fun_l_s(fun_a_l(a_matrix[i, j], linf_al, k_al, t0_al), a_ls, b_ls, m_ls) > 0,
+                       (n[i, j] - m[i, j] - b[i, j] - y[i, j]) * g_r * q * e[i - 1] * fun_l_s(fun_a_l(a_matrix[i, j], linf_al, k_al, t0_al), a_ls, b_ls, m_ls),
+                       0)
+      g[i, 1] = ifelse((n[i, 1] - m[i, 1] - b[i, 1] - y[i, j]) * g_r * q * e[i - 1] * fun_l_s(fun_a_l(a_matrix[i, 1], linf_al, k_al, t0_al), a_ls, b_ls, m_ls) > 0,
+                       (n[i, 1] - m[i, 1] - b[i, 1] - y[i, j]) * g_r * q * e[i - 1] * fun_l_s(fun_a_l(a_matrix[i, 1], linf_al, k_al, t0_al), a_ls, b_ls, m_ls),
+                       0)
+    }
+    
     #  Recruitment for time i.
-    rec[i] = fun_rec(sum(n[i, 2:(a_i - a_0 + 1)]), a_r, b_r, d_r)
+    rec[i] = fun_rec(sum(n[i, 2:(a_i - a_0 + 1)]), a_r, b_r, d_r, f1_r, f2_r)
     
     # Aquaculture.
     a0_aq[i,] = a0_aq[i - 1,] * hinv_aq[i - 1,] + 1
@@ -260,7 +283,7 @@ fun = function(par){
     r_fi[i] = sum(p_mat[i,] * fun_l_w(a_lw, fun_a_l(a_matrix[i, ], linf_al, k_al, t0_al), b_lw) * y[i, ] * by1 * by2 * 1000) # Constant for conversion to grams of buche.
     
     # Costs.
-    c_fi[i] = e[i] * c_2017 # + r_fi[i] * 0.75 # Mind the hard-coding for labor costs in r_fi.
+    c_fi[i] = e[i] * c_2017 + (r_fi[i] - e[i] * c_2017) * c_crew + e[i] * switch_en * multi_en * c_enf
   }
   
   # Tidy results: numbers, recruitment, catches, effort, revenues, costs, profits.
