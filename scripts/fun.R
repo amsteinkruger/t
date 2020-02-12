@@ -270,12 +270,12 @@ fun = function(par){
     # Prices in matrix. 
     for(j in 1:(a_i - a_0 + 1)){
       p_mat[i, j] = fun_p(sum(fun_l_w(a_lw, fun_a_l(a_matrix[i, ], linf_al, k_al, t0_al), b_lw) * y[i, ] * by1 * by2, # Fishery production.
-                              (n0_aq[i,] * w0_aq[i,] * by1 * by2 * h_aq[i,] + nt0_aq[i,] * w0_aq[i,] * by1 * by2 * hinv_aq[i,]) * switch_aq) # Aquaculture production. 
+                              (n0_aq[i,] * w0_aq[i,] * by1 * by2 * h_aq[i,] + nt0_aq[i,] * w0_aq[i,] * by1 * by2 * hinv_aq[i,]) * switch_aq * sub) # Aquaculture production. 
                           / 1000, # Conversion to tonnes.
                           fun_l_w(a_lw, fun_a_l(a_matrix[i, j], linf_al, k_al, t0_al), b_lw) * by1 * by2, 
                           a_ma, 
                           b_ma, 
-                          c_ma) * loss
+                          c_ma * dem) * loss
       p_mat[i, j] = ifelse(p_mat[i, j] > 0, p_mat[i, j], 0)
     }
     

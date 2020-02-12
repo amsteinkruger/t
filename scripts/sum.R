@@ -1,8 +1,10 @@
 # ---- sum ----
 
+# Out of date as of 2/11.
+
 # Summarize results for text. This round of code iteration does not explicate multiple production scales.
 results_bio = results %>% 
-  filter(Variable == "Numbers" & Year == max(Year)) %>% 
+  filter(Variable == "Numbers" & Year == max(Year) & Scenario == ) %>% 
   mutate(Biomass = fun_l_w(pars_base[4, 1], 
                            fun_a_l(Age - 0.5, 
                                    pars_base[1, 1], 
