@@ -4,13 +4,13 @@
 
 # Summarize results for text. This round of code iteration does not explicate multiple production scales.
 results_bio = results %>% 
-  filter(Variable == "Numbers" & Year == max(Year) & Scenario == ) %>% 
-  mutate(Biomass = fun_l_w(pars_base[4, 1], 
+  filter(Variable == "Numbers" & Year == max(Year) & Scenario == "hm") %>% 
+  mutate(Biomass = fun_l_w(pars_base["a_lw", 1], 
                            fun_a_l(Age - 0.5, 
-                                   pars_base[1, 1], 
-                                   pars_base[2, 1], 
-                                   pars_base[3, 1]),  
-                           pars_base[5, 1]) / 1000 * Result) %>% 
+                                   pars_base["linf_al", 1], 
+                                   pars_base["k_al", 1], 
+                                   pars_base["t0_al", 1]),  
+                           pars_base["b_lw", 1]) / 1000 * Result) %>% 
   group_by(Run, Scenario) %>% 
   summarize(SumBio = sum(Biomass)) %>% 
   ungroup() %>% 

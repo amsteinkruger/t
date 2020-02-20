@@ -45,32 +45,33 @@ pars_full = dat_par %>%
           mid = lm_tidy$estimate[2], 
           low = lm_tidy$estimate[2] - lm_tidy$std.error[2], 
           high = lm_tidy$estimate[2] + lm_tidy$std.error[2], 
-          units = "-", 
+          units = NA, 
           module = "Fishery", 
-          source_def = "Intermediate", 
-          source_pess = NA, 
-          source_opt = NA) %>% 
+          source1 = "Intermediate", 
+          source2 = NA, 
+          source3 = NA) %>% 
   add_row(name_long = "Size Premium", 
           name_short = "b_ma", 
           "function" = "Demand", 
           mid = lm_tidy$estimate[3], 
           low = lm_tidy$estimate[3] - lm_tidy$std.error[3], 
           high = lm_tidy$estimate[3] + lm_tidy$std.error[3], 
-          units = "-", 
+          units = NA, 
           module = "Fishery", 
-          source_def = "Intermediate", 
-          source_pess = NA, 
-          source_opt = NA) %>%
+          source1 = "Intermediate", 
+          source2 = NA, 
+          source3 = NA) %>%
   add_row(name_long = "Choke Price", 
           name_short = "c_ma", 
           "function" = "Demand", 
           mid = lm_tidy$estimate[1], 
           low = lm_tidy$estimate[1] - lm_tidy$std.error[1], 
           high = lm_tidy$estimate[1] + lm_tidy$std.error[1], 
-          units = "-", module = "Fishery", 
-          source_def = "Intermediate", 
-          source_pess = NA, 
-          source_opt = NA) %>%
+          units = NA, 
+          module = "Fishery", 
+          source1 = "Intermediate", 
+          source2 = NA, 
+          source3 = NA) %>%
   # Add aquaculture outputs to parameter table.
   add_row(name_long = "Aq. Mortality Coefficient", 
           name_short = "b1_mort_aq", 
@@ -78,22 +79,22 @@ pars_full = dat_par %>%
           mid = am_reg_tidy$estimate[1], 
           low = am_reg_tidy$estimate[1] + am_reg_tidy$std.error[1],
           high = am_reg_tidy$estimate[1] - am_reg_tidy$std.error[1], 
-          units = "-", 
+          units = NA, 
           module = "Aquaculture", 
-          source_def = "Intermediate", 
-          source_pess = NA, 
-          source_opt = NA) %>%
+          source1 = "Intermediate", 
+          source2 = NA, 
+          source3 = NA) %>%
   add_row(name_long = "Aq. Mortality Coefficient", 
           name_short = "b2_mort_aq", 
           "function" = "Aquaculture Mortality", 
           mid = am_reg_tidy$estimate[2], 
           low = am_reg_tidy$estimate[2] + am_reg_tidy$std.error[2], 
           high = am_reg_tidy$estimate[2] - am_reg_tidy$std.error[2], 
-          units = "-", 
+          units = NA, 
           module = "Aquaculture", 
-          source_def = "Intermediate", 
-          source_pess = NA, 
-          source_opt = NA)
+          source1 = "Intermediate", 
+          source2 = NA, 
+          source3 = NA)
     
 # Turn parameters into a matrix for multiple model runs.
 pars_base = pars_full %>% 
@@ -113,22 +114,6 @@ pars_0["nprop", ] = rnorm(n,
                           mean = 1, 
                           sd = 0.085)
 
-pars_0["a_r", ] = rnorm(n,
-                        mean = pars_base["a_r", 1],
-                        sd = pars_base["a_r", 1] - pars_base["a_r", 2])
-
-pars_0["b_r", ] = rnorm(n,
-                        mean = pars_base["b_r", 1],
-                        sd = pars_base["b_r", 1] - pars_base["b_r", 2])
-# 
-# pars_0["d_r", ] = rnorm(n,
-#                         mean = pars_base["d_r", 1],
-#                         sd = pars_base["d_r", 1] - pars_base["d_r", 2])
-
-pars_0["f_2017", ] = runif(n,
-                           min = pars_base["f_2017", 2],
-                           max = pars_base["f_2017", 3])
-
 pars_0["e_2017", ] = runif(n,
                            min = pars_base["e_2017", 2],
                            max = pars_base["e_2017", 3])
@@ -136,10 +121,6 @@ pars_0["e_2017", ] = runif(n,
 pars_0["c_2017", ] = runif(n,
                            min = pars_base["c_2017", 2],
                            max = pars_base["c_2017", 3])
-
-pars_0["c_crew", ] = runif(n,
-                           min = pars_base["c_crew", 2],
-                           max = pars_base["c_crew", 3])
 
 pars_0["eta_limit", ] = runif(n,
                               min = pars_base["eta_limit", 2],
@@ -173,14 +154,6 @@ pars_0["mmin_aq", 1:n] = runif(n,
 pars_0["disc_aq", 1:n] = runif(n,
                                min = pars_base["disc_aq", 2],
                                max = pars_base["disc_aq", 3])
-
-pars_0["by1", 1:n] = runif(n,
-                           min = pars_base["by1", 2],
-                           max = pars_base["by1", 3])
-
-pars_0["by2", 1:n] = runif(n,
-                           min = pars_base["by2", 2],
-                           max = pars_base["by2", 3])
 
 pars_0["c_cages", 1:n] = ceiling(runif(n,
                                        min = pars_base["c_cages", 2],

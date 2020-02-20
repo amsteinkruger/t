@@ -15,12 +15,12 @@ fun_opt = function(scale,
     select(a) %>%
     fun %>%
     filter(Variable == "Numbers") %>%
-    mutate(Biomass = fun_l_w(pars_base[4, 1],
-                             fun_a_l(Age - 0.5,
-                                     pars_base[1, 1],
-                                     pars_base[2, 1],
-                                     pars_base[3, 1]),
-                             pars_base[5, 1]) / 1000 * Result) %>%
+    mutate(Biomass = fun_l_w(pars_base["a_lw", 1], 
+                             fun_a_l(Age - 0.5, 
+                                     pars_base["linf_al", 1], 
+                                     pars_base["k_al", 1], 
+                                     pars_base["t0_al", 1]),  
+                             pars_base["b_lw", 1]) / 1000 * Result) %>% 
     group_by(Year) %>%
     summarize(Sum = sum(Biomass)) %>%
     ungroup() %>%
@@ -32,12 +32,12 @@ fun_opt = function(scale,
     select(b) %>%
     fun %>%
     filter(Variable == "Numbers") %>%
-    mutate(Biomass = fun_l_w(pars_base[4, 1],
-                             fun_a_l(Age - 0.5,
-                                     pars_base[1, 1],
-                                     pars_base[2, 1],
-                                     pars_base[3, 1]),
-                             pars_base[5, 1]) / 1000 * Result) %>%
+    mutate(Biomass = fun_l_w(pars_base["a_lw", 1], 
+                             fun_a_l(Age - 0.5, 
+                                     pars_base["linf_al", 1], 
+                                     pars_base["k_al", 1], 
+                                     pars_base["t0_al", 1]),  
+                             pars_base["b_lw", 1]) / 1000 * Result) %>% 
     group_by(Year) %>%
     summarize(Sum = sum(Biomass)) %>%
     ungroup() %>%
@@ -95,8 +95,8 @@ pars =
              par_1)
   
 # Get a matrix of parameters for demand and substitution.  
-mat = crossing(dem = seq(1.00, 5.00, by = 0.01), 
-               sub = seq(0.00, 1.00, by = 0.01))
+mat = crossing(dem = seq(1.00, 3.00, by = 0.05), 
+               sub = seq(0.00, 1.00, by = 0.05))
 
 # Optimize on test parameters.
 opt_test = fun_opter(dem = 1.25, 
@@ -125,14 +125,17 @@ use =
 
 # Plot results.
 vis_dem = 
-  biscuit %>% 
+  use %>% 
+  mutate(scale = ifelse(diff > 1000,
+                        NA,
+                        scale)) %>% 
   ggplot() +
   geom_raster(aes(x = sub,
                   y = dem,
                   fill = scale / 1000)) +
-  geom_text(aes(x = sub,
-                y = dem,
-                label = round(scale / 1000, 0))) +
+  # geom_text(aes(x = sub,
+  #               y = dem,
+  #               label = round(scale / 1000, 0))) +
   scale_x_reverse(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
   scale_fill_viridis() +

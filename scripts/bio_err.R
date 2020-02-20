@@ -4,12 +4,12 @@
 #  Find biomass for each cohort and year, then sum by cohort.
 results_sum = results %>% 
   filter(Variable == "Numbers") %>% 
-  mutate(Biomass = fun_l_w(pars_base[4, 1], 
+  mutate(Biomass = fun_l_w(pars_base["a_lw", 1], 
                            fun_a_l(Age - 0.5, 
-                                   pars_base[1, 1], 
-                                   pars_base[2, 1], 
-                                   pars_base[3, 1]),  
-                           pars_base[5, 1]) / 1000 * Result) %>% 
+                                   pars_base["linf_al", 1], 
+                                   pars_base["k_al", 1], 
+                                   pars_base["t0_al", 1]),  
+                           pars_base["b_lw", 1]) / 1000 * Result) %>% 
   group_by(Year,
            Run, 
            Scenario,
@@ -17,27 +17,6 @@ results_sum = results %>%
   summarize(SumNum = sum(Result), 
             SumBio = sum(Biomass)) %>% 
   ungroup() 
-
-# (Deprecated)
-# Keep counterfactual runs. Bin runs by scale of aquaculture, then find quantile outcomes.
-# results_cag = results_sum %>% 
-#   filter(Scenario == "Foreign and Domestic Markets") %>% 
-#   mutate(Cages = ifelse(Cages > 0, 
-#                         ifelse(Cages > 25, 
-#                                ifelse(Cages > 50, 
-#                                       ifelse(Cages > 75, 
-#                                              "75 - 100", 
-#                                              "50 - 75"), 
-#                                       "25 - 50"), 
-#                                "1 - 25"),
-#                         "0")) %>% 
-#   group_by(Year,
-#            Scenario,
-#            Cages) %>% 
-#   summarize(MedBio = median(SumBio),
-#             ForBio = quantile(SumBio, 0.40),
-#             SixBio = quantile(SumBio, 0.60)) %>% 
-#   ungroup()
 
 #  Find maxima and minima of all runs and quantiles. Filter for status quo runs for inner quantiles in geom_ribbon below.
 results_sce = results_sum %>% 
@@ -84,15 +63,15 @@ plot_bio =
              color = "firebrick4",
              linetype = "dashed") +
   geom_text(aes(x = 2018,
-               y = 23000,
-               label = Label)) +
+                y = 23000,
+                label = Label)) +
   scale_color_manual(values = pal_col) +
   scale_fill_manual(values = pal_fil) +
   scale_y_continuous(expand = c(0, 0),
-                     limits = c(0, 25000),
+                     limits = c(0, 20000),
                      labels = scales::comma) +
   scale_x_continuous(expand = c(0, 0.75),
-                     breaks = c(2019, 2030, 2040)) +
+                     breaks = c(2019, 2025)) +
   labs(x = "", y = "Biomass (Tonnes)") +
   theme_pubr() +
   theme(legend.background = element_rect(fill = "transparent"),
@@ -108,8 +87,8 @@ plot_bio =
 plot_bio_over = 
   ggplot(results_sce) + 
   geom_line(aes(x = Year + 2016,
-                 y = MedBio,
-                 color = Label),
+                y = MedBio,
+                color = Label),
             alpha = 0.,
             size = 1.25) +
   geom_point(aes(x = Year + 2016,
@@ -122,29 +101,29 @@ plot_bio_over =
              color = "firebrick4",
              linetype = "dashed") +
   annotate("text",
-           x = 2043,
+           x = 2027,
            y = 14000,
            label = "A") +
   annotate("text",
-           x = 2043,
+           x = 2027,
            y = 18000,
            label = "B") +
   annotate("text",
-           x = 2043,
+           x = 2027,
            y = 18700,
            label = "C") +
   annotate("text",
-           x = 2043,
+           x = 2027,
            y = 19200,
            label = "D") +
   scale_color_manual(values = pal_col) +
   scale_fill_manual(values = pal_fil) +
   scale_y_continuous(expand = c(0, 0),
-                     limits = c(0, 25000),
+                     limits = c(5000, 20000),
                      labels = scales::comma) +
   scale_x_continuous(expand = c(0, 0.75),
-                     limits = c(2016, 2044),
-                     breaks = c(2019, 2030, 2040)) +
+                     limits = c(2016, 2028),
+                     breaks = c(2019, 2025)) +
   labs(x = "", y = "Biomass (Tonnes)") +
   theme_pubr() +
   theme(legend.background = element_rect(fill = "transparent"),

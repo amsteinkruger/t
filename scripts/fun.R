@@ -68,7 +68,7 @@ fun = function(par){
   #   Initial cohort count is density at first saleable size, plus cumulative mortality at first saleable age.
   #   Casually, nstart = nsale + mort(a(l(wsale))).
   #   Cumulative mortality to first saleable age:
-  a_sale = (t0_al_aq - 1 / k_al_aq * (log(1 - ((sale_size_aq / a_lw) ^ (1 / b_lw)) / linf_al_aq))) # Inverse Von Bertalanffy.
+  a_sale = (t0_al - 1 / k_al * (log(1 - ((sale_size_aq / a_lw) ^ (1 / b_lw)) / linf_al))) # Inverse Von Bertalanffy.
   #   Initial stock to reach optimal density at first salable size:
   nstart = nsale * (100 / (100 - fun_a_aqmort(a_sale, b1_mort_aq, b2_mort_aq, mmin_aq))) * 
     (100 / (100 - fun_a_aqmort(a_sale, b1_mort_aq, b2_mort_aq, mmin_aq))) * 
@@ -131,15 +131,15 @@ fun = function(par){
                     fun_l_w(a_lw, fun_a_l(a_matrix[1, ], linf_al, k_al, t0_al), b_lw) * by1 * by2 * 1000, 
                     a_ma, b_ma, c_ma) * loss
   r_fi[1] = sum(p_mat[1,] * fun_l_w(a_lw, fun_a_l(a_matrix[1, ], linf_al, k_al, t0_al), b_lw) * y[1, ] * by1 * by2 * 1000) # Constant for conversion to grams of buche.
-  c_fi[1] = e[1] * c_2017 + (r_fi[1] - e[1] * c_2017) * c_crew + e[1] * switch_en * multi_en * c_enf # Costs for first year. Vessel costs, crew shares of profit, and enforcement intensification. 
-  rec[1] = fun_rec(sum(n[1, 2:(a_i - a_0 + 1)]), a_r, b_r, d_r, f1_r, f2_r) # Recruitment for first year. Start of column designation is hard-coded. 
+  c_fi[1] = e[1] * c_2017 + e[1] * switch_en * multi_en * c_enf # Costs for first year. Vessel costs, crew shares of profit, and enforcement intensification. 
+  rec[1] = fun_rec(sum(n[1, 4:(a_i - a_0 + 1)]), a_r, b_r, d_r, f1_r, f2_r) # Recruitment for first year. Start of column designation is hard-coded. 
   eta = (e[1] * eta_limit) / abs(r_fi[1] - c_fi[1]) # Parameter to restrict changes in effort.
   
   #  Aquaculture.
   #   Current.
   # a0_aq[1,] = round(runif(c_cages, 0, ceiling(a_sale))) # Ages set from random uniform distribution.
   a0_aq[1,] = rep(ceiling(a_sale), c_cages) # Ages set to first harvest.
-  w0_aq[1,] = fun_l_w(a_lw, fun_a_l(a0_aq[1,], linf_al_aq, k_al_aq, t0_al_aq), b_lw)
+  w0_aq[1,] = fun_l_w(a_lw, fun_a_l(a0_aq[1,], linf_al, k_al, t0_al), b_lw)
   nm0_aq[1,] = nstart * (0.01 * fun_a_aqmort(a0_aq[1,], b1_mort_aq, b2_mort_aq, mmin_aq))
   ns0_aq[1,] = nstart * (1 - 0.01 * fun_a_aqmort(a0_aq[1,], b1_mort_aq, b2_mort_aq, mmin_aq)) # Note leading mortality.
   nt0_aq[1,] = ifelse(ns0_aq[1,] - fun_ns(cage_size_aq, dens_aq, w0_aq[1,]) > 0, 
@@ -150,11 +150,11 @@ fun = function(par){
   p0_aq[1,] = rep(10, c_cages) # Watch out for this Band-Aid.
   rt0_aq[1,] = nt0_aq[1,] * w0_aq[1,] * by1 * by2 * p0_aq[1,] * switch_aq + nt0_aq[1,] * w0_aq[1,] * f_z * g_z # Trimming revenues for maw and wet product. Fix placeholder names.
   r0_aq[1,] = w0_aq[1,] * n0_aq[1,] * by1 * by2 * n0_aq[1,] * p0_aq[1,] * switch_aq + n0_aq[1,] * w0_aq[1,] * f_z * g_z # Harvest revenues for maw and wet product. Fix placeholder names.
-  c0_aq[1,] = n0_aq[1,] * fun_l_w(a_lw, fun_a_l(a0_aq[1,] - 0.5, linf_al_aq, k_al_aq, t0_al_aq), b_lw) * feed_prop_aq * feed_cost_aq * 365 # Fix placeholder variable names.
+  c0_aq[1,] = n0_aq[1,] * fun_l_w(a_lw, fun_a_l(a0_aq[1,] - 0.5, linf_al, k_al, t0_al), b_lw) * feed_prop_aq * feed_cost_aq * 365 # Fix placeholder variable names.
   
   #   Led.
   a1_aq[1,] = a0_aq[1,] + 1
-  w1_aq[1,] = fun_l_w(a_lw, fun_a_l(a1_aq[1,], linf_al_aq, k_al_aq, t0_al_aq), b_lw)
+  w1_aq[1,] = fun_l_w(a_lw, fun_a_l(a1_aq[1,], linf_al, k_al, t0_al), b_lw)
   # Since this implementation of mortality/survival and trimming require iteration to work, the corresponding lead variables are spaghetti.
   nm1_aq[1,] = (nstart * (1 - 0.01 * fun_a_aqmort(a1_aq[1,] - 1, b1_mort_aq, b2_mort_aq, mmin_aq)) - 
                  ifelse(nstart * (1 - 0.01 * fun_a_aqmort(a1_aq[1,] - 1, b1_mort_aq, b2_mort_aq, mmin_aq) - fun_ns(cage_size_aq, dens_aq, w1_aq[1,])) > 0, 
@@ -170,7 +170,7 @@ fun = function(par){
   #for(j in 1:c_cages){p0_aq[1, j] = p_mat[1, a0_aq[1, j]] * 1000} # Looping to enable position references in the price matrix.
   rt1_aq[1,] = nt1_aq[1,] * w1_aq[1,] * by1 * by2 * p1_aq[1,] * switch_aq + nt1_aq[1,] * w1_aq[1,] * f_z * g_z # Trimming revenues for maw and wet product. Fix placeholder names.
   r1_aq[1,] = w1_aq[1,] * n1_aq[1,] * by1 * by2 * n1_aq[1,] * p1_aq[1,] * switch_aq + n1_aq[1,] * w1_aq[1,] * f_z * g_z # Harvest revenues for maw and wet product. Fix placeholder names.
-  c1_aq[1,] = n1_aq[1,] * fun_l_w(a_lw, fun_a_l(a1_aq[1,] - 0.5, linf_al_aq, k_al_aq, t0_al_aq), b_lw) * feed_prop_aq * feed_cost_aq * 365 # Fix placeholder variable names.
+  c1_aq[1,] = n1_aq[1,] * fun_l_w(a_lw, fun_a_l(a1_aq[1,] - 0.5, linf_al, k_al, t0_al), b_lw) * feed_prop_aq * feed_cost_aq * 365 # Fix placeholder variable names.
   
   h_aq[1,] = 0
   hinv_aq[1,] = 1
@@ -231,11 +231,11 @@ fun = function(par){
     }
     
     #  Recruitment for time i.
-    rec[i] = fun_rec(sum(n[i, 2:(a_i - a_0 + 1)]), a_r, b_r, d_r, f1_r, f2_r)
+    rec[i] = fun_rec(sum(n[i, 4:(a_i - a_0 + 1)]), a_r, b_r, d_r, f1_r, f2_r)
     
     # Aquaculture.
     a0_aq[i,] = a0_aq[i - 1,] * hinv_aq[i - 1,] + 1
-    w0_aq[i,] = fun_l_w(a_lw, fun_a_l(a0_aq[i,], linf_al_aq, k_al_aq, t0_al_aq), b_lw)
+    w0_aq[i,] = fun_l_w(a_lw, fun_a_l(a0_aq[i,], linf_al, k_al, t0_al), b_lw)
     nm0_aq[i,] = (nstart * h_aq[i - 1,] + n0_aq[i - 1,] * hinv_aq[i - 1,]) * (0.01 * fun_a_aqmort(a0_aq[i,], b1_mort_aq, b2_mort_aq, mmin_aq)) # Note leading mortality.
     ns0_aq[i,] = (nstart * h_aq[i - 1,] + n0_aq[i - 1,] * hinv_aq[i - 1,]) * (1 - 0.01 * fun_a_aqmort(a0_aq[i,], b1_mort_aq, b2_mort_aq, mmin_aq)) # Note leading mortality.
     nt0_aq[i,] = ifelse(ns0_aq[i,] - fun_ns(cage_size_aq, dens_aq, w0_aq[i,]) > 0, ns0_aq[i,] - fun_ns(cage_size_aq, dens_aq, w0_aq[i,]), 0)
@@ -243,10 +243,10 @@ fun = function(par){
     p0_aq[i,] = p_mat[i - 1, a0_aq[i,]] * 1000 # Conversion for price in grams to revenue from kilograms of dry maw.
     rt0_aq[i,] = nt0_aq[i,] * w0_aq[i,] * by1 * by2 * p0_aq[i,] * switch_aq + nt0_aq[i,] * w0_aq[i,] * f_z * g_z # Trimming revenues.
     r0_aq[i,] = n0_aq[i,] * w0_aq[i,] * by1 * by2 * p0_aq[i,] * switch_aq + n0_aq[i,] * w0_aq[i,] * f_z * g_z # Harvest revenues.
-    c0_aq[i,] = n0_aq[i,] * fun_l_w(a_lw, fun_a_l(a0_aq[i,] - 0.5, linf_al_aq, k_al_aq, t0_al_aq), b_lw) * feed_prop_aq * feed_cost_aq * 365
+    c0_aq[i,] = n0_aq[i,] * fun_l_w(a_lw, fun_a_l(a0_aq[i,] - 0.5, linf_al, k_al, t0_al), b_lw) * feed_prop_aq * feed_cost_aq * 365
     
     a1_aq[i,] = a0_aq[i,] + 1
-    w1_aq[i,] = fun_l_w(a_lw, fun_a_l(a1_aq[i,], linf_al_aq, k_al_aq, t0_al_aq), b_lw)
+    w1_aq[i,] = fun_l_w(a_lw, fun_a_l(a1_aq[i,], linf_al, k_al, t0_al), b_lw)
     nm1_aq[i,] = (nstart * h_aq[i - 1,] + n1_aq[i - 1,] * hinv_aq[i - 1,]) * (0.01 * fun_a_aqmort(a1_aq[i,], b1_mort_aq, b2_mort_aq, mmin_aq)) # Note leading mortality.
     ns1_aq[i,] = (nstart * h_aq[i - 1,] + n1_aq[i - 1,] * hinv_aq[i - 1,]) * (1 - 0.01 * fun_a_aqmort(a1_aq[i,], b1_mort_aq, b2_mort_aq, mmin_aq)) # Note leading mortality.
     nt1_aq[i,] = ifelse(ns1_aq[i,] - fun_ns(cage_size_aq, dens_aq, w1_aq[i,]) > 0, ns1_aq[i,] - fun_ns(cage_size_aq, dens_aq, w1_aq[i,]), 0)
@@ -254,7 +254,7 @@ fun = function(par){
     p1_aq[i,] = p_mat[i - 1, a1_aq[i,]] * 1000 # Conversion for price in grams to revenue from kilograms of dry maw.
     rt1_aq[i,] = nt1_aq[i,] * w1_aq[i,] * by1 * by2 * p1_aq[i,] * switch_aq + nt1_aq[i,] * w1_aq[i,] * f_z * g_z # Trimming revenues.
     r1_aq[i,] = n1_aq[i,] * w1_aq[i,] * by1 * by2 * p1_aq[i,] * switch_aq + n1_aq[i,] * w1_aq[i,] * f_z * g_z # Harvest revenues.
-    c1_aq[i,] = n1_aq[i,] * fun_l_w(a_lw, fun_a_l(a1_aq[i,] - 0.5, linf_al_aq, k_al_aq, t0_al_aq), b_lw) * feed_prop_aq * feed_cost_aq * 365
+    c1_aq[i,] = n1_aq[i,] * fun_l_w(a_lw, fun_a_l(a1_aq[i,] - 0.5, linf_al, k_al, t0_al), b_lw) * feed_prop_aq * feed_cost_aq * 365
     
     h_aq[i,] = ifelse(a0_aq[i,] > ceiling(a_sale), # Wrapper for minimum sale age.
                      ifelse(r0_aq[i,] - l_z * nstart > rt0_aq[i,] - c0_aq[i,] + disc_aq * (r1_aq[i,] - l_z * nstart), # Faustmann.
@@ -283,7 +283,7 @@ fun = function(par){
     r_fi[i] = sum(p_mat[i,] * fun_l_w(a_lw, fun_a_l(a_matrix[i, ], linf_al, k_al, t0_al), b_lw) * y[i, ] * by1 * by2 * 1000) # Constant for conversion to grams of buche.
     
     # Costs.
-    c_fi[i] = e[i] * c_2017 + (r_fi[i] - e[i] * c_2017) * c_crew + e[i] * switch_en * multi_en * c_enf
+    c_fi[i] = e[i] * c_2017 + e[i] * switch_en * multi_en * c_enf
   }
   
   # Tidy results: numbers, recruitment, catches, effort, revenues, costs, profits.
@@ -305,6 +305,18 @@ fun = function(par){
   tidypi_fi$Var2 = NA
   tidypi_fi$value = r_fi - c_fi
   tidypi_fi$var = "Poaching Profit"
+  #  Poaching Revenue.
+  tidyr_fi = rename(data.frame(matrix(NA, 
+                                       nrow = t_i - t_0 + 1, 
+                                       ncol = 4)), 
+                     Var1 = X1, 
+                     Var2 = X2, 
+                     value = X3, 
+                     var = X4)
+  tidyr_fi$Var1 = seq(1, t_i - t_0 + 1)
+  tidyr_fi$Var2 = NA
+  tidyr_fi$value = r_fi
+  tidyr_fi$var = "Poaching Revenue"
   # Aquaculture Profit.
   tidypi_aq = rename(data.frame(matrix(NA, 
                                        nrow = t_i - t_0 + 1, 
@@ -364,18 +376,10 @@ fun = function(par){
   tidyc_aq$value = rowSums(c_aq, na.rm = TRUE) / ((rowSums(y_aq, na.rm = TRUE) * by1 * by2) / 1000) # Summing cages and converting from kilograms to tonnes.
   tidyc_aq$var = "Aquaculture Cost per Metric Ton"
   #  Everything!
-  tidy = bind_rows(tidyn, tidyy, tidypi_fi, tidypi_aq, tidyp, tidye, tidyc_fi, tidyc_aq)
+  tidy = bind_rows(tidyn, tidyy, tidypi_fi, tidyr_fi, tidypi_aq, tidyp, tidye, tidyc_fi, tidyc_aq)
   tidy = rename(tidy, Year = Var1, Age = Var2, Result = value, Variable = var)
   
   # Get results.
   return(tidy)
   
 }
-
-# Code for legacy output starts here. Clean this out.
-#  Recruitment.
-# tidyrec = rename(data.frame(matrix(NA, nrow = t_i - t_0 + 1, ncol = 4)), Var1 = X1, Var2 = X2, value = X3, var = X4)
-# tidyrec$Var1 = seq(1, t_i - t_0 + 1)
-# tidyrec$Var2 = NA
-# tidyrec$value = rec
-# tidyrec$var = "Recruitment"

@@ -18,15 +18,6 @@ results_pi =
                                       "25 - 50"),
                                "1 - 25"),
                         "0")) %>% # Bin scale.
-  # mutate(Cages = ifelse(Cages > 0,
-  #                       ifelse(Cages > 25,
-  #                              ifelse(Cages > 50,
-  #                                     ifelse(Cages > 75,
-  #                                            "75 - 100",
-  #                                            "50 - 75"),
-  #                                     "25 - 50"),
-  #                              "1 - 25"),
-  #                       "0")) %>% # Bin scale.
   drop_na() %>% # Track down origin of NAs.
   group_by(Year, 
            Run,

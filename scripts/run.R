@@ -39,7 +39,7 @@ for(i in 1:n){par = select(pars_3, i)
                     results_3[[i]] = output}
 
 # Go from list to dataframe for easier processing.
-results = bind_rows(results_0, 
+results = bind_rows(results_0,
                     results_1,
                     results_2,
                     results_3)
