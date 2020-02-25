@@ -16,7 +16,7 @@ par_pca =
 # Wrangle results into biomass in final year by run. You might run this w/ profits and effort, too. Just pivot and pray.
 res_pca = results %>% 
   filter(Variable == "Numbers" & Year == max(Year)) %>% 
-  filter(Scenario == "Status Quo" & Scenario == "Aquaculture Intervention") %>% 
+  filter(Scenario == "Status Quo" | Scenario == "Aquaculture Intervention") %>% 
   mutate(Biomass = fun_l_w(pars_base["a_lw", 1], 
                            fun_a_l(Age - 0.5, 
                                    pars_base["linf_al", 1], 
@@ -37,21 +37,15 @@ in_pca_0 =
             res_pca,
             by = "Run") %>% 
   select(Scenario,
-         nprop,
-         a_r,
-         b_r,
          e_2017,
          c_2017,
-         c_crew,
+         g_r,
+         eta_limit,
          c_cages,
-         sale_size_aq,
-         cage_size_aq,
-         dens_aq,
-         mmin_aq,
-         disc_aq,
-         by1,
-         by2,
-         c_cages,
+         sale_size,
+         mmin,
+         dens,
+         disc,
          switch_aq,
          biomass = Sum) %>% # Keep columns w/ bootstrapping. Constants don't work for PCA.
   mutate_if(is.factor, ~ as.numeric(as.character(.x)))
@@ -97,12 +91,12 @@ in_pca_1 =
             by = "Run") %>% 
   select(Scenario,
          'Initial Biomass' = nprop,
-         'Recruitment (a)' = a_r,
-         'Recruitment (b)' = b_r,
          'Initial Effort' = e_2017,
          'Effort Cost' = c_2017,
-         'Stocking Density' = dens_aq,
+         'Effort Entry' = eta_limit,
+         'Stocking Density' = dens,
          'Aquaculture Export' = switch_aq,
+         'Aquaculture Mortality' = mmin,
          'Final Biomass' = Sum) %>% # Keep columns w/ bootstrapping. Constants don't work for PCA.
   mutate_if(is.factor, ~ as.numeric(as.character(.x)))
 
@@ -118,31 +112,34 @@ in_pca_1 =
 pca_1 = prcomp(in_pca_1, scale = TRUE)
 
 # Plot refined PCs.
-vis_pca_1_r =
-  ggbiplot(pca_1,
-           groups = as.character(groups_pca_1$Scenario),
-           ellipse = TRUE,
-           alpha = 0.25,
-           var.axes = FALSE,
-           varname.size = 0) +
-  scale_color_manual(values = c(pal_col[2], pal_col[1])) +
-  scale_x_continuous(expand = c(0, 0),
-                     limits = c(-2, 2)) +
-  scale_y_continuous(expand = c(0, 0),
-                     limits = c(-2, 2)) +
-  theme_pubr() +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "transparent", color = NA),
-        plot.background = element_rect(fill = "transparent", color = NA),
-        legend.position = "none")
+# vis_pca_1_r =
+#   ggbiplot(pca_1,
+#            groups = as.character(groups_pca_1$Scenario),
+#            ellipse = TRUE,
+#            alpha = 0.25,
+#            var.axes = FALSE,
+#            varname.size = 0) +
+#   scale_color_manual(values = c(pal_col[2], pal_col[1])) +
+#   scale_x_continuous(expand = c(0, 0),
+#                      limits = c(-2, 2)) +
+#   scale_y_continuous(expand = c(0, 0),
+#                      limits = c(-2, 2)) +
+#   theme_pubr() +
+#   theme(panel.grid.major = element_blank(),
+#         panel.grid.minor = element_blank(),
+#         panel.background = element_rect(fill = "transparent", color = NA),
+#         plot.background = element_rect(fill = "transparent", color = NA),
+#         legend.position = "none",
+#         axis.title.y = element_blank(),
+#         axis.text.y = element_blank(),
+#         axis.ticks.y = element_blank())
 
 vis_pca_1_l =
   ggbiplot(pca_1,
            groups = as.character(groups_pca_1$Scenario),
            ellipse = TRUE,
-           alpha = 0.00,
-           varname.size = 2.75,
+           alpha = 0.15,
+           varname.size = 3.25,
            varname.adjust = 1.05) +
   scale_color_manual(values = c(pal_col[2], pal_col[1])) +
   scale_x_continuous(expand = c(0, 0),
@@ -156,39 +153,39 @@ vis_pca_1_l =
         plot.background = element_rect(fill = "transparent", color = NA),
         legend.position = "none")
 
-vis_pca_1_scree =
-  ggscreeplot(pca_1,
-              type = "pev") +
-  scale_x_continuous(expand = c(0, 0.25),
-                     limits = c(1, 8),
-                     breaks = c(1, 2, 3, 4, 5, 6, 7, 8)) +
-  scale_y_continuous(expand = c(0, 0),
-                     limits = c(0, 0.25),
-                     breaks = c(0, 0.05, 0.10, 0.15, 0.20, 0.25)) +
-  theme_pubr()
-
-# Tabulate refined PCA.
-# factoextra option.
-factoextra::facto_summarize(pca_1, "var")
-# w/o factoextra: yoink importance.
-pca_imp <- data.frame(summary(pca_1)$importance)
-# ditto rotations (what are these someone help)
-pca_rot <- data.frame(summary(pca_1)$rotation)
-
-# Compile plots.
-vis_pca = 
-  arrangeGrob(vis_pca_1_l,
-              vis_pca_1_r,
-              vis_pca_1_scree,
-              ncol = 3,
-              widths = c(6, 6, 3))
+# vis_pca_1_scree =
+#   ggscreeplot(pca_1,
+#               type = "pev") +
+#   scale_x_continuous(expand = c(0, 0.25),
+#                      limits = c(1, 8),
+#                      breaks = c(1, 2, 3, 4, 5, 6, 7, 8)) +
+#   scale_y_continuous(expand = c(0, 0),
+#                      limits = c(0, 0.25),
+#                      breaks = c(0, 0.05, 0.10, 0.15, 0.20, 0.25)) +
+#   theme_pubr()
+# 
+# # Tabulate refined PCA.
+# # factoextra option.
+# factoextra::facto_summarize(pca_1, "var")
+# # w/o factoextra: yoink importance.
+# pca_imp <- data.frame(summary(pca_1)$importance)
+# # ditto rotations (what are these someone help)
+# pca_rot <- data.frame(summary(pca_1)$rotation)
+# 
+# # Compile plots.
+# vis_pca = 
+#   arrangeGrob(vis_pca_1_l,
+#               vis_pca_1_r,
+#               vis_pca_1_scree,
+#               ncol = 3,
+#               widths = c(6.25, 6, 3))
 
 # Save plots.
 ggsave("./out/vis_pca.png", 
-       vis_pca,
+       vis_pca_1_l,
        dpi = 300,
-       width = 18, 
-       height = 6)
+       width = 7.25, 
+       height = 7.25)
 
 # Save tables, too.
 # Importances of PCs.

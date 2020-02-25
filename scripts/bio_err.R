@@ -26,18 +26,17 @@ results_sce = results_sum %>%
             MaxBio = max(SumBio),
             MinBio = min(SumBio),
             TenBio = quantile(SumBio, 0.10),
-            NinBio = quantile(SumBio, 0.90),
-            ForBio = quantile(SumBio, 0.40),
-            SixBio = quantile(SumBio, 0.60)) %>% 
+            NinBio = quantile(SumBio, 0.90)) %>% 
   ungroup() %>% 
   mutate(Label = ifelse(Scenario == "Status Quo",
                         "A",
-                        ifelse(Scenario == "Aquaculture Intervention",
-                               "B",
-                               ifelse(Scenario == "Enforcement Intervention",
-                                      "C",
-                                      "D"))),
-         Label = factor(Label, levels = c("A", "B", "C", "D")))
+                        "B"), # ,
+                        # ifelse(Scenario == "Aquaculture Intervention",
+                        #        "B",
+                        #        ifelse(Scenario == "Enforcement Intervention",
+                        #               "C",
+                        #               "D"))),
+         Label = factor(Label, levels = c("A", "B"))) # , "C", "D")))
 
 # Plot the summary numbers.
 plot_bio = 
@@ -63,15 +62,15 @@ plot_bio =
              color = "firebrick4",
              linetype = "dashed") +
   geom_text(aes(x = 2018,
-                y = 23000,
+                y = 19500,
                 label = Label)) +
   scale_color_manual(values = pal_col) +
   scale_fill_manual(values = pal_fil) +
   scale_y_continuous(expand = c(0, 0),
-                     limits = c(0, 20000),
+                     limits = c(5000, 20000),
                      labels = scales::comma) +
   scale_x_continuous(expand = c(0, 0.75),
-                     breaks = c(2019, 2025)) +
+                     breaks = c(2019, 2029)) +
   labs(x = "", y = "Biomass (Tonnes)") +
   theme_pubr() +
   theme(legend.background = element_rect(fill = "transparent"),
@@ -101,29 +100,29 @@ plot_bio_over =
              color = "firebrick4",
              linetype = "dashed") +
   annotate("text",
-           x = 2027,
-           y = 14000,
+           x = 2032,
+           y = 10250,
            label = "A") +
   annotate("text",
-           x = 2027,
-           y = 18000,
+           x = 2032,
+           y = 12000,
            label = "B") +
-  annotate("text",
-           x = 2027,
-           y = 18700,
-           label = "C") +
-  annotate("text",
-           x = 2027,
-           y = 19200,
-           label = "D") +
+  # annotate("text",
+  #          x = 2027,
+  #          y = 18700,
+  #          label = "C") +
+  # annotate("text",
+  #          x = 2027,
+  #          y = 19200,
+  #          label = "D") +
   scale_color_manual(values = pal_col) +
   scale_fill_manual(values = pal_fil) +
   scale_y_continuous(expand = c(0, 0),
                      limits = c(5000, 20000),
                      labels = scales::comma) +
   scale_x_continuous(expand = c(0, 0.75),
-                     limits = c(2016, 2028),
-                     breaks = c(2019, 2025)) +
+                     limits = c(2017, 2033),
+                     breaks = c(2019, 2029)) +
   labs(x = "", y = "Biomass (Tonnes)") +
   theme_pubr() +
   theme(legend.background = element_rect(fill = "transparent"),
@@ -159,11 +158,11 @@ plots_bio =
   arrangeGrob(plot_bio,
               plots_bio_over,
               ncol = 2,
-              widths = c(7, 2))
+              widths = c(2, 1))
 
 ggsave("./out/plots_bio.png", 
        plots_bio,
        dpi = 300,
        bg = "transparent",
-       width = 18, 
-       height = 5)
+       width = 8.5, 
+       height = 4.5)

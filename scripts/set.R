@@ -74,7 +74,7 @@ pars_full = dat_par %>%
           source3 = NA) %>%
   # Add aquaculture outputs to parameter table.
   add_row(name_long = "Aq. Mortality Coefficient", 
-          name_short = "b1_mort_aq", 
+          name_short = "b1_mort", 
           "function" = "Aquaculture Mortality", 
           mid = am_reg_tidy$estimate[1], 
           low = am_reg_tidy$estimate[1] + am_reg_tidy$std.error[1],
@@ -85,7 +85,7 @@ pars_full = dat_par %>%
           source2 = NA, 
           source3 = NA) %>%
   add_row(name_long = "Aq. Mortality Coefficient", 
-          name_short = "b2_mort_aq", 
+          name_short = "b2_mort", 
           "function" = "Aquaculture Mortality", 
           mid = am_reg_tidy$estimate[2], 
           low = am_reg_tidy$estimate[2] + am_reg_tidy$std.error[2], 
@@ -133,27 +133,27 @@ pars_0["multi_en", ] = runif(n,
 pars_0["c_enf", ] = runif(n,
                            min = pars_base["c_enf", 2],
                            max = pars_base["c_enf", 3])
+
+pars_0["g_r", ] = runif(n,
+                          min = pars_base["g_r", 2],
+                          max = pars_base["g_r", 3])
  
 #  Aquaculture.
-pars_0["sale_size_aq", 1:n] = runif(n,
-                                    min = pars_base["sale_size_aq", 2],
-                                    max = pars_base["sale_size_aq", 3])
+pars_0["sale_size", 1:n] = runif(n,
+                                    min = pars_base["sale_size", 2],
+                                    max = pars_base["sale_size", 3])
 
-pars_0["cage_size_aq", 1:n] = runif(n,
-                                       min = pars_base["cage_size_aq", 2],
-                                       max = pars_base["cage_size_aq", 3])
+pars_0["dens", 1:n] = runif(n,
+                               min = pars_base["dens", 2],
+                               max = pars_base["dens", 3])
 
-pars_0["dens_aq", 1:n] = runif(n,
-                               min = pars_base["dens_aq", 2],
-                               max = pars_base["dens_aq", 3])
+pars_0["mmin", 1:n] = runif(n,
+                               min = pars_base["mmin", 2],
+                               max = pars_base["mmin", 3])
 
-pars_0["mmin_aq", 1:n] = runif(n,
-                               min = pars_base["mmin_aq", 2],
-                               max = pars_base["mmin_aq", 3])
-
-pars_0["disc_aq", 1:n] = runif(n,
-                               min = pars_base["disc_aq", 2],
-                               max = pars_base["disc_aq", 3])
+pars_0["disc", 1:n] = runif(n,
+                               min = pars_base["disc", 2],
+                               max = pars_base["disc", 3])
 
 pars_0["c_cages", 1:n] = ceiling(runif(n,
                                        min = pars_base["c_cages", 2],
@@ -163,9 +163,9 @@ pars_0["c_cages", 1:n] = ceiling(runif(n,
 pars_1 = pars_0
 pars_1["switch_aq", ] = 1
 # Build n runs w/ increased enforcement.
-pars_2 = pars_0
-pars_2["switch_en", ] = 1
+# pars_2 = pars_0
+# pars_2["switch_en", ] = 1
 # Build n runs w/ aquaculture and increased enforcement.
-pars_3 = pars_0
-pars_3["switch_aq", ] = 1
-pars_3["switch_en", ] = 1
+# pars_3 = pars_0
+# pars_3["switch_aq", ] = 1
+# pars_3["switch_en", ] = 1

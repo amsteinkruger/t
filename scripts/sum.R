@@ -4,7 +4,7 @@
 
 # Summarize results for text. This round of code iteration does not explicate multiple production scales.
 results_bio = results %>% 
-  filter(Variable == "Numbers" & Year == max(Year) & Scenario == "hm") %>% 
+  filter(Variable == "Numbers" & Year == max(Year) & Cages < 19) %>% 
   mutate(Biomass = fun_l_w(pars_base["a_lw", 1], 
                            fun_a_l(Age - 0.5, 
                                    pars_base["linf_al", 1], 
@@ -18,14 +18,14 @@ results_bio = results %>%
   summarize(MedBio = median(SumBio)) %>% 
   ungroup() %>% 
   spread(key = Scenario, value = MedBio) %>% 
-  mutate(abs = `Foreign and Domestic Markets` - `Domestic Market`,
-         pro = `Foreign and Domestic Markets` / `Domestic Market`)
+  mutate(abs = `Aquaculture Intervention` - `Status Quo`,
+         pro = `Aquaculture Intervention` / `Status Quo`)
 
 # Differential and proportional impacts in biomass for the median of runs in the final year.
 print(results_bio)
 
 results_pi = results %>% 
-  filter(Variable == "Poaching Profit" & Cages < 25) %>% 
+  filter(Variable == "Poaching Profit" & Cages < 10) %>% 
   group_by(Run, Scenario) %>% 
   summarize(SumPi = sum(Result)) %>% 
   ungroup() %>% 
@@ -33,11 +33,11 @@ results_pi = results %>%
   summarize(MedPi = median(SumPi)) %>% 
   ungroup() %>% 
   spread(key = Scenario, value = MedPi) %>% 
-  mutate(abs = `Foreign and Domestic Markets` - `Domestic Market`,
-         pro = `Foreign and Domestic Markets` / `Domestic Market`)
+  mutate(abs = `Aquaculture Intervention` - `Status Quo`,
+         pro = `Aquaculture Intervention` / `Status Quo`)
 
 results_pi_aq = results %>% 
-  filter(Variable == "Aquaculture Profit" & Cages < 25) %>% 
+  filter(Variable == "Aquaculture Profit" & Cages < 10) %>% 
   group_by(Run, Scenario) %>% 
   summarize(SumPi = sum(Result, na.rm = TRUE)) %>% 
   ungroup() %>% 
@@ -45,15 +45,15 @@ results_pi_aq = results %>%
   summarize(MedPi = median(SumPi, na.rm = TRUE)) %>% 
   ungroup() %>% 
   spread(key = Scenario, value = MedPi) %>% 
-  mutate(abs = `Foreign and Domestic Markets` - `Domestic Market`,
-         pro = `Foreign and Domestic Markets` / `Domestic Market`)
+  mutate(abs = `Aquaculture Intervention` - `Status Quo`,
+         pro = `Aquaculture Intervention` / `Status Quo`)
 
 # Differential and proportional impacts in profit for the median of runs in the final year.
 print(results_pi)
 print(results_pi_aq)
 
 results_pr = results %>% 
-  filter(Variable == "Price") %>% 
+  filter(Variable == "Price" & Cages < 20) %>% 
   group_by(Run, Scenario) %>% 
   summarize(MeaPr = mean(Result)) %>% 
   ungroup() %>% 
@@ -61,8 +61,8 @@ results_pr = results %>%
   summarize(MedPr = median(MeaPr)) %>% 
   ungroup() %>% 
   spread(key = Scenario, value = MedPr) %>% 
-  mutate(abs = `Foreign and Domestic Markets` - `Domestic Market`,
-         pro = `Foreign and Domestic Markets` / `Domestic Market`)
+  mutate(abs = `Aquaculture Intervention` - `Status Quo`,
+         pro = `Aquaculture Intervention` / `Status Quo`)
 
 # Differential and proportional impacts in prices at a = 13.5 for the median of runs in the final year.
 print(results_pr)
