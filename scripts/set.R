@@ -163,9 +163,9 @@ pars_0["c_cages", 1:n] = ceiling(runif(n,
 pars_1 = pars_0
 pars_1["switch_aq", ] = 1
 # Build n runs w/ increased enforcement.
-# pars_2 = pars_0
-# pars_2["switch_en", ] = 1
+pars_2 = pars_0
+pars_2["switch_en", ] = 1
 # Build n runs w/ aquaculture and increased enforcement.
-# pars_3 = pars_0
-# pars_3["switch_aq", ] = 1
-# pars_3["switch_en", ] = 1
+pars_3 = pars_0
+pars_3["switch_aq", ] = 1
+pars_3["switch_en", ] = 1

@@ -30,13 +30,12 @@ results_sce = results_sum %>%
   ungroup() %>% 
   mutate(Label = ifelse(Scenario == "Status Quo",
                         "A",
-                        "B"), # ,
-                        # ifelse(Scenario == "Aquaculture Intervention",
-                        #        "B",
-                        #        ifelse(Scenario == "Enforcement Intervention",
-                        #               "C",
-                        #               "D"))),
-         Label = factor(Label, levels = c("A", "B"))) # , "C", "D")))
+                        ifelse(Scenario == "Aquaculture Intervention",
+                               "B",
+                               ifelse(Scenario == "Enforcement Intervention",
+                                      "C",
+                                      "D"))),
+         Label = factor(Label, levels = c("A", "B", "C", "D")))
 
 # Plot the summary numbers.
 plot_bio = 
@@ -107,14 +106,14 @@ plot_bio_over =
            x = 2032,
            y = 12000,
            label = "B") +
-  # annotate("text",
-  #          x = 2027,
-  #          y = 18700,
-  #          label = "C") +
-  # annotate("text",
-  #          x = 2027,
-  #          y = 19200,
-  #          label = "D") +
+  annotate("text",
+           x = 2032,
+           y = 10600,
+           label = "C") +
+  annotate("text",
+           x = 2032,
+           y = 11350,
+           label = "D") +
   scale_color_manual(values = pal_col) +
   scale_fill_manual(values = pal_fil) +
   scale_y_continuous(expand = c(0, 0),
@@ -158,11 +157,11 @@ plots_bio =
   arrangeGrob(plot_bio,
               plots_bio_over,
               ncol = 2,
-              widths = c(2, 1))
+              widths = c(4, 1))
 
 ggsave("./out/plots_bio.png", 
        plots_bio,
        dpi = 300,
        bg = "transparent",
-       width = 8.5, 
-       height = 4.5)
+       width = 15, 
+       height = 5)
