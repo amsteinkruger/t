@@ -12,7 +12,6 @@ dat_p = read_csv("./data/dat_p.csv")
 #  Marginal mortalities per month in aquaculture from COF (2017).
 dat_aqm = read_csv("./data/dat_aqm.csv") 
 
-
 # Fishery
 #  Biomass at age for 2017 from INAPESCA (2018).
 #  From the thesis.

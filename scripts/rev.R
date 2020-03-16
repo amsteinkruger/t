@@ -1,13 +1,13 @@
-# ---- pi ----
+# ---- rev ----
 
-# Summarize profit impact.
-results_pi = 
+# Summarize revenue impact.
+results_rev = 
   results %>% 
   select(-Age) %>% 
   filter(Scenario == "Status Quo" | Scenario == "Aquaculture Intervention") %>% 
-  filter(Variable == "Aquaculture Profit" | Variable == "Poaching Profit") %>%
+  filter(Variable == "Aquaculture Revenue" | Variable == "Poaching Revenue") %>%
   mutate(Variable = str_remove(string = Variable,
-                               pattern = " Profit")) %>%
+                               pattern = " Revenue")) %>%
   mutate(Result = Result * 0.000001) %>%
   mutate(Cages = ifelse(Cages > 0,
                         ifelse(Cages > 25,
@@ -66,8 +66,8 @@ pal_fil = viridis(4,
                   option = "D")
 
 #  Then plot.
-plot_pi = 
-  ggplot(data = results_pi) + 
+plot_rev = 
+  ggplot(data = results_rev) + 
   geom_col(aes(x = Years,
                y = Mea,
                fill = Cages),
@@ -77,7 +77,7 @@ plot_pi =
              linetype = "dashed") +
   scale_fill_manual(values = pal_fil) +
   labs(x = "", 
-       y = "\u0394 \u03C0 (US$M 2018)", 
+       y = "\u0394 R (US$M 2018)", 
        fill = "Aquaculture Scale (10^6 m^3)") +
   theme_pubr() +
   theme(axis.text.x = element_text(angle = 45,
@@ -94,11 +94,11 @@ plot_pi =
              scales = "free")
 
 # Print for .Rmd
-print(plot_pi)
+print(plot_rev)
 
 # Save.
-ggsave("./out/plot_pi.png", 
-       plot_pi, 
+ggsave("./out/plot_rev.png", 
+       plot_rev, 
        dpi = 300,
        width = 6, 
        height = 6,

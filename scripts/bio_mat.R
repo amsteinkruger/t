@@ -4,12 +4,12 @@
 #  Find median biomass for each cohort and year.
 results_mat = results %>% 
   filter(Variable == "Numbers") %>% 
-  mutate(Biomass = fun_l_w(pars_base[4, 1], 
+  mutate(Biomass = fun_l_w(pars_base["a_lw", 1], 
                            fun_a_l(Age - 0.5, 
-                                   pars_base[1, 1], 
-                                   pars_base[2, 1], 
-                                   pars_base[3, 1]),  
-                           pars_base[5, 1]) / 1000 * Result) %>% 
+                                   pars_base["linf_al", 1], 
+                                   pars_base["k_al", 1], 
+                                   pars_base["t0_al", 1]),  
+                           pars_base["b_lw", 1]) / 1000 * Result) %>% 
   group_by(Year,
            Age, 
            Scenario) %>% 
@@ -58,11 +58,13 @@ plot_bio_mat_pronum =
   theme(legend.background = element_rect(fill = "transparent"),
         legend.title = element_blank(),
         strip.background = element_blank(),
-        strip.text = element_blank(),
+        #strip.text = element_blank(),
         panel.background = element_rect(fill = "transparent", color = NA),
         panel.spacing.x = unit(5, "lines"),
         plot.background = element_rect(fill = "transparent", color = NA)) + 
   facet_wrap(~Scenario)
+
+print(plot_bio_mat_pronum)
 
 # Save.
 ggsave("./out/plot_mat.png", 
