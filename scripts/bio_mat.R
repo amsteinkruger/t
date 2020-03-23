@@ -2,7 +2,8 @@
 
 # Summarize results for matrix panels.
 #  Find median biomass for each cohort and year.
-results_mat = results %>% 
+results_mat = 
+  results %>% 
   filter(Variable == "Numbers") %>% 
   mutate(Biomass = fun_l_w(pars_base["a_lw", 1], 
                            fun_a_l(Age - 0.5, 
@@ -18,17 +19,21 @@ results_mat = results %>%
   ungroup()
 
 #  Get median biomasses of first year by age for proportional numbers.
-results_bas = results_mat %>% 
+results_bas = 
+  results_mat %>% 
   filter(Year == 1) %>% 
   select(Age, 
          BasNum = MedNum, 
          BasBio = MedBio)
 
 #  Calculate proportions.
-results_mat = results_mat %>% 
+results_mat = 
+  results_mat %>% 
   left_join(results_bas, by = "Age") %>% 
   mutate(ProNum = MedNum / BasNum,
-         ProBio = MedBio / BasBio)
+         ProBio = MedBio / BasBio) %>% 
+  filter(Scenario == "Status Quo" | Scenario == "Aquaculture Intervention") %>% 
+  pivot_wider(id_cols = )
 
 # Plot matrices.
 plot_bio_mat_medbio = 
@@ -51,7 +56,7 @@ plot_bio_mat_pronum =
                 fill = ProNum)) +
   scale_fill_viridis_c(option = "D") +
   scale_x_continuous(expand = c(0, 0),
-                     breaks = c(2017, 2036)) +
+                     breaks = c(2017, 2029)) +
   scale_y_continuous(expand = c(0, 0)) +
   labs(x = "", y = "Age") +
   theme_classic() +
