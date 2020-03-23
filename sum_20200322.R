@@ -107,4 +107,4 @@ ggsave("plot_sum_panel.png",
        plot_sum_panel,
        dpi = 300,
        width = 8.5,
-       height = 15)
+       height = 12)
