@@ -3,7 +3,7 @@
 # Summarize results for matrix panels.
 #  Find median biomass for each cohort and year.
 results_mat = results %>% 
-  filter(Variable == "Numbers") %>% 
+  filter(Variable == "Numbers" & Age > 4) %>% 
   mutate(Biomass = fun_l_w(pars_base["a_lw", 1], 
                            fun_a_l(Age - 0.5, 
                                    pars_base["linf_al", 1], 
