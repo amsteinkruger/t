@@ -1,9 +1,4 @@
-# ---- run ----
-
-# Clock model runtime.
-watch_go = proc.time()
-
-# Build a home for results of runs.
+# House results.
 results_0 = vector("list", n)
 results_1 = vector("list", n)
 results_2 = vector("list", n)
@@ -43,9 +38,3 @@ results = bind_rows(results_0,
                     results_1,
                     results_2,
                     results_3)
-
-# Clock model runtime.
-watch_stop = proc.time() - watch_go
-
-# Just how slow is this loop?
-print(watch_stop) # 105.3833m, n = 10000?, 2019/7/3.

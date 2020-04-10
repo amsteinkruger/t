@@ -1,5 +1,3 @@
-# ---- set ----
-
 # Visualization
 #  Set up palettes.
 pal_fil = viridis(4, 
@@ -102,7 +100,7 @@ pars_base = pars_full %>%
   column_to_rownames(var = "name_short")
 
 # Define n runs.
-n = 1000
+n = 100
 
 # Build n runs w/o aquaculture.
 pars_0 = pars_base[1]

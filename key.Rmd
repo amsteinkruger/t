@@ -1,122 +1,73 @@
 ---
-title: "Simulating Economic and Ecological Outcomes of Totoaba Aquaculture"
+title: "Commercializing aquaculture to conserve totoaba"
 output:
-html_document: default
+  pdf_document:
+    toc: true
+    df_print: kable
+    keep_md: true
 ---
 
-For presentations, 
-9.32"w, 3.25"h (or not?)
-Proza Libre
-Open Sans
-Back: #073763ff
-Head: #f3f3f3
-Body: #efefef
+\newpage
 
+# Packages
 
-####0. Libraries
-
-```{r lib_read}
-
-knitr::read_chunk('./scripts/lib.R')
+```{r lib, code = readLines("./scripts/01_lib.R"), message = FALSE}
 
 ```
 
-```{r lib}
+# Data
+
+```{r dat, code = readLines("./scripts/02_dat.R"), message = FALSE}
 ```
 
-####1. Data
+\newpage
 
-```{r dat_read, cache = FALSE}
-knitr::read_chunk('./scripts/dat.R')
+# Functions
+
+```{r fun, code = readLines("./scripts/03_fun.R")}
 ```
 
-```{r dat}
+\newpage
+
+# Set-Up for Model Runs
+
+```{r set, code = readLines("./scripts/04_set.R")}
 ```
 
-####2. Functions
+\newpage
 
-```{r fun_read}
+# Model Runs
 
-knitr::read_chunk('./scripts/fun.R')
-
+```{r run, code = readLines("./scripts/05_run.R")}
 ```
 
-```{r fun}
+\newpage
+
+# Visualizing Biological Impacts
+
+```{r bio, code = readLines("./scripts/06_1_bio.R")}
 ```
 
-####3. Set-Up
+![bio](out/vis_bio_sum.png)
 
-```{r set_read}
+\newpage
 
-knitr::read_chunk('./scripts/set.R')
+#  Visualizing Economic Impacts
 
+```{r rev, code = readLines("./scripts/06_2_rev.R")}
 ```
 
-```{r set}
+![rev](out/vis_rev.png)
+
+\newpage
+
+# Visualizing Influence of Demand and Substitution
+
+```{r dem, code = readLines("./scripts/06_3_dem.R")}
 ```
 
+![dem](out/vis_dem.png)
 
-####4. Runs
+# Visualizing Principal Components
 
-```{r run_read}
-knitr::read_chunk('./scripts/run.R')
-```
-
-```{r run}
-```
-
-####5. Analysis and Visualization
-
-#####5.1.1 Biomass Trajectories
-
-```{r bio_err_read}
-knitr::read_chunk('./scripts/bio_err.R')
-```
-
-```{r bio_err}
-```
-
-#####5.1.2 Biomass Matrices
-
-```{r bio_mat_read}
-knitr::read_chunk('./scripts/bio_mat.R')
-```
-
-```{r bio_mat}
-```
-
-#####5.2 Profit
-
-```{r pi_read}
-knitr::read_chunk('./scripts/pi.R')
-```
-
-```{r pi}
-```
-
-#####5.3 Demand
-
-```{r dem_read}
-knitr::read_chunk('./scripts/dem.R')
-```
-
-```{r dem}
-```
-
-#####5.4 PCA
-
-```{r pca_read}
-knitr::read_chunk('./scripts/pca.R')
-```
-
-```{r pca}
-```
-
-#####5.5 Map
-
-```{r map_read}
-knitr::read_chunk('./scripts/map.R')
-```
-
-```{r map}
-```
+# Summarizing Results

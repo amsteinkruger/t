@@ -1,7 +1,3 @@
-# ---- sum ----
-
-# Out of date as of 2/11.
-
 # Summarize results for text. This round of code iteration does not explicate multiple production scales.
 results_bio = results %>% 
   filter(Variable == "Numbers" & Year == max(Year) & Cages < 19) %>% 

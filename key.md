@@ -1,3 +1,52 @@
+---
+title: "Commercializing aquaculture to conserve Totoaba macdonaldi in the Gulf of California"
+output:
+  pdf_document:
+    toc: true
+    df_print: kable
+    keep_md: true
+---
+
+\newpage
+
+# Packages
+
+
+```r
+library(janitor)
+library(broom)
+library(reshape2)
+library(ggpubr)
+library(ggbiplot)
+library(viridis)
+library(factoextra)
+library(tidyverse)
+```
+
+# Data
+
+
+```r
+# Parameters from several sources noted in the file.
+dat_par = read_csv("./data/dat_pars.csv") %>% 
+  clean_names()
+
+# Prices and characteristics of buche in end markets. Several sources.
+dat_p = read_csv("./data/dat_p.csv")
+
+#  Marginal mortalities per month in aquaculture from Cygnus Ocean Farms (2017).
+dat_aqm = read_csv("./data/dat_aqm.csv") 
+
+#  Biomass at age for 2017 from INAPESCA (2018).
+dat_bio = read_csv("./data/dat_bio.csv")
+```
+
+\newpage
+
+# Functions
+
+
+```r
 # Ages to lengths - Von Bertalanffy Growth Function.
 fun_a_l = function(a, linf, k, t0){l = linf * (1 - exp(-k * (a - t0)))}
 
@@ -391,3 +440,642 @@ fun = function(par){
   return(tidy)
   
 }
+```
+
+\newpage
+
+# Set-Up for Model Runs
+
+
+```r
+# Visualization
+#  Set up palettes.
+pal_fil = viridis(4, 
+                  begin = 0.00, 
+                  end = 0.50, 
+                  direction = -1, 
+                  option = "D",
+                  alpha = 0.50)
+
+pal_col = viridis(4, 
+                  begin = 0.00, 
+                  end = 0.50, 
+                  direction = -1, 
+                  option = "D")
+
+# Market
+#  Estimate inverse demand.
+#   Nonlinear model doesn't really pay off, but here's the code anyhow.
+# nlm = nls(p ~ q * a + (g ^ b) + c, 
+#           data = dat_p, 
+#           start = c(a = -5.00, b = 2.00, c = 20))
+
+#   Linear model works fine.
+lm_p = lm(p ~ q + g,
+          data = dat_p)
+
+#  Clean results.
+lm_tidy = tidy(lm_p)
+
+# Aquaculture
+#  Estimate incremental mortalities.
+#  Regression:
+am_reg = nls(m_months ~ b1 * exp(b2 * a_months), dat_aqm, start = list(b1 = 8.00, b2 = - 1.00))
+#  Clean results.
+am_reg_tidy = tidy(am_reg)
+
+# Pull initial and intermediate parameters together.
+pars_full = dat_par %>%
+  # Add market outputs to parameter table.
+  add_row(name_long = "Quantity Elasticity", 
+          name_short = "a_ma", 
+          "function" = "Demand", 
+          mid = lm_tidy$estimate[2], 
+          low = lm_tidy$estimate[2] - lm_tidy$std.error[2], 
+          high = lm_tidy$estimate[2] + lm_tidy$std.error[2], 
+          units = NA, 
+          module = "Fishery", 
+          source1 = "Intermediate", 
+          source2 = NA, 
+          source3 = NA) %>% 
+  add_row(name_long = "Size Premium", 
+          name_short = "b_ma", 
+          "function" = "Demand", 
+          mid = lm_tidy$estimate[3], 
+          low = lm_tidy$estimate[3] - lm_tidy$std.error[3], 
+          high = lm_tidy$estimate[3] + lm_tidy$std.error[3], 
+          units = NA, 
+          module = "Fishery", 
+          source1 = "Intermediate", 
+          source2 = NA, 
+          source3 = NA) %>%
+  add_row(name_long = "Choke Price", 
+          name_short = "c_ma", 
+          "function" = "Demand", 
+          mid = lm_tidy$estimate[1], 
+          low = lm_tidy$estimate[1] - lm_tidy$std.error[1], 
+          high = lm_tidy$estimate[1] + lm_tidy$std.error[1], 
+          units = NA, 
+          module = "Fishery", 
+          source1 = "Intermediate", 
+          source2 = NA, 
+          source3 = NA) %>%
+  # Add aquaculture outputs to parameter table.
+  add_row(name_long = "Aq. Mortality Coefficient", 
+          name_short = "b1_mort", 
+          "function" = "Aquaculture Mortality", 
+          mid = am_reg_tidy$estimate[1], 
+          low = am_reg_tidy$estimate[1] + am_reg_tidy$std.error[1],
+          high = am_reg_tidy$estimate[1] - am_reg_tidy$std.error[1], 
+          units = NA, 
+          module = "Aquaculture", 
+          source1 = "Intermediate", 
+          source2 = NA, 
+          source3 = NA) %>%
+  add_row(name_long = "Aq. Mortality Coefficient", 
+          name_short = "b2_mort", 
+          "function" = "Aquaculture Mortality", 
+          mid = am_reg_tidy$estimate[2], 
+          low = am_reg_tidy$estimate[2] + am_reg_tidy$std.error[2], 
+          high = am_reg_tidy$estimate[2] - am_reg_tidy$std.error[2], 
+          units = NA, 
+          module = "Aquaculture", 
+          source1 = "Intermediate", 
+          source2 = NA, 
+          source3 = NA)
+    
+# Turn parameters into a matrix for multiple model runs.
+pars_base = pars_full %>% 
+  select(2, 4:6) %>%
+  column_to_rownames(var = "name_short")
+
+# Define n runs.
+n = 100
+
+# Build n runs w/o aquaculture.
+pars_0 = pars_base[1]
+pars_0[2:n] = pars_0[1]
+
+# Draws. 
+#  Fishery.
+pars_0["nprop", ] = rnorm(n, 
+                          mean = 1, 
+                          sd = 0.085)
+
+pars_0["e_2017", ] = runif(n,
+                           min = pars_base["e_2017", 2],
+                           max = pars_base["e_2017", 3])
+
+pars_0["c_2017", ] = runif(n,
+                           min = pars_base["c_2017", 2],
+                           max = pars_base["c_2017", 3])
+
+pars_0["eta_limit", ] = runif(n,
+                              min = pars_base["eta_limit", 2],
+                              max = pars_base["eta_limit", 3])
+
+pars_0["multi_en", ] = runif(n,
+                           min = pars_base["multi_en", 2],
+                           max = pars_base["multi_en", 3])
+
+pars_0["c_enf", ] = runif(n,
+                           min = pars_base["c_enf", 2],
+                           max = pars_base["c_enf", 3])
+
+pars_0["g_r", ] = runif(n,
+                          min = pars_base["g_r", 2],
+                          max = pars_base["g_r", 3])
+ 
+#  Aquaculture.
+pars_0["sale_size", 1:n] = runif(n,
+                                    min = pars_base["sale_size", 2],
+                                    max = pars_base["sale_size", 3])
+
+pars_0["dens", 1:n] = runif(n,
+                               min = pars_base["dens", 2],
+                               max = pars_base["dens", 3])
+
+pars_0["mmin", 1:n] = runif(n,
+                               min = pars_base["mmin", 2],
+                               max = pars_base["mmin", 3])
+
+pars_0["disc", 1:n] = runif(n,
+                               min = pars_base["disc", 2],
+                               max = pars_base["disc", 3])
+
+pars_0["c_cages", 1:n] = ceiling(runif(n,
+                                       min = pars_base["c_cages", 2],
+                                       max = pars_base["c_cages", 3]))
+
+# Build n runs w/ aquaculture.
+pars_1 = pars_0
+pars_1["switch_aq", ] = 1
+# Build n runs w/ increased enforcement.
+pars_2 = pars_0
+pars_2["switch_en", ] = 1
+# Build n runs w/ aquaculture and increased enforcement.
+pars_3 = pars_0
+pars_3["switch_aq", ] = 1
+pars_3["switch_en", ] = 1
+```
+
+\newpage
+
+# Model Runs
+
+
+```r
+# House results.
+results_0 = vector("list", n)
+results_1 = vector("list", n)
+results_2 = vector("list", n)
+results_3 = vector("list", n)
+
+# Loop through parameter sets.
+for(i in 1:n){par = select(pars_0, i)
+                    output = fun(par)
+                    output$Run = i
+                    output$Scenario = "Status Quo" # Band-Aid: This would be better outside of the loop.
+                    output$Cages = par["c_cages",] # Band-Aid: This carries one parameter through, but compact code to carry all through would be nice.
+                    results_0[[i]] = output}
+```
+
+```
+## Note: Using an external vector in selections is ambiguous.
+## i Use `all_of(i)` instead of `i` to silence this message.
+## i See <https://tidyselect.r-lib.org/reference/faq-external-vector.html>.
+## This message is displayed once per session.
+```
+
+```r
+for(i in 1:n){par = select(pars_1, i)
+                    output = fun(par)
+                    output$Run = i
+                    output$Scenario = "Aquaculture Intervention" # Band-Aid: This would be better outside of the loop.
+                    output$Cages = par["c_cages",] # Band-Aid: This carries one parameter through, but compact code to carry all through would be nice.
+                    results_1[[i]] = output}
+
+for(i in 1:n){par = select(pars_2, i)
+                    output = fun(par)
+                    output$Run = i
+                    output$Scenario = "Enforcement Intervention" # Band-Aid: This would be better outside of the loop.
+                    output$Cages = par["c_cages",] # Band-Aid: This carries one parameter through, but compact code to carry all through would be nice.
+                    results_2[[i]] = output}
+
+for(i in 1:n){par = select(pars_3, i)
+                    output = fun(par)
+                    output$Run = i
+                    output$Scenario = "Aquaculture and Enforcement Interventions" # Band-Aid: This would be better outside of the loop.
+                    output$Cages = par["c_cages",] # Band-Aid: This carries one parameter through, but compact code to carry all through would be nice.
+                    results_3[[i]] = output}
+
+# Go from list to dataframe for easier processing.
+results = bind_rows(results_0,
+                    results_1,
+                    results_2,
+                    results_3)
+```
+
+\newpage
+
+# Visualizing Biological Impacts
+
+
+```r
+# Summarize results in barplots of differential outcomes wrt total reproductive biomass and biomass by cohort.
+#  Reproductive biomass w/ aq. scale.
+vis_bio_sum = 
+  results %>% 
+  filter(Variable == "Numbers" & Age > 3) %>% 
+  mutate(Biomass = fun_l_w(pars_base["a_lw", 1], 
+                           fun_a_l(Age - 0.5, 
+                                   pars_base["linf_al", 1], 
+                                   pars_base["k_al", 1], 
+                                   pars_base["t0_al", 1]),  
+                           pars_base["b_lw", 1]) / 1000 * Result) %>% 
+
+  group_by(Year,
+           Run, 
+           Scenario) %>% 
+  summarize(Biomass = sum(Biomass)) %>% 
+  pivot_wider(names_from = Scenario,
+              values_from = Biomass) %>% 
+  mutate(`Aquaculture Intervention` = `Aquaculture Intervention` - `Status Quo`,
+         `Enforcement Intervention` = `Enforcement Intervention` - `Status Quo`,
+         `Aquaculture and Enforcement Interventions` = `Aquaculture and Enforcement Interventions` - `Status Quo`) %>% 
+  select(-`Status Quo`) %>% 
+  pivot_longer(cols = c("Aquaculture Intervention",
+                        "Enforcement Intervention",
+                        "Aquaculture and Enforcement Interventions"),
+               names_to = "Scenario",
+               values_to = "Values") %>% 
+  group_by(Year,
+           Scenario) %>% 
+  summarize(Mid = mean(Values, na.rm = TRUE),
+            High = mean(Values, na.rm = TRUE) + sd(Values, na.rm = TRUE),
+            Low = mean(Values, na.rm = TRUE) - sd(Values, na.rm = TRUE)) %>% 
+  ungroup %>% 
+  mutate(Scenario = factor(Scenario, 
+                           levels = c("Aquaculture Intervention",
+                                      "Enforcement Intervention",
+                                      "Aquaculture and Enforcement Interventions"),
+                           labels = c("Aquaculture Intervention",
+                                      "Enforcement Intervention",
+                                      "Aquaculture and Enforcement Interventions"))) %>% 
+  ggplot + 
+  geom_crossbar(aes(x = Year + 2016,
+                   y = Mid,
+                   ymin = Low,
+                   ymax = High,
+                   group = Year + 2016,
+                   fill = Mid),
+                width = 1) +
+  labs(x = "",
+       y = "Effect of Aquaculture Exports on Spawning Fishery Biomass (Tonnes)",
+       fill = "Mean") +
+  scale_x_continuous(breaks = c(2019, 2024, 2029)) +
+  scale_fill_viridis_c() +
+  guides(fill = guide_colorbar(barwidth = 15,
+                               barheight = 0.5,
+                               ticks = FALSE)) +
+  theme_pubr() +
+  theme(legend.background = element_rect(fill = "transparent"),
+        legend.text = element_text(margin = margin(l = 2.5, r = 2.5), hjust = 0),
+        panel.background = element_rect(fill = "transparent", color = NA),
+        plot.background = element_rect(fill = "transparent", color = NA)) +
+    facet_wrap(~ Scenario,
+               nrow = 1)
+
+#   Save.
+ggsave("./out/vis_bio_sum.png",
+       vis_bio_sum,
+       dpi = 300,
+       width = 6.5,
+       height = 4.5)
+
+#  Visualize w/ age structure, w/o error.
+vis_bio_age_dif = 
+  results %>% 
+  filter(Scenario == "Status Quo" | Scenario == "Aquaculture Intervention") %>% 
+  filter(Variable == "Numbers" & Age > 3) %>% 
+  mutate(Biomass = fun_l_w(pars_base["a_lw", 1], 
+                           fun_a_l(Age - 0.5, 
+                                   pars_base["linf_al", 1], 
+                                   pars_base["k_al", 1], 
+                                   pars_base["t0_al", 1]),  
+                           pars_base["b_lw", 1]) / 1000 * Result) %>% 
+  
+  group_by(Year,
+           Age,
+           Scenario) %>% 
+  summarize(Biomass = sum(Biomass)) %>% 
+  ungroup %>% 
+  pivot_wider(names_from = Scenario,
+              values_from = Biomass) %>% 
+  mutate(Difference = `Aquaculture Intervention` - `Status Quo`,
+         Proportion = `Aquaculture Intervention` / `Status Quo`) %>% 
+  pivot_longer(cols = c("Difference",
+                        "Proportion"),
+               names_to = "Which",
+               values_to = "Values") %>% 
+  filter(Which == "Difference") %>% 
+  ggplot +
+  geom_raster(aes(x = Year + 2016,
+                y = Age, 
+                fill = Values)) +
+  labs(x = "",
+       fill = "Biomass Differential (Intervention-Status Quo)") +
+  scale_fill_viridis_c(option = "D") +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  theme_pubr()
+```
+
+![bio](out/vis_bio_sum.png)
+
+\newpage
+
+#  Visualizing Economic Impacts
+
+
+```r
+# Summarize revenue impact.
+results_rev = 
+  results %>% 
+  select(-Age) %>% 
+  filter(Scenario == "Status Quo" | Scenario == "Aquaculture Intervention") %>% 
+  filter(Variable == "Aquaculture Revenue" | Variable == "Poaching Revenue") %>%
+  mutate(Variable = str_remove(string = Variable,
+                               pattern = " Revenue")) %>%
+  mutate(Result = Result * 0.000001) %>%
+  mutate(Cages = ifelse(Cages > 0,
+                        ifelse(Cages > 25,
+                               ifelse(Cages > 50,
+                                      ifelse(Cages > 75,
+                                             "0.75-1.00",
+                                             "0.50-0.75"),
+                                      "0.25-0.50"),
+                               "0.01-0.25"),
+                        "0")) %>% # Bin scale.
+  drop_na() %>% # Track down origin of NAs.
+  group_by(Year, 
+           Run,
+           Variable, 
+           Scenario,
+           Cages) %>% 
+  mutate(Result = ifelse(Scenario == "Aquaculture Intervention", 
+                         Result, 
+                         -Result)) %>% # Change sign on status quo runs for tidy difference calculation.
+  ungroup() %>% 
+  group_by(Year,
+           Run,
+           Variable,
+           Cages) %>% 
+  summarize(Difference = sum(Result)) %>% # Sum runs by run for tidy difference.
+  ungroup() %>% 
+  group_by(Year, 
+           Variable,
+           Cages) %>% 
+  summarize(Mea = mean(Difference)) %>% # Summarize differences by scale bin.
+  ungroup %>% 
+  mutate(Years = ceiling(Year * 0.33)) %>% # Summarize mean differences by four-year average.
+  group_by(Years,
+           Variable,
+           Cages) %>% 
+  summarize(Mea = mean(Mea)) %>% 
+  ungroup() %>% 
+  mutate(Years = ifelse(Years > 1,
+                        ifelse(Years > 2,
+                               ifelse(Years > 3,
+                                             ifelse(Years > 4,
+                                                    "2029 - 2031",
+                                             "2026 - 2028"),
+                                      "2023 - 2025"),
+                               "2020 - 2022"),
+                        "2017 - 2019")) %>%
+  mutate(Years = as.factor(Years))
+
+
+# Plot differences.
+#  First, tweak the manual fill palette.
+pal_fil = viridis(4, 
+                  begin = 0.00, 
+                  end = 0.50, 
+                  direction = -1, 
+                  option = "D")
+
+#  Then plot.
+vis_rev = 
+  ggplot(data = results_rev) + 
+  geom_col(aes(x = Years,
+               y = Mea,
+               fill = Cages),
+           position = "dodge") +
+  geom_hline(aes(yintercept = 0),
+             color = "firebrick",
+             linetype = "dashed") +
+  scale_fill_manual(values = pal_fil) +
+  labs(x = "", 
+       y = "\u0394 R (US$M 2018)", 
+       fill = "Aquaculture Scale (10^6 m^3)") +
+  theme_pubr() +
+  theme(axis.text.x = element_text(angle = 45,
+                                   hjust = 0.50,
+                                   vjust = 0.60),
+        legend.background = element_rect(fill = "transparent"),
+        legend.position = "right",
+        legend.text = element_text(margin = margin(l = 2.5, r = 2.5), hjust = 0),
+        strip.background = element_blank(),
+        strip.text = element_blank(),
+        panel.background = element_rect(fill = "transparent", color = NA),
+        plot.background = element_rect(fill = "transparent", color = NA)) +
+  facet_grid(rows = vars(Variable),
+             scales = "free")
+
+# Save.
+ggsave("./out/vis_rev.png",
+       vis_rev,
+       dpi = 300,
+       width = 6.5,
+       height = 4.5)
+```
+
+![rev](out/vis_rev.png)
+
+\newpage
+
+# Visualizing Influence of Demand and Substitution
+
+
+```r
+# Test sensitivity of biomass outcomes to demand and substitution.
+# define wrapper function that takes parameters and returns scalar difference of counterfactual and status quo median biomass.
+#  drop results where result > 0 or ... whatever works
+fun_opt = function(scale, 
+                   pars){
+  
+  pars["c_cages", "b"] = 10
+  pars["cage_size", "b"] = scale / 10 # Band-Aid to get a continuous-ish input. This works out to m^3 of production.
+  
+  out_0 =
+    pars %>%
+    select(a) %>%
+    fun %>%
+    filter(Variable == "Numbers") %>%
+    mutate(Biomass = fun_l_w(pars_base["a_lw", 1], 
+                             fun_a_l(Age - 0.5, 
+                                     pars_base["linf_al", 1], 
+                                     pars_base["k_al", 1], 
+                                     pars_base["t0_al", 1]),  
+                             pars_base["b_lw", 1]) / 1000 * Result) %>% 
+    group_by(Year) %>%
+    summarize(Sum = sum(Biomass)) %>%
+    ungroup() %>%
+    filter(Year == max(Year)) %>%
+    pull(Sum)
+
+  out_1 =
+    pars %>%
+    select(b) %>%
+    fun %>%
+    filter(Variable == "Numbers") %>%
+    mutate(Biomass = fun_l_w(pars_base["a_lw", 1], 
+                             fun_a_l(Age - 0.5, 
+                                     pars_base["linf_al", 1], 
+                                     pars_base["k_al", 1], 
+                                     pars_base["t0_al", 1]),  
+                             pars_base["b_lw", 1]) / 1000 * Result) %>% 
+    group_by(Year) %>%
+    summarize(Sum = sum(Biomass)) %>%
+    ungroup() %>%
+    filter(Year == max(Year)) %>%
+    pull(Sum)
+
+  dif = abs(out_1 - out_0)
+
+  return(dif)
+  
+}
+
+fun_opter = function(dem,
+                     sub,
+                     pars){
+  
+  pars = 
+    pars %>% 
+    mutate(b = ifelse(names == "dem",
+                      dem,
+                      ifelse(names == "sub",
+                             sub,
+                             b))) %>%  # Change out null values for demand and substitution changes for matrix values.
+    column_to_rownames("names")
+  
+  opt = optim(par = 0, # Give a starting value for scale.
+              fn = fun_opt,
+              method = "Brent",
+              lower = 0,
+              upper = 100000,
+              pars = pars)
+  
+  return(list(opt$par, 
+              opt$value))
+}
+
+# Get parameters together. You might get a cleaner outcome by finding medians of bootstrapped parameters.
+par_0 = 
+  pars_base %>% # Snag parameters for the status quo.
+  select(1) %>% # Keep the central estimates (and remember that central estimates != inputs for median outcome).
+  rename(a = mid) %>% # Get a unique name to avoid overwriting at join.
+  rownames_to_column("names")
+
+par_1 =
+  pars_base %>% # ""
+  select(1) %>% # ""
+  rename(b = mid) %>% # ""
+  rownames_to_column("names") %>% 
+  mutate(b = ifelse(names == "switch_aq",
+                    1,
+                    b))
+
+pars = 
+  inner_join(par_0, 
+             par_1)
+```
+
+```
+## Joining, by = "names"
+```
+
+```r
+# Get a matrix of parameters for demand and substitution.  
+mat = crossing(dem = seq(1.00, 2.00, by = 0.10), 
+               sub = seq(0.00, 1.00, by = 0.10))
+
+# Optimize on test parameters.
+opt_test = fun_opter(dem = 1.25, 
+                     sub = 0.75, 
+                     pars = pars) # Returns 24k m^3 at 9.11e-06 (2/11).
+
+# Optimize on full set.
+opt = 
+  mat %>% 
+  mutate(opt = map2(.x = dem,
+                    .y = sub,
+                    .f = fun_opter,
+                    pars = pars))
+
+# Manipulate results.
+use =
+  opt %>%
+  unnest(opt) %>%
+  mutate(opt = as.numeric(opt),
+         set = rep(1:(nrow(.) / 2), each = 2),
+         val = rep(1:2, nrow(.) / 2)) %>% 
+  pivot_wider(names_from = val,
+              values_from = opt) %>% 
+    rename(scale = `1`,
+           diff = `2`)
+
+# Plot results.
+vis_dem = 
+  use %>% 
+  mutate(scale = ifelse(diff > 500,
+                        NA,
+                        scale)) %>% 
+  ggplot() +
+  geom_raster(aes(x = sub,
+                  y = dem,
+                  fill = scale / 100000)) +
+  geom_text(aes(x = sub,
+                y = dem,
+                label = ifelse(round(scale / 100000, 2) == 1, "1.00+", round(scale / 100000, 2))),
+            size = 3.25) +
+  scale_x_reverse(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_fill_viridis(direction = -1,
+                     na.value = "grey15") +
+  guides(fill = guide_colorbar(barwidth = 15,
+                               barheight = 0.5,
+                               ticks = FALSE)) +
+  labs(x = "Substitution (Ratio of Prices for Aquaculture and Fishery Products)",
+       y = "Demand (Proportion of 2017 Quantity Demanded)",
+       fill = "Aquaculture Scale (10^6 m^3)") +
+  theme_pubr()
+
+# Save.
+ggsave("./out/vis_dem.png",
+       vis_dem,
+       dpi = 300,
+       width = 6.5,
+       height = 4.5)
+```
+
+```
+## Warning: Removed 37 rows containing missing values (geom_text).
+```
+
+![dem](out/vis_dem.png)
+
+# Visualizing Principal Components
+
+# Summarizing Results
