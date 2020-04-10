@@ -42,9 +42,6 @@ output:
 
 # Visualizing Influence of Demand and Substitution
 
-```{r dem, code = readLines("./scripts/06_3_dem.R")}
-```
-
 # Visualizing Principal Components
 
 # Summarizing Results
