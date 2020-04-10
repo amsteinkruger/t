@@ -91,6 +91,9 @@ vis_rev =
   facet_grid(rows = vars(Variable),
              scales = "free")
 
+# Print.
+print(vis_rev)
+
 # Save.
 ggsave("./out/vis_rev.png",
        vis_rev,

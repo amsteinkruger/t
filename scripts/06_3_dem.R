@@ -1,6 +1,5 @@
 # Test sensitivity of biomass outcomes to demand and substitution.
 # define wrapper function that takes parameters and returns scalar difference of counterfactual and status quo median biomass.
-#  drop results where result > 0 or ... whatever works
 fun_opt = function(scale, 
                    pars){
   
@@ -145,6 +144,9 @@ vis_dem =
        y = "Demand (Proportion of 2017 Quantity Demanded)",
        fill = "Aquaculture Scale (10^6 m^3)") +
   theme_pubr()
+
+# Print.
+print(vis_dem)
 
 # Save.
 ggsave("./out/vis_dem.png",

@@ -1,18 +1,22 @@
----
-title: "Commercializing aquaculture to conserve Totoaba macdonaldi in the Gulf of California"
-output:
-  pdf_document:
-    toc: true
-    df_print: kable
-    keep_md: true
----
+Commercializing aquaculture to conserve totoaba
+================
 
-\newpage
+  - [Packages](#packages)
+  - [Data](#data)
+  - [Functions](#functions)
+  - [Set-Up for Model Runs](#set-up-for-model-runs)
+  - [Model Runs](#model-runs)
+  - [Visualizing Biological Impacts](#visualizing-biological-impacts)
+  - [Visualizing Economic Impacts](#visualizing-economic-impacts)
+  - [Visualizing Influence of Demand and
+    Substitution](#visualizing-influence-of-demand-and-substitution)
+  - [Visualizing Principal
+    Components](#visualizing-principal-components)
+  - [Summarizing Results](#summarizing-results)
 
 # Packages
 
-
-```r
+``` r
 library(janitor)
 library(broom)
 library(reshape2)
@@ -25,8 +29,7 @@ library(tidyverse)
 
 # Data
 
-
-```r
+``` r
 # Parameters from several sources noted in the file.
 dat_par = read_csv("./data/dat_pars.csv") %>% 
   clean_names()
@@ -41,12 +44,9 @@ dat_aqm = read_csv("./data/dat_aqm.csv")
 dat_bio = read_csv("./data/dat_bio.csv")
 ```
 
-\newpage
-
 # Functions
 
-
-```r
+``` r
 # Ages to lengths - Von Bertalanffy Growth Function.
 fun_a_l = function(a, linf, k, t0){l = linf * (1 - exp(-k * (a - t0)))}
 
@@ -442,12 +442,9 @@ fun = function(par){
 }
 ```
 
-\newpage
-
 # Set-Up for Model Runs
 
-
-```r
+``` r
 # Visualization
 #  Set up palettes.
 pal_fil = viridis(4, 
@@ -619,12 +616,9 @@ pars_3["switch_aq", ] = 1
 pars_3["switch_en", ] = 1
 ```
 
-\newpage
-
 # Model Runs
 
-
-```r
+``` r
 # House results.
 results_0 = vector("list", n)
 results_1 = vector("list", n)
@@ -640,14 +634,12 @@ for(i in 1:n){par = select(pars_0, i)
                     results_0[[i]] = output}
 ```
 
-```
-## Note: Using an external vector in selections is ambiguous.
-## i Use `all_of(i)` instead of `i` to silence this message.
-## i See <https://tidyselect.r-lib.org/reference/faq-external-vector.html>.
-## This message is displayed once per session.
-```
+    ## Note: Using an external vector in selections is ambiguous.
+    ## i Use `all_of(i)` instead of `i` to silence this message.
+    ## i See <https://tidyselect.r-lib.org/reference/faq-external-vector.html>.
+    ## This message is displayed once per session.
 
-```r
+``` r
 for(i in 1:n){par = select(pars_1, i)
                     output = fun(par)
                     output$Run = i
@@ -676,12 +668,9 @@ results = bind_rows(results_0,
                     results_3)
 ```
 
-\newpage
-
 # Visualizing Biological Impacts
 
-
-```r
+``` r
 # Summarize results in barplots of differential outcomes wrt total reproductive biomass and biomass by cohort.
 #  Reproductive biomass w/ aq. scale.
 vis_bio_sum = 
@@ -746,6 +735,13 @@ vis_bio_sum =
     facet_wrap(~ Scenario,
                nrow = 1)
 
+#   Print.
+print(vis_bio_sum)
+```
+
+![](key_files/figure-gfm/bio-1.png)<!-- -->
+
+``` r
 #   Save.
 ggsave("./out/vis_bio_sum.png",
        vis_bio_sum,
@@ -791,14 +787,9 @@ vis_bio_age_dif =
   theme_pubr()
 ```
 
-![bio](out/vis_bio_sum.png)
+# Visualizing Economic Impacts
 
-\newpage
-
-#  Visualizing Economic Impacts
-
-
-```r
+``` r
 # Summarize revenue impact.
 results_rev = 
   results %>% 
@@ -892,6 +883,13 @@ vis_rev =
   facet_grid(rows = vars(Variable),
              scales = "free")
 
+# Print.
+print(vis_rev)
+```
+
+![](key_files/figure-gfm/rev-1.png)<!-- -->
+
+``` r
 # Save.
 ggsave("./out/vis_rev.png",
        vis_rev,
@@ -900,14 +898,9 @@ ggsave("./out/vis_rev.png",
        height = 4.5)
 ```
 
-![rev](out/vis_rev.png)
-
-\newpage
-
 # Visualizing Influence of Demand and Substitution
 
-
-```r
+``` r
 # Test sensitivity of biomass outcomes to demand and substitution.
 # define wrapper function that takes parameters and returns scalar difference of counterfactual and status quo median biomass.
 #  drop results where result > 0 or ... whatever works
@@ -1002,11 +995,9 @@ pars =
              par_1)
 ```
 
-```
-## Joining, by = "names"
-```
+    ## Joining, by = "names"
 
-```r
+``` r
 # Get a matrix of parameters for demand and substitution.  
 mat = crossing(dem = seq(1.00, 2.00, by = 0.10), 
                sub = seq(0.00, 1.00, by = 0.10))
@@ -1062,6 +1053,15 @@ vis_dem =
        fill = "Aquaculture Scale (10^6 m^3)") +
   theme_pubr()
 
+# Print.
+print(vis_dem)
+```
+
+    ## Warning: Removed 37 rows containing missing values (geom_text).
+
+![](key_files/figure-gfm/dem-1.png)<!-- -->
+
+``` r
 # Save.
 ggsave("./out/vis_dem.png",
        vis_dem,
@@ -1070,11 +1070,7 @@ ggsave("./out/vis_dem.png",
        height = 4.5)
 ```
 
-```
-## Warning: Removed 37 rows containing missing values (geom_text).
-```
-
-![dem](out/vis_dem.png)
+    ## Warning: Removed 37 rows containing missing values (geom_text).
 
 # Visualizing Principal Components
 

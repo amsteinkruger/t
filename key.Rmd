@@ -1,18 +1,13 @@
 ---
 title: "Commercializing aquaculture to conserve totoaba"
-output:
-  pdf_document:
+output: 
+  github_document:
     toc: true
-    df_print: kable
-    keep_md: true
 ---
-
-\newpage
 
 # Packages
 
 ```{r lib, code = readLines("./scripts/01_lib.R"), message = FALSE}
-
 ```
 
 # Data
@@ -20,53 +15,35 @@ output:
 ```{r dat, code = readLines("./scripts/02_dat.R"), message = FALSE}
 ```
 
-\newpage
-
 # Functions
 
 ```{r fun, code = readLines("./scripts/03_fun.R")}
 ```
-
-\newpage
 
 # Set-Up for Model Runs
 
 ```{r set, code = readLines("./scripts/04_set.R")}
 ```
 
-\newpage
-
 # Model Runs
 
 ```{r run, code = readLines("./scripts/05_run.R")}
 ```
-
-\newpage
 
 # Visualizing Biological Impacts
 
 ```{r bio, code = readLines("./scripts/06_1_bio.R")}
 ```
 
-![bio](out/vis_bio_sum.png)
-
-\newpage
-
 #  Visualizing Economic Impacts
 
 ```{r rev, code = readLines("./scripts/06_2_rev.R")}
 ```
 
-![rev](out/vis_rev.png)
-
-\newpage
-
 # Visualizing Influence of Demand and Substitution
 
 ```{r dem, code = readLines("./scripts/06_3_dem.R")}
 ```
-
-![dem](out/vis_dem.png)
 
 # Visualizing Principal Components
 

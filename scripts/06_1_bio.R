@@ -62,6 +62,9 @@ vis_bio_sum =
     facet_wrap(~ Scenario,
                nrow = 1)
 
+#   Print.
+print(vis_bio_sum)
+
 #   Save.
 ggsave("./out/vis_bio_sum.png",
        vis_bio_sum,
