@@ -1,5 +1,3 @@
-# ---- fun ----
-
 # Ages to lengths - Von Bertalanffy Growth Function.
 fun_a_l = function(a, linf, k, t0){l = linf * (1 - exp(-k * (a - t0)))}
 

@@ -1,5 +1,3 @@
-# ---- rev ----
-
 # Summarize revenue impact.
 results_rev = 
   results %>% 
@@ -66,7 +64,7 @@ pal_fil = viridis(4,
                   option = "D")
 
 #  Then plot.
-plot_rev = 
+vis_rev = 
   ggplot(data = results_rev) + 
   geom_col(aes(x = Years,
                y = Mea,
@@ -93,13 +91,9 @@ plot_rev =
   facet_grid(rows = vars(Variable),
              scales = "free")
 
-# Print for .Rmd
-print(plot_rev)
-
 # Save.
-ggsave("./out/plot_rev.png", 
-       plot_rev, 
+ggsave("./out/vis_rev.png",
+       vis_rev,
        dpi = 300,
-       width = 6, 
-       height = 6,
-       bg = "transparent")
+       width = 6.5,
+       height = 4.5)

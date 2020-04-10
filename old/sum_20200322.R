@@ -1,7 +1,3 @@
-# ---- sum_20200322 ----
-
-# Testing commit + push + pull on a fresh machine.
-
 # Get outputs to think through variable relationships in a big ol' panel figure.
 dat_sum_panel = 
   results %>% 

@@ -1,7 +1,3 @@
-# ---- pca ----
-
-# Out of date as of 2/11. Rehashing forward.
-
 # Principal Component Analysis of parameters on biomass in final year.
 #  Wrangle parameters by run.
 par_pca = 
