@@ -18,11 +18,12 @@ vis_bio_sum =
               values_from = Biomass) %>% 
   mutate(`Aquaculture Intervention` = `Aquaculture Intervention` - `Status Quo`,
          `Enforcement Intervention` = `Enforcement Intervention` - `Status Quo`,
-         `Aquaculture and Enforcement Interventions` = `Aquaculture and Enforcement Interventions` - `Status Quo`) %>% 
-  select(-`Status Quo`) %>% 
+         `Both Interventions` = `Aquaculture and Enforcement Interventions` - `Status Quo`) %>% 
+  select(-`Status Quo`,
+         -`Aquaculture and Enforcement Interventions`) %>% 
   pivot_longer(cols = c("Aquaculture Intervention",
                         "Enforcement Intervention",
-                        "Aquaculture and Enforcement Interventions"),
+                        "Both Interventions"),
                names_to = "Scenario",
                values_to = "Values") %>% 
   group_by(Year,
@@ -34,10 +35,10 @@ vis_bio_sum =
   mutate(Scenario = factor(Scenario, 
                            levels = c("Aquaculture Intervention",
                                       "Enforcement Intervention",
-                                      "Aquaculture and Enforcement Interventions"),
+                                      "Both Interventions"),
                            labels = c("Aquaculture Intervention",
                                       "Enforcement Intervention",
-                                      "Aquaculture and Enforcement Interventions"))) %>% 
+                                      "Both Interventions"))) %>% 
   ggplot + 
   geom_crossbar(aes(x = Year + 2016,
                    y = Mid,
@@ -47,7 +48,7 @@ vis_bio_sum =
                    fill = Mid),
                 width = 1) +
   labs(x = "",
-       y = "Effect of Aquaculture Exports on Spawning Fishery Biomass (Tonnes)",
+       y = "Effect of Aquaculture Exports on Adult Biomass (t)",
        fill = "Mean") +
   scale_x_continuous(breaks = c(2019, 2024, 2029)) +
   scale_fill_viridis_c() +

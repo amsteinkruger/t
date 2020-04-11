@@ -153,4 +153,4 @@ ggsave("./out/vis_dem.png",
        vis_dem,
        dpi = 300,
        width = 6.5,
-       height = 4.5)
+       height = 7.0)

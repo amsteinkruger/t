@@ -1,84 +1,129 @@
-# Summarize results for text. This round of code iteration does not explicate multiple production scales.
-results_bio = results %>% 
-  filter(Variable == "Numbers" & Year == max(Year) & Cages < 19) %>% 
-  mutate(Biomass = fun_l_w(pars_base["a_lw", 1], 
-                           fun_a_l(Age - 0.5, 
-                                   pars_base["linf_al", 1], 
-                                   pars_base["k_al", 1], 
-                                   pars_base["t0_al", 1]),  
-                           pars_base["b_lw", 1]) / 1000 * Result) %>% 
-  group_by(Run, Scenario) %>% 
-  summarize(SumBio = sum(Biomass)) %>% 
-  ungroup() %>% 
-  group_by(Scenario) %>% 
-  summarize(MedBio = median(SumBio)) %>% 
-  ungroup() %>% 
-  spread(key = Scenario, value = MedBio) %>% 
-  mutate(abs = `Aquaculture Intervention` - `Status Quo`,
-         pro = `Aquaculture Intervention` / `Status Quo`)
-
-# Differential and proportional impacts in biomass for the median of runs in the final year.
-print(results_bio)
-
-results_pi = results %>% 
-  filter(Variable == "Poaching Profit" & Cages < 10) %>% 
-  group_by(Run, Scenario) %>% 
-  summarize(SumPi = sum(Result)) %>% 
-  ungroup() %>% 
-  group_by(Scenario) %>% 
-  summarize(MedPi = median(SumPi)) %>% 
-  ungroup() %>% 
-  spread(key = Scenario, value = MedPi) %>% 
-  mutate(abs = `Aquaculture Intervention` - `Status Quo`,
-         pro = `Aquaculture Intervention` / `Status Quo`)
-
-results_pi_aq = results %>% 
-  filter(Variable == "Aquaculture Profit" & Cages < 10) %>% 
-  group_by(Run, Scenario) %>% 
-  summarize(SumPi = sum(Result, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(Scenario) %>% 
-  summarize(MedPi = median(SumPi, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  spread(key = Scenario, value = MedPi) %>% 
-  mutate(abs = `Aquaculture Intervention` - `Status Quo`,
-         pro = `Aquaculture Intervention` / `Status Quo`)
-
-# Differential and proportional impacts in profit for the median of runs in the final year.
-print(results_pi)
-print(results_pi_aq)
-
-results_pr = results %>% 
-  filter(Variable == "Price" & Cages < 20) %>% 
-  group_by(Run, Scenario) %>% 
-  summarize(MeaPr = mean(Result)) %>% 
-  ungroup() %>% 
-  group_by(Scenario) %>% 
-  summarize(MedPr = median(MeaPr)) %>% 
-  ungroup() %>% 
-  spread(key = Scenario, value = MedPr) %>% 
-  mutate(abs = `Aquaculture Intervention` - `Status Quo`,
-         pro = `Aquaculture Intervention` / `Status Quo`)
-
-# Differential and proportional impacts in prices at a = 13.5 for the median of runs in the final year.
-print(results_pr)
-
-# Easy code for cost results check.
-# View(filter(results, Variable == "Poaching Cost per Metric Ton"))
-# View(filter(results, Variable == "Aquaculture Cost per Metric Ton"))
-results_co = 
+# Summarize results for text.
+#  Biomass (Difference and Proportion)
+results_bio = 
   results %>% 
-  filter(Variable == "Poaching Cost per Metric Ton" | Variable == "Aquaculture Cost per Metric Ton") %>% 
-  filter(is.infinite(Result) == FALSE & is.na(Result) == FALSE) %>% 
-  filter(Result < quantile(Result, 0.75)) #%>% 
-  ggplot() +
-  geom_col(aes(x = Year,
-               y = Result,
-               fill = Variable),
-           position = "dodge2") +
-    facet_wrap(~Scenario)
+  filter(Variable == "Numbers" & Year == 15) %>% 
+  mutate(Biomass = fun_l_w(pars_base["a_lw", 1],
+                           fun_a_l(Age - 0.5,
+                                   pars_base["linf_al", 1],
+                                   pars_base["k_al", 1],
+                                   pars_base["t0_al", 1]),
+                           pars_base["b_lw", 1]) / 1000 * Result) %>%
+  group_by(Scenario,
+           Run) %>% 
+  summarize(Biomass = sum(Biomass)) %>% 
+  group_by(Scenario) %>% 
+  summarize(Biomass = mean(Biomass)) %>% 
+  pivot_wider(names_from = Scenario,
+              values_from = Biomass) %>% 
+  pivot_longer(cols = 1:3,
+               values_to = "Result",
+               names_to = "Intervention") %>% 
+  mutate(Difference = Result - `Status Quo`,
+         Proportion = Result / `Status Quo`,
+         Variable = "Stock Biomass") %>% 
+  select(-`Status Quo`)
   
-median(filter(results_co, Variable == "Poaching Cost per Metric Ton" & Scenario == "Domestic Market")$Result, na.rm = TRUE)
-median(filter(results_co, Variable == "Aquaculture Cost per Metric Ton" & Scenario == "Domestic Market")$Result, na.rm = TRUE)
-median(filter(results_co, Variable == "Poaching Cost per Metric Ton" & Scenario == "Foreign and Domestic Markets")$Result, na.rm = TRUE)
-median(filter(results_co, Variable == "Aquaculture Cost per Metric Ton" & Scenario == "Foreign and Domestic Markets")$Result, na.rm = TRUE)
+#  Catches (Difference and Proportion)
+results_cat = 
+  results %>% 
+  filter(Variable == "Catches" & Year == 15) %>% 
+  mutate(Biomass = fun_l_w(pars_base["a_lw", 1],
+                           fun_a_l(Age - 0.5,
+                                   pars_base["linf_al", 1],
+                                   pars_base["k_al", 1],
+                                   pars_base["t0_al", 1]),
+                           pars_base["b_lw", 1]) / 1000 * Result) %>%
+  group_by(Scenario,
+           Run) %>% 
+  summarize(Biomass = sum(Biomass)) %>% 
+  group_by(Scenario) %>% 
+  summarize(Biomass = mean(Biomass)) %>% 
+  pivot_wider(names_from = Scenario,
+              values_from = Biomass) %>% 
+  pivot_longer(cols = 1:3,
+               values_to = "Result",
+               names_to = "Intervention") %>% 
+  mutate(Difference = Result - `Status Quo`,
+         Proportion = Result / `Status Quo`,
+         Variable = "Catch Biomass") %>% 
+  select(-`Status Quo`)
+
+#  Effort (Difference and Proportion)
+results_eff = 
+  results %>% 
+  filter(Variable == "Effort" & Year == 15) %>% 
+  group_by(Scenario) %>% 
+  summarize(Result = mean(Result)) %>% 
+  pivot_wider(names_from = Scenario,
+              values_from = Result) %>% 
+  pivot_longer(cols = 1:3,
+               values_to = "Result",
+               names_to = "Intervention") %>% 
+  mutate(Difference = Result - `Status Quo`,
+         Proportion = Result / `Status Quo`,
+         Variable = "Effort") %>% 
+  select(-`Status Quo`)
+
+#  Price (Difference and Proportion)
+results_pri = 
+  results %>% 
+  filter(Variable == "Price" & Year == 15) %>% 
+  group_by(Scenario) %>% 
+  summarize(Result = mean(Result)) %>% 
+  pivot_wider(names_from = Scenario,
+              values_from = Result) %>% 
+  pivot_longer(cols = 1:3,
+               values_to = "Result",
+               names_to = "Intervention") %>% 
+  mutate(Difference = Result - `Status Quo`,
+         Proportion = Result / `Status Quo`,
+         Variable = "Price") %>% 
+  select(-`Status Quo`)
+
+#  Revenue (Fishery) (Difference and Proportion)
+results_rev_f = 
+  results %>% 
+  filter(Variable == "Poaching Revenue" & Year == 15) %>% 
+  group_by(Scenario) %>% 
+  summarize(Result = mean(Result)) %>% 
+  pivot_wider(names_from = Scenario,
+              values_from = Result) %>% 
+  pivot_longer(cols = 1:3,
+               values_to = "Result",
+               names_to = "Intervention") %>% 
+  mutate(Difference = Result - `Status Quo`,
+         Proportion = Result / `Status Quo`,
+         Variable = "Revenue (Fishery)") %>% 
+  select(-`Status Quo`)
+
+#  Revenue (Aquaculture) (Difference and Proportion)
+results_rev_a = 
+  results %>% 
+  filter(Variable == "Aquaculture Revenue" & Year > 10) %>% # Band-Aid to get last five years for smoothing.
+  group_by(Scenario) %>% 
+  summarize(Result = mean(Result)) %>% 
+  pivot_wider(names_from = Scenario,
+              values_from = Result) %>% 
+  pivot_longer(cols = 1:3,
+               values_to = "Result",
+               names_to = "Intervention") %>% 
+  mutate(Difference = Result - `Status Quo`,
+         Proportion = Result / `Status Quo`,
+         Variable = "Revenue (Aquaculture)") %>% 
+  select(-`Status Quo`)
+
+# Tabulate!
+results_sum = 
+  bind_rows(results_bio,
+            results_cat,
+            results_eff,
+            results_pri,
+            results_rev_f,
+            results_rev_a)
+
+# Print!
+print(results_sum)
+
+# Export!
+kable(results_sum, "html", digits = 2) %>% cat(file = "./out/results_sum.html")

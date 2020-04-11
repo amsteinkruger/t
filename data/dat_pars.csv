@@ -46,6 +46,6 @@ Catch (Mass) (2017),f_2017,Catch,762,762,762,Metric Tonnes,Fishery,"INAPESCA (20
 Effort (2017),e_2017,Catch,125,100,150,Boat-Years,Fishery,"Fisher interviews (Castellanos 2018, INAPESCA 2018)",,
 Effort Cost,c_2017,Catch,100000,75000,125000,USD/Boat-Year,Fishery,"Fishers interviews; (Green Crime in Mexico, Martinez 2018-Ch.12); INAPESCA (2018); see t_c.xlsx for details.",,
 Enforcement Switch,switch_en,Catch,0,0,0,Binary,Fishery,,,
-Enforcement Multiplier,multi_en,Catch,5,1,10,Proportion,FIshery,,,
+Enforcement Multiplier,multi_en,Catch,3,1,5,Proportion,FIshery,,,
 Enforcement Cost,c_enf,Catch,10000,5000,15000,USD2018/Vessel/Year,Fishery,,,
 Effort Entry Limit,eta_limit,Catch,0.1,0.05,0.15,Proportion,Fishery,INAPESCA (2018),,

@@ -69,25 +69,24 @@ vis_rev =
   geom_col(aes(x = Years,
                y = Mea,
                fill = Cages),
-           position = "dodge") +
+           position = "dodge",
+           width = 0.80) +
   geom_hline(aes(yintercept = 0),
              color = "firebrick",
              linetype = "dashed") +
   scale_fill_manual(values = pal_fil) +
   labs(x = "", 
-       y = "\u0394 R (US$M 2018)", 
-       fill = "Aquaculture Scale (10^6 m^3)") +
+       y = "Effects on Revenue by Sector (US$M 2018)", 
+       fill = expression(paste("Aquaculture Scale (", 10^6, m^3, ")"))) +
   theme_pubr() +
-  theme(axis.text.x = element_text(angle = 45,
+  theme(axis.text.x = element_text(size = 10,
+                                   angle = 45,
                                    hjust = 0.50,
                                    vjust = 0.60),
-        legend.background = element_rect(fill = "transparent"),
+        axis.text.y = element_text(size = 10),
         legend.position = "right",
-        legend.text = element_text(margin = margin(l = 2.5, r = 2.5), hjust = 0),
-        strip.background = element_blank(),
-        strip.text = element_blank(),
-        panel.background = element_rect(fill = "transparent", color = NA),
-        plot.background = element_rect(fill = "transparent", color = NA)) +
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 9)) +
   facet_grid(rows = vars(Variable),
              scales = "free")
 

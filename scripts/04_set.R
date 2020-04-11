@@ -1,5 +1,4 @@
-# Visualization
-#  Set up palettes.
+# Set up palettes for visualization.
 pal_fil = viridis(4, 
                   begin = 0.00, 
                   end = 0.50, 
@@ -13,7 +12,7 @@ pal_col = viridis(4,
                   direction = -1, 
                   option = "D")
 
-# Market
+# Set up price model.
 #  Estimate inverse demand.
 #   Nonlinear model doesn't really pay off, but here's the code anyhow.
 # nlm = nls(p ~ q * a + (g ^ b) + c, 
@@ -27,7 +26,7 @@ lm_p = lm(p ~ q + g,
 #  Clean results.
 lm_tidy = tidy(lm_p)
 
-# Aquaculture
+# Set up aquaculture model.
 #  Estimate incremental mortalities.
 #  Regression:
 am_reg = nls(m_months ~ b1 * exp(b2 * a_months), dat_aqm, start = list(b1 = 8.00, b2 = - 1.00))

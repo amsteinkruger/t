@@ -42,6 +42,15 @@ output:
 
 # Visualizing Influence of Demand and Substitution
 
+```{r dem, code = readLines("./scripts/06_3_dem.R")}
+```
+
 # Visualizing Principal Components
 
+```{r pca, code = readLines("./scripts/07_pca.R")}
+```
+
 # Summarizing Results
+
+```{r sum, code = readLines("./scripts/07_sum.R")}
+```
