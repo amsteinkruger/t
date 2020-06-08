@@ -180,7 +180,7 @@ fun = function(par){
   r_fi[1] = sum(p_mat[1,] * fun_l_w(a_lw, fun_a_l(a_matrix[1, ], linf_al, k_al, t0_al), b_lw) * y[1, ] * by1 * by2 * 1000) # Constant for conversion to grams of buche.
   c_fi[1] = e[1] * c_2017 + e[1] * switch_en * multi_en * c_enf # Costs for first year. Vessel costs, crew shares of profit, and enforcement intensification.
   rec[1] = fun_rec(sum(n[1, 4:(a_i - a_0 + 1)]), a_r, b_r, d_r, f1_r, f2_r) # Recruitment for first year. Start of column designation is hard-coded.
-  eta = (e[1] * eta_limit) / abs(r_fi[1] - c_fi[1]) # Parameter to restrict changes in effort.
+  eta = (e[1] * eta_limit) / abs(r_fi[1] - e[1] * c_2017) # Parameter to restrict changes in effort. 
 
   #  Aquaculture.
   #   Current.
@@ -447,8 +447,7 @@ fun = function(par){
 # Set-Up for Model Runs
 
 ``` r
-# Visualization
-#  Set up palettes.
+# Set up palettes for visualization.
 pal_fil = viridis(4, 
                   begin = 0.00, 
                   end = 0.50, 
@@ -462,7 +461,7 @@ pal_col = viridis(4,
                   direction = -1, 
                   option = "D")
 
-# Market
+# Set up price model.
 #  Estimate inverse demand.
 #   Nonlinear model doesn't really pay off, but here's the code anyhow.
 # nlm = nls(p ~ q * a + (g ^ b) + c, 
@@ -476,7 +475,7 @@ lm_p = lm(p ~ q + g,
 #  Clean results.
 lm_tidy = tidy(lm_p)
 
-# Aquaculture
+# Set up aquaculture model.
 #  Estimate incremental mortalities.
 #  Regression:
 am_reg = nls(m_months ~ b1 * exp(b2 * a_months), dat_aqm, start = list(b1 = 8.00, b2 = - 1.00))
@@ -549,7 +548,7 @@ pars_base = pars_full %>%
   column_to_rownames(var = "name_short")
 
 # Define n runs.
-n = 100
+n = 10000
 
 # Build n runs w/o aquaculture.
 pars_0 = pars_base[1]
@@ -723,7 +722,7 @@ vis_bio_sum =
                    fill = Mid),
                 width = 1) +
   labs(x = "",
-       y = "Effect of Aquaculture Exports on Adult Biomass (t)",
+       y = "Effect of Intervention(s) on Adult Biomass (t)",
        fill = "Mean") +
   scale_x_continuous(breaks = c(2019, 2024, 2029)) +
   scale_fill_viridis_c() +
@@ -887,11 +886,7 @@ vis_rev =
 
 # Print.
 print(vis_rev)
-```
 
-![](README_files/figure-gfm/rev-1.png)<!-- -->
-
-``` r
 # Save.
 ggsave("./out/vis_rev.png",
        vis_rev,
@@ -994,11 +989,7 @@ par_1 =
 pars = 
   inner_join(par_0, 
              par_1)
-```
-
-    ## Joining, by = "names"
-
-``` r
+  
 # Get a matrix of parameters for demand and substitution.  
 mat = crossing(dem = seq(1.00, 2.00, by = 0.10), 
                sub = seq(0.00, 1.00, by = 0.10))
@@ -1056,13 +1047,7 @@ vis_dem =
 
 # Print.
 print(vis_dem)
-```
 
-    ## Warning: Removed 37 rows containing missing values (geom_text).
-
-![](README_files/figure-gfm/dem-1.png)<!-- -->
-
-``` r
 # Save.
 ggsave("./out/vis_dem.png",
        vis_dem,
@@ -1070,8 +1055,6 @@ ggsave("./out/vis_dem.png",
        width = 6.5,
        height = 7.0)
 ```
-
-    ## Warning: Removed 37 rows containing missing values (geom_text).
 
 # Visualizing Principal Components
 
@@ -1158,57 +1141,22 @@ vis_pca =
 
 # Print!
 print(vis_pca)
-```
 
-    ## Warning: Removed 11 rows containing missing values (geom_point).
-
-![](README_files/figure-gfm/pca-1.png)<!-- -->
-
-``` r
 # Save!
 ggsave("./out/vis_pca.png", 
        vis_pca,
        dpi = 300,
        width = 6.5, 
        height = 7.0)
-```
 
-    ## Warning: Removed 11 rows containing missing values (geom_point).
-
-``` r
 # Tabulate refined PCA.
 #  yoink importance and print
 pca_imp = data.frame(summary(pca)$importance)
 print(pca_imp)
-```
-
-    ##                             PC1      PC2      PC3       PC4       PC5       PC6
-    ## Standard deviation     1.390804 1.053996 1.037158 0.9863993 0.8947804 0.3247252
-    ## Proportion of Variance 0.322390 0.185150 0.179280 0.1621600 0.1334400 0.0175700
-    ## Cumulative Proportion  0.322390 0.507540 0.686820 0.8489900 0.9824300 1.0000000
-
-``` r
 #  yoink rotations and print
 pca_rot = data.frame(summary(pca)$rotation)
 print(pca_rot)
-```
 
-    ##                           PC1         PC2         PC3          PC4         PC5
-    ## Initial Biomass     0.4343856 -0.41296102  0.40858012  0.221569791  0.49947222
-    ## Initial Effort     -0.1370868 -0.47794290 -0.25538395 -0.746529763  0.34707346
-    ## Effort Cost        -0.0354553 -0.76329996 -0.15103610  0.307965544 -0.53909005
-    ## Effort Entry        0.2331034  0.02358373  0.60018148 -0.529505988 -0.53888419
-    ## Aquaculture Export  0.5021119  0.13183274 -0.61645373 -0.135466859 -0.21237760
-    ## Final Biomass       0.6962799  0.02170012 -0.06925611  0.005431781  0.06284129
-    ##                            PC6
-    ## Initial Biomass     0.41865141
-    ## Initial Effort     -0.09894520
-    ## Effort Cost        -0.08856264
-    ## Effort Entry        0.11881108
-    ## Aquaculture Export  0.53575461
-    ## Final Biomass      -0.71130052
-
-``` r
 # Save tables.
 # Importances of PCs.
 kable(pca_imp, "html") %>% cat(., file = "./out/pca_imp.html")
@@ -1345,31 +1293,7 @@ results_sum =
 
 # Print!
 print(results_sum)
-```
 
-    ## # A tibble: 18 x 5
-    ##    Intervention                    Result  Difference Proportion Variable       
-    ##    <chr>                            <dbl>       <dbl>      <dbl> <chr>          
-    ##  1 Aquaculture and Enforcement~    1.14e4     1.19e+3      1.12  Stock Biomass  
-    ##  2 Aquaculture Intervention        1.19e4     1.72e+3      1.17  Stock Biomass  
-    ##  3 Enforcement Intervention        1.04e4     1.27e+2      1.01  Stock Biomass  
-    ##  4 Aquaculture and Enforcement~    5.88e1    -1.22e+2      0.325 Catch Biomass  
-    ##  5 Aquaculture Intervention        3.02e1    -1.51e+2      0.167 Catch Biomass  
-    ##  6 Enforcement Intervention        1.65e2    -1.58e+1      0.913 Catch Biomass  
-    ##  7 Aquaculture and Enforcement~    1.57e1    -3.86e+1      0.289 Effort         
-    ##  8 Aquaculture Intervention        8.13e0    -4.62e+1      0.150 Effort         
-    ##  9 Enforcement Intervention        4.74e1    -6.87e+0      0.874 Effort         
-    ## 10 Aquaculture and Enforcement~    2.92e0    -2.35e+0      0.554 Price          
-    ## 11 Aquaculture Intervention        2.93e0    -2.34e+0      0.557 Price          
-    ## 12 Enforcement Intervention        5.37e0     1.05e-1      1.02  Price          
-    ## 13 Aquaculture and Enforcement~    9.29e5    -3.75e+6      0.199 Revenue (Fishe~
-    ## 14 Aquaculture Intervention        5.00e5    -4.18e+6      0.107 Revenue (Fishe~
-    ## 15 Enforcement Intervention        4.40e6    -2.74e+5      0.941 Revenue (Fishe~
-    ## 16 Aquaculture and Enforcement~    7.52e7     5.49e+7      3.70  Revenue (Aquac~
-    ## 17 Aquaculture Intervention        7.80e7     5.77e+7      3.84  Revenue (Aquac~
-    ## 18 Enforcement Intervention        2.03e7     0.           1     Revenue (Aquac~
-
-``` r
 # Export!
 kable(results_sum, "html", digits = 2) %>% cat(file = "./out/results_sum.html")
 ```

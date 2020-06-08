@@ -48,7 +48,7 @@ vis_bio_sum =
                    fill = Mid),
                 width = 1) +
   labs(x = "",
-       y = "Effect of Aquaculture Exports on Adult Biomass (t)",
+       y = "Effect of Intervention(s) on Adult Biomass (t)",
        fill = "Mean") +
   scale_x_continuous(breaks = c(2019, 2024, 2029)) +
   scale_fill_viridis_c() +

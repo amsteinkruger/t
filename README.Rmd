@@ -37,20 +37,20 @@ output:
 
 #  Visualizing Economic Impacts
 
-```{r rev, code = readLines("./scripts/06_2_rev.R")}
+```{r rev, eval = FALSE, code = readLines("./scripts/06_2_rev.R")}
 ```
 
 # Visualizing Influence of Demand and Substitution
 
-```{r dem, code = readLines("./scripts/06_3_dem.R")}
+```{r dem, eval = FALSE, code = readLines("./scripts/06_3_dem.R")}
 ```
 
 # Visualizing Principal Components
 
-```{r pca, code = readLines("./scripts/07_pca.R")}
+```{r pca, eval = FALSE, code = readLines("./scripts/07_pca.R")}
 ```
 
 # Summarizing Results
 
-```{r sum, code = readLines("./scripts/07_sum.R")}
+```{r sum, eval = FALSE, code = readLines("./scripts/07_sum.R")}
 ```
