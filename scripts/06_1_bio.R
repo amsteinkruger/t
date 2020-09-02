@@ -70,42 +70,4 @@ print(vis_bio_sum)
 ggsave("./out/vis_bio_sum.png",
        vis_bio_sum,
        dpi = 300,
-       width = 6.5,
-       height = 4.5)
-
-#  Visualize w/ age structure, w/o error.
-vis_bio_age_dif = 
-  results %>% 
-  filter(Scenario == "Status Quo" | Scenario == "Aquaculture Intervention") %>% 
-  filter(Variable == "Numbers" & Age > 3) %>% 
-  mutate(Biomass = fun_l_w(pars_base["a_lw", 1], 
-                           fun_a_l(Age - 0.5, 
-                                   pars_base["linf_al", 1], 
-                                   pars_base["k_al", 1], 
-                                   pars_base["t0_al", 1]),  
-                           pars_base["b_lw", 1]) / 1000 * Result) %>% 
-  
-  group_by(Year,
-           Age,
-           Scenario) %>% 
-  summarize(Biomass = sum(Biomass)) %>% 
-  ungroup %>% 
-  pivot_wider(names_from = Scenario,
-              values_from = Biomass) %>% 
-  mutate(Difference = `Aquaculture Intervention` - `Status Quo`,
-         Proportion = `Aquaculture Intervention` / `Status Quo`) %>% 
-  pivot_longer(cols = c("Difference",
-                        "Proportion"),
-               names_to = "Which",
-               values_to = "Values") %>% 
-  filter(Which == "Difference") %>% 
-  ggplot +
-  geom_raster(aes(x = Year + 2016,
-                y = Age, 
-                fill = Values)) +
-  labs(x = "",
-       fill = "Biomass Differential (Intervention-Status Quo)") +
-  scale_fill_viridis_c(option = "D") +
-  scale_x_continuous(expand = c(0, 0)) +
-  scale_y_continuous(expand = c(0, 0)) +
-  theme_pubr()
+       width = 6.5)

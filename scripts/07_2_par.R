@@ -1,4 +1,9 @@
 # Principal Component Analysis of parameters on biomass in final year.
+#  Get an R package to visualize PCA.
+#   # Install from Github ("vqv/ggbiplot").
+library(ggbiplot)
+
+# Wrangle results. 
 #  Wrangle parameters by run.
 par_pca = 
   pars_0 %>% 
@@ -19,13 +24,13 @@ res_pca = results %>%
                                    pars_base["k_al", 1], 
                                    pars_base["t0_al", 1]),  
                            pars_base["b_lw", 1]) / 1000 * Result) %>% 
-  group_by(Run, 
-           Scenario) %>% 
-  summarize(Sum = sum(Biomass, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  mutate(Run = ifelse(Scenario == "Aquaculture Intervention",
-                      Run + n,
-                      Run))
+  dplyr::group_by(Run, 
+                  Scenario) %>% 
+  dplyr::summarize(Sum = sum(Biomass, na.rm = TRUE)) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::mutate(Run = ifelse(Scenario == "Aquaculture Intervention",
+                             Run + n,
+                             Run))
 
 
 
@@ -42,35 +47,35 @@ in_pca =
          # 'Stocking Density' = dens,
          'Aquaculture Export' = switch_aq,
          # 'Aquaculture Mortality' = mmin,
-         'Final Biomass' = Sum) %>% # Keep columns w/ bootstrapping. Constants don't work for PCA.
-  mutate_if(is.factor, ~ as.numeric(as.character(.x)))
-
+         'Final Biomass' = Sum) # Keep columns w/ bootstrapping. Constants don't work for PCA.
 groups_pca =
   in_pca %>% 
   select(Scenario)
 
 in_pca = 
   in_pca %>% 
-  select(-Scenario)
+  select(-Scenario) %>%
+  mutate_all(~ as.numeric(as.character(.x)))
+
 
 # Run refined PCA.
-pca = prcomp(in_pca, scale = TRUE)
+pca_par = prcomp(in_pca, scale = TRUE)
 
 # Plot refined PCs.
-vis_pca =
-  ggbiplot(pca,
+vis_par =
+  ggbiplot(pca_par,
            groups = as.character(groups_pca$Scenario),
-           ellipse = TRUE,
-           alpha = 0.50,
+           ellipse = FALSE,
+           alpha = 0.25,
            varname.size = 3.25,
            varname.adjust = 1.05) +
   scale_color_manual(values = c(pal_col[2], pal_col[1])) +
   scale_x_continuous(expand = c(0, 0),
-                     limits = c(-2, 2.5)) +
+                     limits = c(-2.5, 2)) +
   scale_y_continuous(expand = c(0, 0),
                      limits = c(-2, 2)) +
-  labs(x = "Standardized Principal Component (1) (31.6% Var.)",
-       y = "Standardized Principal Component (2) (21.7% Var.)") +
+  labs(x = "Standardized Principal Component (1) (1.34 SD, 0.30 Var)",
+       y = "Standardized Principal Component (2) (1.00 SD, 0.17 Var)") +
   theme_pubr() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -78,26 +83,27 @@ vis_pca =
         plot.background = element_rect(fill = "transparent", color = NA),
         legend.position = "none")
 
-# Print!
-print(vis_pca)
+vis_par$layers <- c(vis_par$layers[[2]], vis_par$layers[[1]], vis_par$layers[[3]]) # Change order of layers.
+
+print(vis_par)
 
 # Save!
-ggsave("./out/vis_pca.png", 
-       vis_pca,
+ggsave("./out/vis_par.png", 
+       vis_par,
        dpi = 300,
        width = 6.5, 
        height = 7.0)
 
 # Tabulate refined PCA.
 #  yoink importance and print
-pca_imp = data.frame(summary(pca)$importance)
-print(pca_imp)
+par_imp = data.frame(summary(pca_par)$importance)
+print(par_imp)
 #  yoink rotations and print
-pca_rot = data.frame(summary(pca)$rotation)
-print(pca_rot)
+par_rot = data.frame(summary(pca_par)$rotation)
+print(par_rot)
 
 # Save tables.
 # Importances of PCs.
-kable(pca_imp, "html") %>% cat(., file = "./out/pca_imp.html")
+kable(par_imp, "html") %>% cat(., file = "./out/par_imp.html")
 # Rotations of variables in PCs.
-kable(pca_rot, "html") %>% cat(., file = "./out/pca_rot.html")
+kable(par_rot, "html") %>% cat(., file = "./out/par_rot.html")

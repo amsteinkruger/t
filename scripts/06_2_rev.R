@@ -97,5 +97,4 @@ print(vis_rev)
 ggsave("./out/vis_rev.png",
        vis_rev,
        dpi = 300,
-       width = 6.5,
-       height = 4.5)
+       width = 6.5)

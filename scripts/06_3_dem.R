@@ -91,13 +91,8 @@ pars =
              par_1)
   
 # Get a matrix of parameters for demand and substitution.  
-mat = crossing(dem = seq(1.00, 2.00, by = 0.10), 
-               sub = seq(0.00, 1.00, by = 0.10))
-
-# Optimize on test parameters.
-opt_test = fun_opter(dem = 1.25, 
-                     sub = 0.75, 
-                     pars = pars) # Returns 24k m^3 at 9.11e-06 (2/11).
+mat = expand_grid(dem = seq(1.00, 2.00, by = 0.10), 
+                  sub = seq(0.00, 1.00, by = 0.10))
 
 # Optimize on full set.
 opt = 
@@ -136,13 +131,13 @@ vis_dem =
   scale_x_reverse(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
   scale_fill_viridis(direction = -1,
-                     na.value = "grey15") +
+                     na.value = "grey90") +
   guides(fill = guide_colorbar(barwidth = 15,
                                barheight = 0.5,
                                ticks = FALSE)) +
   labs(x = "Substitution (Ratio of Prices for Aquaculture and Fishery Products)",
-       y = "Demand (Proportion of 2017 Quantity Demanded)",
-       fill = "Aquaculture Scale (10^6 m^3)") +
+       y = "Demand (Scaling of Estimated Choke Price, 2014-2018)",
+       fill = expression(paste("Aquaculture Scale (", 10^6, m^3, ")"))) +
   theme_pubr()
 
 # Print.
@@ -152,5 +147,4 @@ print(vis_dem)
 ggsave("./out/vis_dem.png",
        vis_dem,
        dpi = 300,
-       width = 6.5,
-       height = 7.0)
+       width = 6.5)

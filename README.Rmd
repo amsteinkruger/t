@@ -37,20 +37,30 @@ output:
 
 #  Visualizing Economic Impacts
 
-```{r rev, eval = FALSE, code = readLines("./scripts/06_2_rev.R")}
+```{r rev, code = readLines("./scripts/06_2_rev.R")}
 ```
 
 # Visualizing Influence of Demand and Substitution
 
-```{r dem, eval = FALSE, code = readLines("./scripts/06_3_dem.R")}
-```
-
-# Visualizing Principal Components
-
-```{r pca, eval = FALSE, code = readLines("./scripts/07_pca.R")}
+```{r dem, code = readLines("./scripts/06_3_dem.R")}
 ```
 
 # Summarizing Results
 
-```{r sum, eval = FALSE, code = readLines("./scripts/07_sum.R")}
+```{r sum, code = readLines("./scripts/06_4_sum.R")}
+```
+
+# Visualizing Effects on Age Structure (Appendix)
+
+```{r age, code = readLines("./scripts/07_1_age.R")}
+```
+
+# Visualizing Principal Components of Parameters and Biomass Outcomes (Appendix)
+
+```{r par, code = readLines("./scripts/07_2_par.R")}
+```
+
+# Visualizing Principal Components of Simulations (Panel) (Appendix)
+
+```{r pan, code = readLines("./scripts/07_3_pan.R")}
 ```

@@ -44,9 +44,7 @@ pars_full = dat_par %>%
           high = lm_tidy$estimate[2] + lm_tidy$std.error[2], 
           units = NA, 
           module = "Fishery", 
-          source1 = "Intermediate", 
-          source2 = NA, 
-          source3 = NA) %>% 
+          source = "Intermediate") %>% 
   add_row(name_long = "Size Premium", 
           name_short = "b_ma", 
           "function" = "Demand", 
@@ -55,9 +53,7 @@ pars_full = dat_par %>%
           high = lm_tidy$estimate[3] + lm_tidy$std.error[3], 
           units = NA, 
           module = "Fishery", 
-          source1 = "Intermediate", 
-          source2 = NA, 
-          source3 = NA) %>%
+          source = "Intermediate") %>%
   add_row(name_long = "Choke Price", 
           name_short = "c_ma", 
           "function" = "Demand", 
@@ -66,9 +62,7 @@ pars_full = dat_par %>%
           high = lm_tidy$estimate[1] + lm_tidy$std.error[1], 
           units = NA, 
           module = "Fishery", 
-          source1 = "Intermediate", 
-          source2 = NA, 
-          source3 = NA) %>%
+          source = "Intermediate") %>%
   # Add aquaculture outputs to parameter table.
   add_row(name_long = "Aq. Mortality Coefficient", 
           name_short = "b1_mort", 
@@ -78,9 +72,7 @@ pars_full = dat_par %>%
           high = am_reg_tidy$estimate[1] - am_reg_tidy$std.error[1], 
           units = NA, 
           module = "Aquaculture", 
-          source1 = "Intermediate", 
-          source2 = NA, 
-          source3 = NA) %>%
+          source = "Intermediate") %>%
   add_row(name_long = "Aq. Mortality Coefficient", 
           name_short = "b2_mort", 
           "function" = "Aquaculture Mortality", 
@@ -89,9 +81,7 @@ pars_full = dat_par %>%
           high = am_reg_tidy$estimate[2] - am_reg_tidy$std.error[2], 
           units = NA, 
           module = "Aquaculture", 
-          source1 = "Intermediate", 
-          source2 = NA, 
-          source3 = NA)
+          source = "Intermediate")
     
 # Turn parameters into a matrix for multiple model runs.
 pars_base = pars_full %>% 
@@ -99,7 +89,7 @@ pars_base = pars_full %>%
   column_to_rownames(var = "name_short")
 
 # Define n runs.
-n = 10000
+n = 5000
 
 # Build n runs w/o aquaculture.
 pars_0 = pars_base[1]
