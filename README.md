@@ -10,9 +10,13 @@ Commercializing aquaculture to conserve totoaba
   - [Visualizing Economic Impacts](#visualizing-economic-impacts)
   - [Visualizing Influence of Demand and
     Substitution](#visualizing-influence-of-demand-and-substitution)
-  - [Visualizing Principal
-    Components](#visualizing-principal-components)
   - [Summarizing Results](#summarizing-results)
+  - [Visualizing Effects on Age Structure
+    (Appendix)](#visualizing-effects-on-age-structure-appendix)
+  - [Visualizing Principal Components of Parameters and Biomass Outcomes
+    (Appendix)](#visualizing-principal-components-of-parameters-and-biomass-outcomes-appendix)
+  - [Visualizing Principal Components of Simulations (Panel)
+    (Appendix)](#visualizing-principal-components-of-simulations-panel-appendix)
 
 # Packages
 
@@ -20,12 +24,11 @@ Commercializing aquaculture to conserve totoaba
 library(janitor)
 library(broom)
 library(reshape2)
-library(ggpubr)
-library(ggbiplot)
-library(viridis)
 library(factoextra)
 library(kableExtra)
 library(gridExtra)
+library(ggpubr)
+library(viridis)
 library(tidyverse)
 ```
 
@@ -493,9 +496,7 @@ pars_full = dat_par %>%
           high = lm_tidy$estimate[2] + lm_tidy$std.error[2], 
           units = NA, 
           module = "Fishery", 
-          source1 = "Intermediate", 
-          source2 = NA, 
-          source3 = NA) %>% 
+          source = "Intermediate") %>% 
   add_row(name_long = "Size Premium", 
           name_short = "b_ma", 
           "function" = "Demand", 
@@ -504,9 +505,7 @@ pars_full = dat_par %>%
           high = lm_tidy$estimate[3] + lm_tidy$std.error[3], 
           units = NA, 
           module = "Fishery", 
-          source1 = "Intermediate", 
-          source2 = NA, 
-          source3 = NA) %>%
+          source = "Intermediate") %>%
   add_row(name_long = "Choke Price", 
           name_short = "c_ma", 
           "function" = "Demand", 
@@ -515,9 +514,7 @@ pars_full = dat_par %>%
           high = lm_tidy$estimate[1] + lm_tidy$std.error[1], 
           units = NA, 
           module = "Fishery", 
-          source1 = "Intermediate", 
-          source2 = NA, 
-          source3 = NA) %>%
+          source = "Intermediate") %>%
   # Add aquaculture outputs to parameter table.
   add_row(name_long = "Aq. Mortality Coefficient", 
           name_short = "b1_mort", 
@@ -527,9 +524,7 @@ pars_full = dat_par %>%
           high = am_reg_tidy$estimate[1] - am_reg_tidy$std.error[1], 
           units = NA, 
           module = "Aquaculture", 
-          source1 = "Intermediate", 
-          source2 = NA, 
-          source3 = NA) %>%
+          source = "Intermediate") %>%
   add_row(name_long = "Aq. Mortality Coefficient", 
           name_short = "b2_mort", 
           "function" = "Aquaculture Mortality", 
@@ -538,9 +533,7 @@ pars_full = dat_par %>%
           high = am_reg_tidy$estimate[2] - am_reg_tidy$std.error[2], 
           units = NA, 
           module = "Aquaculture", 
-          source1 = "Intermediate", 
-          source2 = NA, 
-          source3 = NA)
+          source = "Intermediate")
     
 # Turn parameters into a matrix for multiple model runs.
 pars_base = pars_full %>% 
@@ -548,7 +541,7 @@ pars_base = pars_full %>%
   column_to_rownames(var = "name_short")
 
 # Define n runs.
-n = 10000
+n = 5000
 
 # Build n runs w/o aquaculture.
 pars_0 = pars_base[1]
@@ -736,7 +729,13 @@ vis_bio_sum =
         plot.background = element_rect(fill = "transparent", color = NA)) +
     facet_wrap(~ Scenario,
                nrow = 1)
+```
 
+    ## `summarise()` regrouping output by 'Year', 'Run' (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'Year' (override with `.groups` argument)
+
+``` r
 #   Print.
 print(vis_bio_sum)
 ```
@@ -748,46 +747,10 @@ print(vis_bio_sum)
 ggsave("./out/vis_bio_sum.png",
        vis_bio_sum,
        dpi = 300,
-       width = 6.5,
-       height = 4.5)
-
-#  Visualize w/ age structure, w/o error.
-vis_bio_age_dif = 
-  results %>% 
-  filter(Scenario == "Status Quo" | Scenario == "Aquaculture Intervention") %>% 
-  filter(Variable == "Numbers" & Age > 3) %>% 
-  mutate(Biomass = fun_l_w(pars_base["a_lw", 1], 
-                           fun_a_l(Age - 0.5, 
-                                   pars_base["linf_al", 1], 
-                                   pars_base["k_al", 1], 
-                                   pars_base["t0_al", 1]),  
-                           pars_base["b_lw", 1]) / 1000 * Result) %>% 
-  
-  group_by(Year,
-           Age,
-           Scenario) %>% 
-  summarize(Biomass = sum(Biomass)) %>% 
-  ungroup %>% 
-  pivot_wider(names_from = Scenario,
-              values_from = Biomass) %>% 
-  mutate(Difference = `Aquaculture Intervention` - `Status Quo`,
-         Proportion = `Aquaculture Intervention` / `Status Quo`) %>% 
-  pivot_longer(cols = c("Difference",
-                        "Proportion"),
-               names_to = "Which",
-               values_to = "Values") %>% 
-  filter(Which == "Difference") %>% 
-  ggplot +
-  geom_raster(aes(x = Year + 2016,
-                y = Age, 
-                fill = Values)) +
-  labs(x = "",
-       fill = "Biomass Differential (Intervention-Status Quo)") +
-  scale_fill_viridis_c(option = "D") +
-  scale_x_continuous(expand = c(0, 0)) +
-  scale_y_continuous(expand = c(0, 0)) +
-  theme_pubr()
+       width = 6.5)
 ```
+
+    ## Saving 6.5 x 5 in image
 
 # Visualizing Economic Impacts
 
@@ -847,8 +810,15 @@ results_rev =
                                "2020 - 2022"),
                         "2017 - 2019")) %>%
   mutate(Years = as.factor(Years))
+```
 
+    ## `summarise()` regrouping output by 'Year', 'Run', 'Variable' (override with `.groups` argument)
 
+    ## `summarise()` regrouping output by 'Year', 'Variable' (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'Years', 'Variable' (override with `.groups` argument)
+
+``` r
 # Plot differences.
 #  First, tweak the manual fill palette.
 pal_fil = viridis(4, 
@@ -886,14 +856,19 @@ vis_rev =
 
 # Print.
 print(vis_rev)
+```
 
+![](README_files/figure-gfm/rev-1.png)<!-- -->
+
+``` r
 # Save.
 ggsave("./out/vis_rev.png",
        vis_rev,
        dpi = 300,
-       width = 6.5,
-       height = 4.5)
+       width = 6.5)
 ```
+
+    ## Saving 6.5 x 5 in image
 
 # Visualizing Influence of Demand and Substitution
 
@@ -989,15 +964,14 @@ par_1 =
 pars = 
   inner_join(par_0, 
              par_1)
-  
-# Get a matrix of parameters for demand and substitution.  
-mat = crossing(dem = seq(1.00, 2.00, by = 0.10), 
-               sub = seq(0.00, 1.00, by = 0.10))
+```
 
-# Optimize on test parameters.
-opt_test = fun_opter(dem = 1.25, 
-                     sub = 0.75, 
-                     pars = pars) # Returns 24k m^3 at 9.11e-06 (2/11).
+    ## Joining, by = "names"
+
+``` r
+# Get a matrix of parameters for demand and substitution.  
+mat = expand_grid(dem = seq(1.00, 2.00, by = 0.10), 
+                  sub = seq(0.00, 1.00, by = 0.10))
 
 # Optimize on full set.
 opt = 
@@ -1006,7 +980,9 @@ opt =
                     .y = sub,
                     .f = fun_opter,
                     pars = pars))
+```
 
+``` r
 # Manipulate results.
 use =
   opt %>%
@@ -1036,133 +1012,34 @@ vis_dem =
   scale_x_reverse(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
   scale_fill_viridis(direction = -1,
-                     na.value = "grey15") +
+                     na.value = "grey90") +
   guides(fill = guide_colorbar(barwidth = 15,
                                barheight = 0.5,
                                ticks = FALSE)) +
   labs(x = "Substitution (Ratio of Prices for Aquaculture and Fishery Products)",
-       y = "Demand (Proportion of 2017 Quantity Demanded)",
-       fill = "Aquaculture Scale (10^6 m^3)") +
+       y = "Demand (Scaling of Estimated Choke Price, 2014-2018)",
+       fill = expression(paste("Aquaculture Scale (", 10^6, m^3, ")"))) +
   theme_pubr()
 
 # Print.
 print(vis_dem)
+```
 
+    ## Warning: Removed 37 rows containing missing values (geom_text).
+
+![](README_files/figure-gfm/dem-1.png)<!-- -->
+
+``` r
 # Save.
 ggsave("./out/vis_dem.png",
        vis_dem,
        dpi = 300,
-       width = 6.5,
-       height = 7.0)
+       width = 6.5)
 ```
 
-# Visualizing Principal Components
+    ## Saving 6.5 x 5 in image
 
-``` r
-# Principal Component Analysis of parameters on biomass in final year.
-#  Wrangle parameters by run.
-par_pca = 
-  pars_0 %>% 
-  rownames_to_column("name") %>% 
-  bind_cols(pars_1) %>% 
-  t() %>%
-  as.data.frame() %>% 
-  row_to_names(1) %>% 
-  mutate(Run = seq(1, nrow(.)))
-
-# Wrangle results into biomass in final year by run. You might run this w/ profits and effort, too. Just pivot and pray.
-res_pca = results %>% 
-  filter(Variable == "Numbers" & Year == max(Year)) %>% 
-  filter(Scenario == "Status Quo" | Scenario == "Aquaculture Intervention") %>% 
-  mutate(Biomass = fun_l_w(pars_base["a_lw", 1], 
-                           fun_a_l(Age - 0.5, 
-                                   pars_base["linf_al", 1], 
-                                   pars_base["k_al", 1], 
-                                   pars_base["t0_al", 1]),  
-                           pars_base["b_lw", 1]) / 1000 * Result) %>% 
-  group_by(Run, 
-           Scenario) %>% 
-  summarize(Sum = sum(Biomass, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  mutate(Run = ifelse(Scenario == "Aquaculture Intervention",
-                      Run + n,
-                      Run))
-
-
-
-# Try the whole thing again, but with a little more taste in choosing variables.
-in_pca = 
-  left_join(par_pca,
-            res_pca,
-            by = "Run") %>% 
-  select(Scenario,
-         'Initial Biomass' = nprop,
-         'Initial Effort' = e_2017,
-         'Effort Cost' = c_2017,
-         'Effort Entry' = eta_limit,
-         # 'Stocking Density' = dens,
-         'Aquaculture Export' = switch_aq,
-         # 'Aquaculture Mortality' = mmin,
-         'Final Biomass' = Sum) %>% # Keep columns w/ bootstrapping. Constants don't work for PCA.
-  mutate_if(is.factor, ~ as.numeric(as.character(.x)))
-
-groups_pca =
-  in_pca %>% 
-  select(Scenario)
-
-in_pca = 
-  in_pca %>% 
-  select(-Scenario)
-
-# Run refined PCA.
-pca = prcomp(in_pca, scale = TRUE)
-
-# Plot refined PCs.
-vis_pca =
-  ggbiplot(pca,
-           groups = as.character(groups_pca$Scenario),
-           ellipse = TRUE,
-           alpha = 0.50,
-           varname.size = 3.25,
-           varname.adjust = 1.05) +
-  scale_color_manual(values = c(pal_col[2], pal_col[1])) +
-  scale_x_continuous(expand = c(0, 0),
-                     limits = c(-2, 2.5)) +
-  scale_y_continuous(expand = c(0, 0),
-                     limits = c(-2, 2)) +
-  labs(x = "Standardized Principal Component (1) (31.6% Var.)",
-       y = "Standardized Principal Component (2) (21.7% Var.)") +
-  theme_pubr() +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "transparent", color = NA),
-        plot.background = element_rect(fill = "transparent", color = NA),
-        legend.position = "none")
-
-# Print!
-print(vis_pca)
-
-# Save!
-ggsave("./out/vis_pca.png", 
-       vis_pca,
-       dpi = 300,
-       width = 6.5, 
-       height = 7.0)
-
-# Tabulate refined PCA.
-#  yoink importance and print
-pca_imp = data.frame(summary(pca)$importance)
-print(pca_imp)
-#  yoink rotations and print
-pca_rot = data.frame(summary(pca)$rotation)
-print(pca_rot)
-
-# Save tables.
-# Importances of PCs.
-kable(pca_imp, "html") %>% cat(., file = "./out/pca_imp.html")
-# Rotations of variables in PCs.
-kable(pca_rot, "html") %>% cat(., file = "./out/pca_rot.html")
-```
+    ## Warning: Removed 37 rows containing missing values (geom_text).
 
 # Summarizing Results
 
@@ -1192,7 +1069,13 @@ results_bio =
          Proportion = Result / `Status Quo`,
          Variable = "Stock Biomass") %>% 
   select(-`Status Quo`)
-  
+```
+
+    ## `summarise()` regrouping output by 'Scenario' (override with `.groups` argument)
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+``` r
 #  Catches (Difference and Proportion)
 results_cat = 
   results %>% 
@@ -1217,7 +1100,12 @@ results_cat =
          Proportion = Result / `Status Quo`,
          Variable = "Catch Biomass") %>% 
   select(-`Status Quo`)
+```
 
+    ## `summarise()` regrouping output by 'Scenario' (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+``` r
 #  Effort (Difference and Proportion)
 results_eff = 
   results %>% 
@@ -1233,7 +1121,11 @@ results_eff =
          Proportion = Result / `Status Quo`,
          Variable = "Effort") %>% 
   select(-`Status Quo`)
+```
 
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+``` r
 #  Price (Difference and Proportion)
 results_pri = 
   results %>% 
@@ -1249,7 +1141,11 @@ results_pri =
          Proportion = Result / `Status Quo`,
          Variable = "Price") %>% 
   select(-`Status Quo`)
+```
 
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+``` r
 #  Revenue (Fishery) (Difference and Proportion)
 results_rev_f = 
   results %>% 
@@ -1265,7 +1161,11 @@ results_rev_f =
          Proportion = Result / `Status Quo`,
          Variable = "Revenue (Fishery)") %>% 
   select(-`Status Quo`)
+```
 
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+``` r
 #  Revenue (Aquaculture) (Difference and Proportion)
 results_rev_a = 
   results %>% 
@@ -1281,7 +1181,11 @@ results_rev_a =
          Proportion = Result / `Status Quo`,
          Variable = "Revenue (Aquaculture)") %>% 
   select(-`Status Quo`)
+```
 
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+``` r
 # Tabulate!
 results_sum = 
   bind_rows(results_bio,
@@ -1293,7 +1197,511 @@ results_sum =
 
 # Print!
 print(results_sum)
+```
 
+    ## # A tibble: 18 x 5
+    ##    Intervention                    Result  Difference Proportion Variable       
+    ##    <chr>                            <dbl>       <dbl>      <dbl> <chr>          
+    ##  1 Aquaculture and Enforcement~    1.20e4     1.93e+3     1.19   Stock Biomass  
+    ##  2 Aquaculture Intervention        1.17e4     1.64e+3     1.16   Stock Biomass  
+    ##  3 Enforcement Intervention        1.05e4     4.68e+2     1.05   Stock Biomass  
+    ##  4 Aquaculture and Enforcement~    2.55e1    -1.75e+2     0.127  Catch Biomass  
+    ##  5 Aquaculture Intervention        4.30e1    -1.57e+2     0.215  Catch Biomass  
+    ##  6 Enforcement Intervention        1.50e2    -5.04e+1     0.748  Catch Biomass  
+    ##  7 Aquaculture and Enforcement~    6.51e0    -5.76e+1     0.102  Effort         
+    ##  8 Aquaculture Intervention        1.15e1    -5.26e+1     0.179  Effort         
+    ##  9 Enforcement Intervention        4.39e1    -2.03e+1     0.684  Effort         
+    ## 10 Aquaculture and Enforcement~    3.03e0    -2.12e+0     0.589  Price          
+    ## 11 Aquaculture Intervention        2.98e0    -2.16e+0     0.580  Price          
+    ## 12 Enforcement Intervention        5.48e0     3.36e-1     1.07   Price          
+    ## 13 Aquaculture and Enforcement~    4.25e5    -4.45e+6     0.0872 Revenue (Fishe~
+    ## 14 Aquaculture Intervention        6.94e5    -4.19e+6     0.142  Revenue (Fishe~
+    ## 15 Enforcement Intervention        3.92e6    -9.62e+5     0.803  Revenue (Fishe~
+    ## 16 Aquaculture and Enforcement~    7.68e7     5.69e+7     3.86   Revenue (Aquac~
+    ## 17 Aquaculture Intervention        7.53e7     5.54e+7     3.78   Revenue (Aquac~
+    ## 18 Enforcement Intervention        1.99e7     0.          1      Revenue (Aquac~
+
+``` r
 # Export!
 kable(results_sum, "html", digits = 2) %>% cat(file = "./out/results_sum.html")
+```
+
+# Visualizing Effects on Age Structure (Appendix)
+
+``` r
+# Summarize results in matrix plot of differential outcomes by cohort biomass.
+#  Visualize w/ age structure, w/o error.
+vis_bio_age_pro = 
+  results %>% 
+  filter(Scenario == "Status Quo" | Scenario == "Aquaculture Intervention") %>% 
+  filter(Variable == "Numbers") %>% 
+  mutate(Biomass = fun_l_w(pars_base["a_lw", 1], 
+                           fun_a_l(Age - 0.5, 
+                                   pars_base["linf_al", 1], 
+                                   pars_base["k_al", 1], 
+                                   pars_base["t0_al", 1]),  
+                           pars_base["b_lw", 1]) / 1000 * Result) %>% 
+  
+  group_by(Year,
+           Age,
+           Scenario) %>% 
+  summarize(Biomass = sum(Biomass)) %>% 
+  ungroup %>% 
+  pivot_wider(names_from = Scenario,
+              values_from = Biomass) %>% 
+  mutate(Difference = `Aquaculture Intervention` - `Status Quo`,
+         Proportion = `Aquaculture Intervention` / `Status Quo`) %>% 
+  pivot_longer(cols = c("Difference",
+                        "Proportion"),
+               names_to = "Which",
+               values_to = "Values") %>% 
+  filter(Which == "Proportion") %>% 
+  ggplot +
+  geom_raster(aes(x = Year + 2016,
+                  y = Age, 
+                  fill = Values)) +
+  labs(x = "",
+       fill = "Biomass Effect (Intervention:Status Quo)") +
+  guides(fill = guide_colorbar(barwidth = 13, 
+                               barheight = 0.5,
+                               ticks = FALSE,
+                               title.position = "bottom",
+                               title.hjust = 0.50)) +
+  scale_fill_viridis_c(option = "D") +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  theme_pubr() +
+  theme(title = element_text(size = 9))
+```
+
+    ## `summarise()` regrouping output by 'Year', 'Age' (override with `.groups` argument)
+
+``` r
+vis_bio_age_dif = 
+  results %>% 
+  filter(Scenario == "Status Quo" | Scenario == "Aquaculture Intervention") %>% 
+  filter(Variable == "Numbers") %>% 
+  mutate(Biomass = fun_l_w(pars_base["a_lw", 1], 
+                           fun_a_l(Age - 0.5, 
+                                   pars_base["linf_al", 1], 
+                                   pars_base["k_al", 1], 
+                                   pars_base["t0_al", 1]),  
+                           pars_base["b_lw", 1]) / 1000 * Result) %>% 
+  
+  group_by(Year,
+           Age,
+           Scenario) %>% 
+  summarize(Biomass = sum(Biomass)) %>% 
+  ungroup %>% 
+  pivot_wider(names_from = Scenario,
+              values_from = Biomass) %>% 
+  mutate(Difference = `Aquaculture Intervention` - `Status Quo`,
+         Proportion = `Aquaculture Intervention` / `Status Quo`) %>% 
+  pivot_longer(cols = c("Difference",
+                        "Proportion"),
+               names_to = "Which",
+               values_to = "Values") %>% 
+  filter(Which == "Difference") %>% 
+  mutate(Values = Values * (1 / 1000000)) %>% # Transform numbers from individuals to millions of individuals.
+  ggplot +
+  geom_raster(aes(x = Year + 2016,
+                  y = Age, 
+                  fill = Values)) +
+  labs(x = "",
+       fill = "Biomass Effect (Intervention - Status Quo)") +
+  guides(fill = guide_colorbar(barwidth = 13, 
+                               barheight = 0.5,
+                               ticks = FALSE,
+                               title.position = "bottom",
+                               title.hjust = 0.50)) +
+  scale_fill_viridis_c(option = "D") +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  theme_pubr() +
+  theme(title = element_text(size = 9))
+```
+
+    ## `summarise()` regrouping output by 'Year', 'Age' (override with `.groups` argument)
+
+``` r
+print(vis_bio_age_pro)
+```
+
+![](README_files/figure-gfm/age-1.png)<!-- -->
+
+``` r
+print(vis_bio_age_dif)
+```
+
+![](README_files/figure-gfm/age-2.png)<!-- -->
+
+``` r
+ggsave("./out/vis_bio_age_pro.png",
+       vis_bio_age_pro,
+       dpi = 300,
+       width = 3.25)
+```
+
+    ## Saving 3.25 x 5 in image
+
+``` r
+ggsave("./out/vis_bio_age_dif.png",
+       vis_bio_age_dif,
+       dpi = 300,
+       width = 3.25)
+```
+
+    ## Saving 3.25 x 5 in image
+
+# Visualizing Principal Components of Parameters and Biomass Outcomes (Appendix)
+
+``` r
+# Principal Component Analysis of parameters on biomass in final year.
+#  Get an R package to visualize PCA.
+#   # Install from Github ("vqv/ggbiplot").
+library(ggbiplot)
+```
+
+    ## Loading required package: plyr
+
+    ## ------------------------------------------------------------------------------
+
+    ## You have loaded plyr after dplyr - this is likely to cause problems.
+    ## If you need functions from both plyr and dplyr, please load plyr first, then dplyr:
+    ## library(plyr); library(dplyr)
+
+    ## ------------------------------------------------------------------------------
+
+    ## 
+    ## Attaching package: 'plyr'
+
+    ## The following objects are masked from 'package:dplyr':
+    ## 
+    ##     arrange, count, desc, failwith, id, mutate, rename, summarise,
+    ##     summarize
+
+    ## The following object is masked from 'package:purrr':
+    ## 
+    ##     compact
+
+    ## The following object is masked from 'package:ggpubr':
+    ## 
+    ##     mutate
+
+    ## Loading required package: scales
+
+    ## 
+    ## Attaching package: 'scales'
+
+    ## The following object is masked from 'package:purrr':
+    ## 
+    ##     discard
+
+    ## The following object is masked from 'package:readr':
+    ## 
+    ##     col_factor
+
+    ## The following object is masked from 'package:viridis':
+    ## 
+    ##     viridis_pal
+
+    ## Loading required package: grid
+
+``` r
+# Wrangle results. 
+#  Wrangle parameters by run.
+par_pca = 
+  pars_0 %>% 
+  rownames_to_column("name") %>% 
+  bind_cols(pars_1) %>% 
+  t() %>%
+  as.data.frame() %>% 
+  row_to_names(1) %>% 
+  mutate(Run = seq(1, nrow(.)))
+```
+
+    ## New names:
+    ## * mid -> mid...2
+    ## * mid.1 -> mid.1...3
+    ## * mid.2 -> mid.2...4
+    ## * mid.3 -> mid.3...5
+    ## * mid.4 -> mid.4...6
+    ## * ...
+
+``` r
+# Wrangle results into biomass in final year by run. You might run this w/ profits and effort, too. Just pivot and pray.
+res_pca = results %>% 
+  filter(Variable == "Numbers" & Year == max(Year)) %>% 
+  filter(Scenario == "Status Quo" | Scenario == "Aquaculture Intervention") %>% 
+  mutate(Biomass = fun_l_w(pars_base["a_lw", 1], 
+                           fun_a_l(Age - 0.5, 
+                                   pars_base["linf_al", 1], 
+                                   pars_base["k_al", 1], 
+                                   pars_base["t0_al", 1]),  
+                           pars_base["b_lw", 1]) / 1000 * Result) %>% 
+  dplyr::group_by(Run, 
+                  Scenario) %>% 
+  dplyr::summarize(Sum = sum(Biomass, na.rm = TRUE)) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::mutate(Run = ifelse(Scenario == "Aquaculture Intervention",
+                             Run + n,
+                             Run))
+```
+
+    ## `summarise()` regrouping output by 'Run' (override with `.groups` argument)
+
+``` r
+# Try the whole thing again, but with a little more taste in choosing variables.
+in_pca = 
+  left_join(par_pca,
+            res_pca,
+            by = "Run") %>% 
+  select(Scenario,
+         'Initial Biomass' = nprop,
+         'Initial Effort' = e_2017,
+         'Effort Cost' = c_2017,
+         'Effort Entry' = eta_limit,
+         # 'Stocking Density' = dens,
+         'Aquaculture Export' = switch_aq,
+         # 'Aquaculture Mortality' = mmin,
+         'Final Biomass' = Sum) # Keep columns w/ bootstrapping. Constants don't work for PCA.
+groups_pca =
+  in_pca %>% 
+  select(Scenario)
+
+in_pca = 
+  in_pca %>% 
+  select(-Scenario) %>%
+  mutate_all(~ as.numeric(as.character(.x)))
+
+
+# Run refined PCA.
+pca_par = prcomp(in_pca, scale = TRUE)
+
+# Plot refined PCs.
+vis_par =
+  ggbiplot(pca_par,
+           groups = as.character(groups_pca$Scenario),
+           ellipse = FALSE,
+           alpha = 0.25,
+           varname.size = 3.25,
+           varname.adjust = 1.05) +
+  scale_color_manual(values = c(pal_col[2], pal_col[1])) +
+  scale_x_continuous(expand = c(0, 0),
+                     limits = c(-2.5, 2)) +
+  scale_y_continuous(expand = c(0, 0),
+                     limits = c(-2, 2)) +
+  labs(x = "Standardized Principal Component (1) (1.34 SD, 0.30 Var)",
+       y = "Standardized Principal Component (2) (1.00 SD, 0.17 Var)") +
+  theme_pubr() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "transparent", color = NA),
+        plot.background = element_rect(fill = "transparent", color = NA),
+        legend.position = "none")
+
+vis_par$layers <- c(vis_par$layers[[2]], vis_par$layers[[1]], vis_par$layers[[3]]) # Change order of layers.
+
+print(vis_par)
+```
+
+    ## Warning: Removed 559 rows containing missing values (geom_point).
+
+![](README_files/figure-gfm/par-1.png)<!-- -->
+
+``` r
+# Save!
+ggsave("./out/vis_par.png", 
+       vis_par,
+       dpi = 300,
+       width = 6.5, 
+       height = 7.0)
+```
+
+    ## Warning: Removed 559 rows containing missing values (geom_point).
+
+``` r
+# Tabulate refined PCA.
+#  yoink importance and print
+par_imp = data.frame(summary(pca_par)$importance)
+print(par_imp)
+```
+
+    ##                             PC1      PC2       PC3       PC4       PC5
+    ## Standard deviation     1.341904 1.012247 0.9996986 0.9969883 0.9916055
+    ## Proportion of Variance 0.300120 0.170770 0.1665700 0.1656600 0.1638800
+    ## Cumulative Proportion  0.300120 0.470890 0.6374600 0.8031200 0.9670000
+    ##                              PC6
+    ## Standard deviation     0.4449554
+    ## Proportion of Variance 0.0330000
+    ## Cumulative Proportion  1.0000000
+
+``` r
+#  yoink rotations and print
+par_rot = data.frame(summary(pca_par)$rotation)
+print(par_rot)
+```
+
+    ##                            PC1           PC2           PC3           PC4
+    ## Initial Biomass    -0.39960959  0.2949778966 -0.7000854516  0.2963370101
+    ## Initial Effort     -0.06438304  0.5282011199  0.0806522803 -0.7017804730
+    ## Effort Cost        -0.11312487 -0.6476550379 -0.0019288096  0.0235469915
+    ## Effort Entry       -0.15274980 -0.4629751111 -0.3692918408 -0.6460322123
+    ## Aquaculture Export -0.54739494 -0.0137228967  0.6058011547  0.0421461340
+    ## Final Biomass      -0.70738677 -0.0005458124 -0.0005892279 -0.0004090981
+    ##                             PC5         PC6
+    ## Initial Biomass     0.120810110  0.40096118
+    ## Initial Effort      0.461834048  0.06758025
+    ## Effort Cost         0.743676719  0.11888007
+    ## Effort Entry       -0.431059453  0.15091458
+    ## Aquaculture Export -0.182271028  0.54605531
+    ## Final Biomass       0.004918088 -0.70680900
+
+``` r
+# Save tables.
+# Importances of PCs.
+kable(par_imp, "html") %>% cat(., file = "./out/par_imp.html")
+# Rotations of variables in PCs.
+kable(par_rot, "html") %>% cat(., file = "./out/par_rot.html")
+```
+
+# Visualizing Principal Components of Simulations (Panel) (Appendix)
+
+``` r
+# Principal Component Analysis of parameters on biomass in final year.
+#  Get an R package to visualize PCA.
+#   # Install from Github ("vqv/ggbiplot").
+library(ggbiplot)
+
+# Wrangle results. 
+res_pca = 
+  results %>% 
+  filter(Variable == "Numbers" | Variable == "Catches" | Variable == "Poaching Profit" | Variable == "Aquaculture Profit" | Variable == "Price") %>% 
+  filter(Scenario == "Status Quo" | Scenario == "Aquaculture Intervention") %>% 
+  mutate(Result = ifelse(Variable == "Numbers" | Variable == "Catches",
+                         fun_l_w(pars_base["a_lw", 1], 
+                                 fun_a_l(Age - 0.5, 
+                                         pars_base["linf_al", 1], 
+                                         pars_base["k_al", 1], 
+                                         pars_base["t0_al", 1]),  
+                                 pars_base["b_lw", 1]) / 1000 * Result,
+                         Result)) %>% 
+  mutate(Run = ifelse(Scenario == "Aquaculture Intervention", # Get unique numbers for scenarios.
+                      Run + n,
+                      Run),
+         Intervention = ifelse(Scenario == "Status Quo", # Get a numeric scenario column.
+                                        0,
+                                        1)) %>% 
+  group_by(Year,
+           Run,
+           Scenario,
+           Intervention,
+           Variable) %>% 
+  dplyr::summarize(Result = sum(Result, na.rm = TRUE)) %>% 
+  ungroup %>% 
+  pivot_wider(names_from = Variable,
+              values_from = Result) %>% 
+  dplyr::select(-Year,
+                -Run) %>% 
+  dplyr::rename(Stock = Numbers,
+                Catch = Catches)
+```
+
+    ## `summarise()` regrouping output by 'Year', 'Run', 'Scenario', 'Intervention' (override with `.groups` argument)
+
+``` r
+groups_pca =
+  res_pca %>% 
+  select(Scenario)
+
+in_pca = 
+  res_pca %>% 
+  select(-Scenario) %>% 
+  mutate_all(~ as.numeric(as.character(.x)))
+
+# Run refined PCA.
+pca_pan = prcomp(in_pca, scale = TRUE)
+
+# Plot refined PCs.
+vis_pan =
+  ggbiplot(pca_pan,
+           groups = as.character(groups_pca$Scenario),
+           ellipse = FALSE,
+           alpha = 0.05,
+           varname.size = 3.25,
+           varname.adjust = 1.05) +
+  scale_color_manual(values = c(pal_col[2], pal_col[1])) +
+  scale_x_continuous(expand = c(0, 0),
+                     limits = c(-2, 3)) +
+  scale_y_continuous(expand = c(0, 0),
+                     limits = c(-3, 3)) +
+  labs(x = "Standardized Principal Component (1) (1.48 SD, 0.37 Var)",
+       y = "Standardized Principal Component (2) (1.26 SD, 0.26 Var)") +
+  theme_pubr() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "transparent", color = NA),
+        plot.background = element_rect(fill = "transparent", color = NA),
+        legend.position = "none")
+
+vis_pan$layers <- c(vis_pan$layers[[2]], vis_pan$layers[[1]], vis_pan$layers[[3]]) # Change order of layers.
+
+print(vis_pan)
+```
+
+    ## Warning: Removed 932 rows containing missing values (geom_point).
+
+![](README_files/figure-gfm/pan-1.png)<!-- -->
+
+``` r
+# Save!
+ggsave("./out/vis_pan.png", 
+       vis_pan,
+       dpi = 300,
+       width = 6.5)
+```
+
+    ## Saving 6.5 x 5 in image
+
+    ## Warning: Removed 932 rows containing missing values (geom_point).
+
+``` r
+# Tabulate refined PCA.
+#  yoink importance and print
+pan_imp = data.frame(summary(pca_pan)$importance)
+print(pan_imp)
+```
+
+    ##                             PC1      PC2       PC3      PC4       PC5       PC6
+    ## Standard deviation     1.479528 1.254652 0.9662684 0.770316 0.6690685 0.5119883
+    ## Proportion of Variance 0.364830 0.262360 0.1556100 0.098900 0.0746100 0.0436900
+    ## Cumulative Proportion  0.364830 0.627190 0.7828000 0.881700 0.9563100 1.0000000
+
+``` r
+#  yoink rotations and print
+pan_rot = data.frame(summary(pca_pan)$rotation)
+print(pan_rot)
+```
+
+    ##                           PC1         PC2         PC3         PC4         PC5
+    ## Intervention        0.3731051 -0.47292839  0.44369108 -0.36237955 -0.05109693
+    ## Aquaculture Profit  0.3972761 -0.34370147 -0.44809996  0.62482761  0.28050159
+    ## Catch               0.1693757  0.70877958 -0.09913398  0.10302104 -0.26832874
+    ## Stock               0.3519782  0.27001458  0.70426918  0.42939689  0.22431476
+    ## Poaching Profit    -0.4753263 -0.28107718  0.26435868  0.52965031 -0.56397037
+    ## Price              -0.5696073  0.06266817  0.16320699  0.05241216  0.69161258
+    ##                           PC6
+    ## Intervention        0.5534796
+    ## Aquaculture Profit  0.2327159
+    ## Catch               0.6135978
+    ## Stock              -0.2692760
+    ## Poaching Profit     0.1630430
+    ## Price               0.4048565
+
+``` r
+# Save tables.
+# Importances of PCs.
+kable(pan_imp, "html") %>% cat(., file = "./out/pan_imp.html")
+# Rotations of variables in PCs.
+kable(pan_rot, "html") %>% cat(., file = "./out/pan_rot.html")
 ```
